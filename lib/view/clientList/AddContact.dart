@@ -1,22 +1,69 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intrasense/model/client_list_model.dart';
+import '../../model/user_model.dart';
 import '../../res/component/CustomDropdown.dart';
 import '../../res/component/CustomElevatedButton.dart';
 import '../../res/component/CustomTextField.dart';
 import '../../utils/AppColors.dart';
 import '../../utils/Images.dart';
+import '../../utils/Utils.dart';
+import '../../view_models/client_view_model.dart';
+import '../../view_models/user_view_model.dart';
+import 'package:provider/provider.dart';
 
-class Addcontact extends StatefulWidget{
+class Addcontact extends StatefulWidget {
   @override
-  _Addcontact createState()=>  _Addcontact();
-
-
+  _Addcontact createState() => _Addcontact();
 }
 
-class _Addcontact extends State<Addcontact>{
+class _Addcontact extends State<Addcontact> {
+  UserModel? _userData;
   String? selectClientValue;
+  String? selectClientId;
+  List<ClientListModel> clientList = [];
+  List<String> clientNamesList = [];
+  TextEditingController _designationController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _mobileController = TextEditingController();
+  TextEditingController _landlineController = TextEditingController();
+  TextEditingController _extController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    getUserDetails(context);
+  }
+
+  Future<UserModel> getUserData() => UserViewModel().getUser();
+  void getUserDetails(BuildContext context) async {
+    _userData = await getUserData();
+    getClientList(context);
+    if (kDebugMode) {
+      print(_userData);
+    }
+  }
+
+  void getClientList(BuildContext context) async {
+    //setLoading(true);
+    final clientViewModel = Provider.of<ClientViewModel>(context, listen: false);
+    Map data = {
+      'user_id': _userData?.data?.userId,
+      'customer_id': _userData?.data?.customerTrackId,
+      'token': _userData?.token,
+    };
+  await clientViewModel.getClientListApi(data, context);
+    setState(() {
+      clientList = clientViewModel.clientList;
+      clientNamesList = clientList.map((item) => item.cmpName).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final clientViewModel = Provider.of<ClientViewModel>(context);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -101,161 +148,195 @@ class _Addcontact extends State<Addcontact>{
             bottom: 0,
             child: SingleChildScrollView(
                 child: Column(
+              children: [
+                const Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      'Select Client',
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textColor,
+                          fontFamily: 'PoppinsMedium'),
+                    )),
+                const SizedBox(height: 5),
+                CustomDropdown(
+                  value: selectClientValue,
+                  items: clientNamesList,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectClientValue = newValue;
+                      selectClientId = clientList
+                          .firstWhere((item) => item.cmpName == newValue)
+                          .companyId;
+                    });
+                  },
+                  hint: 'Select Client',
+                ),
+                const SizedBox(height: 15),
+                const Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      'Designation',
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textColor,
+                          fontFamily: 'PoppinsMedium'),
+                    )),
+                CustomTextField(
+                  controller: _designationController,
+                  hintText: 'Designation',
+                ),
+                const SizedBox(height: 15),
+                const Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      'Name',
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textColor,
+                          fontFamily: 'PoppinsMedium'),
+                    )),
+                CustomTextField(
+                  controller: _nameController,
+                  hintText: 'Name',
+                ),
+                const SizedBox(height: 15),
+                const Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      'Email',
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textColor,
+                          fontFamily: 'PoppinsMedium'),
+                    )),
+                CustomTextField(
+                  controller: _emailController,
+                  hintText: 'Email',
+                ),
+                const SizedBox(height: 15),
+                const Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      'Mobile',
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textColor,
+                          fontFamily: 'PoppinsMedium'),
+                    )),
+                CustomTextField(
+                  controller: _mobileController,
+                  hintText: 'Mobile',
+                ),
+                const SizedBox(height: 15),
+                Row(
                   children: [
-
-                    const Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          'Select Client',
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsMedium'),
-                        )),
-                    const SizedBox(height: 5),
-                    CustomDropdown(
-                      value: selectClientValue,
-                      items: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectClientValue = newValue;
-                        });
-                      },
-                      hint: 'Select Client',
-                    ),
-                    const SizedBox(height: 15),
-
-
-                    const Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          'Designation',
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsMedium'),
-                        )),
-                    const CustomTextField(
-                      hintText: 'Designation',
-                    ),
-                    const SizedBox(height: 15),
-                    const Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          'Name',
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsMedium'),
-                        )),
-                    const CustomTextField(
-                      hintText: 'Name',
-                    ),
-                    const SizedBox(height: 15),
-                    const Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          'Email',
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsMedium'),
-                        )),
-                    const CustomTextField(
-                      hintText: 'Email',
-                    ),
-                    const SizedBox(height: 15),
-                    const Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          'Mobile',
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsMedium'),
-                        )),
-                    const CustomTextField(
-                      hintText: 'Mobile',
-                    ),
-                    const SizedBox(height: 15),
-
-                    Row(
-                      children: [
-                        const Expanded(
-                            flex: 10,
-                            child: Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  'Landline',
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: AppColors.textColor,
-                                      fontFamily: 'PoppinsMedium'),
-                                ))),
-                        Expanded(
-                            flex: 1,
-                            child: Container()),
-                        const Expanded(
-                            flex: 10,
-                            child:  Text(
-                              'Edit',
+                    const Expanded(
+                        flex: 10,
+                        child: Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Landline',
                               style: TextStyle(
                                   fontSize: 14,
                                   color: AppColors.textColor,
                                   fontFamily: 'PoppinsMedium'),
-                            ))
-                      ],
-                    ),
-
-                    const SizedBox(height: 5),
-
-                    Row(
-                      children: [
-                        Expanded(
-                            flex: 10,
-                            child:  const CustomTextField(
-                              hintText: 'landline',
-                            )),
-                        Expanded(
-                            flex: 1,
-                            child: Container()),
-                        Expanded(
-                            flex: 10,
-                            child:  const CustomTextField(
-                              hintText: 'Exit',
-                            ))
-                      ],
-                    ),
-
-
-                    const SizedBox(height: 15),
-                    Row(
-                      children: [
-                        Expanded(
-                            flex: 10,
-                            child: CustomElevatedButton(
-                              onPressed: () {},
-                              buttonText: 'cancel',
-                            )),
-                        Expanded(
-                            flex: 1,
-                            child: Container()),
-                        Expanded(
-                            flex: 10,
-                            child:  CustomElevatedButton(
-                              onPressed: () {},
-                              buttonText: 'Save Contact',
-                            ))
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-
+                            ))),
+                    Expanded(flex: 1, child: Container()),
+                    const Expanded(
+                        flex: 10,
+                        child: Text(
+                          'Ext:',
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textColor,
+                              fontFamily: 'PoppinsMedium'),
+                        ))
                   ],
-                )),
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    Expanded(
+                        flex: 10,
+                        child: CustomTextField(
+                          controller: _landlineController,
+                          hintText: 'landline',
+                        )),
+                    Expanded(flex: 1, child: Container()),
+                    Expanded(
+                        flex: 10,
+                        child: CustomTextField(
+                          controller: _extController,
+                          hintText: 'Exit',
+                        ))
+                  ],
+                ),
+                const SizedBox(height: 15),
+                Row(
+                  children: [
+                    Expanded(
+                        flex: 10,
+                        child: CustomElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          buttonText: 'cancel',
+                        )),
+                    Expanded(flex: 1, child: Container()),
+                    Expanded(
+                        flex: 10,
+                        child: CustomElevatedButton(
+                          onPressed: () {
+                            if (selectClientId==null) {
+                              Utils.toastMessage('Please select client name');
+                            } else if (_designationController.text.isEmpty) {
+                              Utils.toastMessage('Please enter designation');
+                            } else if (_nameController.text.isEmpty) {
+                              Utils.toastMessage('Please enter name');
+                            } else if (_emailController.text.isEmpty) {
+                              Utils.toastMessage('Please enter email');
+                            } else if (_mobileController.text.isEmpty) {
+                              Utils.toastMessage('Please enter mobile');
+                            } else if (_landlineController.text.isEmpty) {
+                              Utils.toastMessage('Please enter landline');
+                            } else if (_landlineController.text.isEmpty) {
+                              Utils.toastMessage('Please enter landline');
+                            } else if (_extController.text.isEmpty) {
+                              Utils.toastMessage('Please enter ext:');
+                            } else {
+                              Map data = {
+                                'user_id': _userData?.data?.userId.toString(),
+                                'usr_role_track_id':
+                                    _userData?.data?.roleTrackId.toString(),
+                                'company_id': selectClientId,
+                                'contactName': _nameController.text.toString(),
+                                'contactEmail':
+                                    _emailController.text.toString(),
+                                'contactDesignation':
+                                    _designationController.text.toString(),
+                                'contactMobile':
+                                    _mobileController.text.toString(),
+                                'contactLandline':
+                                    _landlineController.text.toString(),
+                                'contactLandlineExt':
+                                    _extController.text.toString(),
+                                'token': _userData?.token.toString(),
+                              };
+                              clientViewModel.addContactApi(data, context);
+                            }
+                          },
+                          buttonText: 'Save Contact',
+                          loading: clientViewModel.loading,
+                        ))
+                  ],
+                ),
+                const SizedBox(height: 15),
+              ],
+            )),
           )
         ],
       ),
     );
   }
-
 }

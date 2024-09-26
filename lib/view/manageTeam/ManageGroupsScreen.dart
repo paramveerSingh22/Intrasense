@@ -1,17 +1,77 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intrasense/model/teams/GroupListModel.dart';
 import 'package:intrasense/view/manageTeam/AddNewGroup.dart';
 import 'package:intrasense/view/manageTeam/EditGroupScreen.dart';
+import 'package:intrasense/view/manageTeam/ManageRoleScreen.dart';
+import '../../model/user_model.dart';
 import '../../res/component/CustomElevatedButton.dart';
 import '../../utils/AppColors.dart';
 import '../../utils/Images.dart';
+import '../../utils/Utils.dart';
+import '../../view_models/UserProvider.dart';
+import '../../view_models/teams_view_model.dart';
+import '../../view_models/user_view_model.dart';
+import 'package:provider/provider.dart';
 
 class ManageGroupScreen extends StatefulWidget {
   @override
-  _ManageGroupScreenState createState() => _ManageGroupScreenState();
+  _ManageGroupScreen createState() => _ManageGroupScreen();
 }
 
-class _ManageGroupScreenState extends State<ManageGroupScreen> {
+class _ManageGroupScreen extends State<ManageGroupScreen> {
+  UserModel? _userData;
+  bool _isLoading = false;
+  List<GroupListModel> groupList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getUserDetails(context);
+  }
+
+  Future<UserModel> getUserData() => UserViewModel().getUser();
+  void getUserDetails(BuildContext context) async {
+    _userData = await getUserData();
+    if (kDebugMode) {
+      print(_userData);
+    }
+    getGroupList();
+  }
+
+  Future<void> getGroupList() async {
+    setLoading(true);
+    try {
+      Map data = {
+        'user_id': _userData?.data?.userId,
+        'usr_role_track_id': _userData?.data?.roleTrackId,
+        'usr_customer_track_id': _userData?.data?.customerTrackId,
+        'token': _userData?.token,
+      };
+      final teamViewModel = Provider.of<TeamsViewModel>(context, listen: false);
+      final response = await teamViewModel.getGroupListApi(data, context);
+      setState(() {
+        if (response != null) {
+          groupList = response;
+        }
+        setLoading(false);
+      });
+    } catch (error) {
+      if (kDebugMode) {
+        print('Error fetching employee list: $error');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  void setLoading(bool loading) {
+    setState(() {
+      _isLoading = loading;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,23 +104,21 @@ class _ManageGroupScreenState extends State<ManageGroupScreen> {
                         filled: true,
                         fillColor: Colors.white,
                         contentPadding:
-                            EdgeInsets.fromLTRB(12.0, 5.0, 50.0, 5.0),
+                            const EdgeInsets.fromLTRB(12.0, 5.0, 50.0, 5.0),
                       ),
                     ),
                   ),
                   Expanded(
-                    child: Container(
-                        child: ListView.separated(
-                      itemCount: 5,
+                    child: ListView.separated(
+                      itemCount: groupList.length,
                       separatorBuilder: (BuildContext context, int index) {
-                        return const SizedBox(
-                            height:
-                                10); // List items ke beech mein 10 dp ka gap
+                        return const SizedBox(height: 10);
                       },
                       itemBuilder: (context, index) {
-                        return CustomGroupListTile();
+                        final item = groupList[index];
+                        return CustomGroupListTile(item: item);
                       },
-                    )),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   Padding(
@@ -86,7 +144,9 @@ class _ManageGroupScreenState extends State<ManageGroupScreen> {
 }
 
 class CustomGroupListTile extends StatelessWidget {
-  const CustomGroupListTile({super.key});
+  final GroupListModel item;
+
+  const CustomGroupListTile({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -112,8 +172,8 @@ class CustomGroupListTile extends StatelessWidget {
                       flex: 4,
                       child: Container(
                           child: Text(
-                        'Aman Sidhu',
-                        style: TextStyle(
+                        item.groupName.toString(),
+                        style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.primaryColor,
                           fontFamily: 'PoppinsRegular',
@@ -152,7 +212,19 @@ class CustomGroupListTile extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            EditGroupScreen()));
+                                            EditGroupScreen(
+                                                groupDetails:item
+                                            )));
+                              }
+                              else if (value == 3) {
+                                Utils.showConfirmationDialog(
+                                  context,
+                                  message:
+                                  "Are you sure you want to delete this group?",
+                                  onConfirm: () {
+                                    deleteGroupApi(context, item.groupId);
+                                  },
+                                );
                               }
                             }
                           });
@@ -165,48 +237,26 @@ class CustomGroupListTile extends StatelessWidget {
                       ))
                 ],
               ),
+              const SizedBox(height: 10),
               Row(
                 children: [
-                  Text(
-                    'AHD',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.secondaryOrange,
-                      fontFamily: 'PoppinsRegular',
-                    ),
-                  ),
-                  Text(
-                    ' - Access Health Dental',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textColor,
-                      fontFamily: 'PoppinsRegular',
-                    ),
-                  )
-                ],
-              ),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
+                  const Expanded(
                     flex: 1,
-                    child: Container(
-                      child: Text(
-                        'Email',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontWeight: FontWeight.w400,
-                        ),
+                    child: Text(
+                      'Description',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textColor,
+                        fontFamily: 'PoppinsRegular',
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ),
                   Expanded(
                       flex: 1,
                       child: Text(
-                        'aman@milagro.in',
-                        style: TextStyle(
+                        item.comments.toString(),
+                        style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textColor,
                           fontFamily: 'PoppinsRegular',
@@ -215,16 +265,16 @@ class CustomGroupListTile extends StatelessWidget {
                       ))
                 ],
               ),
-              SizedBox(height: 10),
-              Divider(),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+              const Divider(),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                       flex: 1,
                       child: Container(
-                        child: Text(
-                          'Mobile',
+                        child: const Text(
+                          'Added on',
                           style: TextStyle(
                             fontSize: 14,
                             color: AppColors.textColor,
@@ -236,8 +286,8 @@ class CustomGroupListTile extends StatelessWidget {
                   Expanded(
                       flex: 1,
                       child: Text(
-                        '8456776532',
-                        style: TextStyle(
+                        item.addedOn.toString(),
+                        style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textColor,
                           fontFamily: 'PoppinsRegular',
@@ -246,16 +296,16 @@ class CustomGroupListTile extends StatelessWidget {
                       ))
                 ],
               ),
-              SizedBox(height: 10),
-              Divider(),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+              const Divider(),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                       flex: 1,
                       child: Container(
-                        child: Text(
-                          'Designation',
+                        child: const Text(
+                          'Added by',
                           style: TextStyle(
                             fontSize: 14,
                             color: AppColors.textColor,
@@ -267,8 +317,8 @@ class CustomGroupListTile extends StatelessWidget {
                   Expanded(
                       flex: 1,
                       child: Text(
-                        'Project Manager',
-                        style: TextStyle(
+                        item.addedByName.toString(),
+                        style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textColor,
                           fontFamily: 'PoppinsRegular',
@@ -277,42 +327,42 @@ class CustomGroupListTile extends StatelessWidget {
                       ))
                 ],
               ),
-              SizedBox(height: 10),
-              Divider(),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: Container(
-                        child: Text(
-                          'Location',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textColor,
-                            fontFamily: 'PoppinsRegular',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      )),
-                  Expanded(
-                      flex: 1,
-                      child: Text(
-                        'Canada',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ))
-                ],
-              ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+void deleteGroupApi(BuildContext context, String? groupId) async {
+  final userProvider = Provider.of<UserProvider>(context, listen: false);
+  await userProvider.fetchUserData();
+  Utils.showLoadingDialog(context);
+  try {
+    Map data = {
+      'user_id': userProvider.user?.data?.userId,
+      'usr_role_track_id': userProvider.user?.data?.roleTrackId,
+      'usr_customer_track_id': userProvider.user?.data?.customerTrackId,
+      'group_id': groupId,
+      'token': userProvider.user?.token,
+    };
+
+    final teamViewModel = Provider.of<TeamsViewModel>(context,listen: false);
+    await teamViewModel.deleteGroupApi(data, context);
+
+    final manageGroupScreenState = context.findAncestorStateOfType<_ManageGroupScreen>();
+    manageGroupScreenState?.getGroupList();
+
+    Utils.hideLoadingDialog(context);
+  } catch (error, stackTrace) {
+    if (kDebugMode) {
+      print(error);
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Failed to delete this role')),
+    );
+    Utils.hideLoadingDialog(context);
   }
 }

@@ -1,6 +1,6 @@
 import 'package:intrasense/data/network/BaseApiService.dart';
 import 'package:intrasense/data/network/NetworkApiService.dart';
-import 'package:intrasense/res/app_url.dart';
+import 'package:intrasense/data/network/app_url.dart';
 
 class AuthRepository {
   BaseApiService apiService = NetworkApiService();

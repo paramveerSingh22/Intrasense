@@ -1,20 +1,55 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
+import 'package:intrasense/utils/Utils.dart';
+import 'package:intrasense/view_models/teams_view_model.dart';
+import '../../model/user_model.dart';
 import '../../res/component/CheckboxWithLabel.dart';
 import '../../res/component/CustomElevatedButton.dart';
 import '../../res/component/CustomTextField.dart';
 import '../../utils/AppColors.dart';
 import '../../utils/Images.dart';
+import '../../view_models/user_view_model.dart';
+import 'package:provider/provider.dart';
 
 class AddNewRole extends StatefulWidget{
   _AddNewRole createState() => _AddNewRole();
-
 }
 
 class _AddNewRole extends State<AddNewRole>{
+  TextEditingController _roleNameController = TextEditingController();
+  TextEditingController _notesController = TextEditingController();
+  UserModel? _userData;
+  List<String> selectedPermissions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getUserDetails(context);
+    handlePermissionChange('View', true);
+  }
+
+  Future<UserModel> getUserData() => UserViewModel().getUser();
+  void getUserDetails(BuildContext context) async {
+    _userData = await getUserData();
+    if (kDebugMode) {
+      print(_userData);
+    }
+  }
+
+  void handlePermissionChange(String permission, bool? value) {
+    setState(() {
+      if (value == true) {
+        selectedPermissions.add(permission);
+      } else {
+        selectedPermissions.remove(permission);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final teamViewModel = Provider.of<TeamsViewModel>(context);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -35,16 +70,14 @@ class _AddNewRole extends State<AddNewRole>{
                 padding: EdgeInsets.only(top: 50, left: 30),
                 child: Align(
                   alignment: Alignment.topLeft,
-                  // Top left alignment set karne ke liye
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        Icons.arrow_back, // Back icon ka code
+                        Icons.arrow_back,
                         color: Colors.white,
                       ),
                       SizedBox(width: 8),
-                      // Icon aur text ke beech thoda space dene ke liye
                       Text(
                         'Create Role',
                         style: TextStyle(
@@ -69,8 +102,8 @@ class _AddNewRole extends State<AddNewRole>{
                   width: MediaQuery.of(context).size.width,
                 ),
                 const Positioned(
-                  top: 20, // Adjust the position of the text as needed
-                  left: 30, // Adjust the position of the text as needed
+                  top: 20,
+                  left: 30,
                   child: Text(
                     'Create Role',
                     style: TextStyle(
@@ -110,7 +143,8 @@ class _AddNewRole extends State<AddNewRole>{
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
+                   CustomTextField(
+                    controller: _roleNameController,
                     hintText: 'Role Name',
                   ),
                   const SizedBox(height: 15),
@@ -123,7 +157,8 @@ class _AddNewRole extends State<AddNewRole>{
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
+                   CustomTextField(
+                     controller: _notesController,
                     hintText: 'Additional Notes',
                   ),
                   const SizedBox(height: 15),
@@ -139,11 +174,18 @@ class _AddNewRole extends State<AddNewRole>{
                       )
                   ),
 
+                  const CheckboxWithLabel(
+                    label: 'View',
+                    initialValue: true,
+                    isDisabled: true,
+                    onChanged: null,
+                  ),
+
                   CheckboxWithLabel(
                     label: 'Create',
                     onChanged: (bool? value) {
                       setState(() {
-                        // Handle checkbox change
+                        handlePermissionChange('Create', value);
                       });
                     },
                   ),
@@ -151,15 +193,7 @@ class _AddNewRole extends State<AddNewRole>{
                     label: 'Approve',
                     onChanged: (bool? value) {
                       setState(() {
-                        // Handle checkbox change
-                      });
-                    },
-                  ),
-                  CheckboxWithLabel(
-                    label: 'View',
-                    onChanged: (bool? value) {
-                      setState(() {
-                        // Handle checkbox change
+                        handlePermissionChange('Approve', value);
                       });
                     },
                   ),
@@ -167,7 +201,7 @@ class _AddNewRole extends State<AddNewRole>{
                     label: 'Manage Support',
                     onChanged: (bool? value) {
                       setState(() {
-                        // Handle checkbox change
+                        handlePermissionChange('Support', value);
                       });
                     },
                   ),
@@ -182,8 +216,26 @@ class _AddNewRole extends State<AddNewRole>{
             right: 20,
             child: CustomElevatedButton(
               onPressed: () {
+                if(_roleNameController.text.isEmpty){
+                  Utils.toastMessage("Please enter role name");
+                }
+                else if(_notesController.text.isEmpty){
+                  Utils.toastMessage("Please enter additional notes");
+                }
+                else{
+                  Map data = {
+                    'user_id' : _userData?.data?.userId.toString(),
+                    'usr_role_track_id' : _userData?.data?.roleTrackId.toString(),
+                    'role_name' : _roleNameController.text.toString(),
+                    'description' : _notesController.text.toString(),
+                    'permission' :  selectedPermissions.toString(),
+                    'token' : _userData?.token.toString(),
+                  };
+                  teamViewModel.addRoleApi(data,context);
+                }
               },
               buttonText: 'Create New Role',
+              loading: teamViewModel.loading,
             ),
           ),
         ],

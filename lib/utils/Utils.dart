@@ -28,4 +28,58 @@ class Utils {
     current.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
   }
+
+  static void showConfirmationDialog(
+      BuildContext context, {
+        required String message,
+        required VoidCallback onConfirm,
+      }) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Confirmation"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                onConfirm(); // Call the passed callback
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static void showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () async => false, // Prevent closing by back button
+          child: Dialog(
+            backgroundColor: Colors.transparent,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static void hideLoadingDialog(BuildContext context) {
+    Navigator.of(context, rootNavigator: true).pop(); // Close the dialog
+  }
+
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intrasense/model/client_subs_diary_model.dart';
+
 import '../../model/client_list_model.dart';
 import '../../model/country_list_model.dart';
 import '../../model/industry_list_model.dart';
@@ -16,12 +18,19 @@ import '../../view_models/common_view_model.dart';
 import '../../view_models/user_view_model.dart';
 import 'package:provider/provider.dart';
 
-class Addsubsidiary extends StatefulWidget{
+class EditSubsidiary extends StatefulWidget{
+  final ClientSubsDiaryModel subClient;
+
+  const EditSubsidiary ({
+    Key? key,
+    required this.subClient
+
+}): super(key: key);
   @override
-  _AddSubsidiary createState() => _AddSubsidiary();
+  _EditSubsidiary createState() => _EditSubsidiary();
 }
 
-class _AddSubsidiary extends State<Addsubsidiary>{
+class _EditSubsidiary extends State<EditSubsidiary>{
   UserModel? _userData;
 
   String? selectCountryValue;
@@ -50,6 +59,14 @@ class _AddSubsidiary extends State<Addsubsidiary>{
   @override
   void initState() {
     super.initState();
+    _subClientNameController.text = widget.subClient.entityName.toString();
+    _emailController.text = widget.subClient.entityEmail.toString();
+    _contactController.text = widget.subClient.entityPhone.toString();
+    _address1Controller.text = widget.subClient.entityAddress.toString();
+    _address2Controller.text = widget.subClient.entityAddress2.toString();
+    _stateController.text = widget.subClient.state.toString();
+    _cityController.text = widget.subClient.city.toString();
+    _pincodeController.text = widget.subClient.postalCode.toString();
     getUserDetails(context);
   }
 
@@ -76,6 +93,12 @@ class _AddSubsidiary extends State<Addsubsidiary>{
     setState(() {
       clientList = clientViewModel.clientList;
       clientNamesList = clientList.map((item) => item.cmpName).toList();
+      if(clientNamesList.contains(widget.subClient.entityName)){
+        selectClientValue=widget.subClient.entityName.toString();
+        selectClientId = clientList
+            .firstWhere((item) => item.cmpName == widget.subClient.entityName.toString())
+            .companyId;
+      }
     });
   }
 
@@ -85,6 +108,7 @@ class _AddSubsidiary extends State<Addsubsidiary>{
     setState(() {
       countryList = commonViewModel.countryList;
       countryNamesList= countryList.map((country) => country.countryName).toList();
+      selectCountryValue= widget.subClient.country.toString();
     });
   }
 
@@ -94,6 +118,12 @@ class _AddSubsidiary extends State<Addsubsidiary>{
     setState(() {
       industryList = commonViewModel.industryList;
       industryNamesList= industryList.map((industry) => industry.type.toString()).toList();
+      if(industryNamesList.contains(widget.subClient.industryName.toString())){
+        selectIndustryValue= widget.subClient.industryName.toString();
+        selectedIndustryId = industryList
+            .firstWhere((industry) => industry.type == widget.subClient.industryName.toString())
+            .id;
+      }
     });
   }
 
@@ -131,7 +161,7 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                       SizedBox(width: 8),
                       // Icon aur text ke beech thoda space dene ke liye
                       Text(
-                        'Add client',
+                        'Edit client',
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.white,
@@ -157,7 +187,7 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                   top: 20, // Adjust the position of the text as needed
                   left: 30, // Adjust the position of the text as needed
                   child: Text(
-                    'Add Client',
+                    'Edit Client',
                     style: TextStyle(
                         fontSize: 14,
                         color: AppColors.secondaryOrange,
@@ -221,7 +251,7 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                               color: AppColors.textColor,
                               fontFamily: 'PoppinsMedium'),
                         )),
-                     CustomTextField(
+                    CustomTextField(
                       controller: _subClientNameController,
                       hintText: 'Client Name',
                     ),
@@ -235,8 +265,8 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                               color: AppColors.textColor,
                               fontFamily: 'PoppinsMedium'),
                         )),
-                     CustomTextField(
-                       controller: _emailController,
+                    CustomTextField(
+                      controller: _emailController,
                       hintText: 'Email',
                     ),
                     const SizedBox(height: 15),
@@ -249,8 +279,8 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                               color: AppColors.textColor,
                               fontFamily: 'PoppinsMedium'),
                         )),
-                     CustomTextField(
-                       controller: _contactController,
+                    CustomTextField(
+                      controller: _contactController,
                       hintText: 'Contact',
                     ),
                     const SizedBox(height: 15),
@@ -287,7 +317,7 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                               color: AppColors.textColor,
                               fontFamily: 'PoppinsMedium'),
                         )),
-                     CustomTextField(
+                    CustomTextField(
                       controller: _address1Controller,
                       hintText: 'Address1',
                     ),
@@ -301,8 +331,8 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                               color: AppColors.textColor,
                               fontFamily: 'PoppinsMedium'),
                         )),
-                     CustomTextField(
-                       controller: _address2Controller,
+                    CustomTextField(
+                      controller: _address2Controller,
                       hintText: 'Address2',
                     ),
                     const SizedBox(height: 15),
@@ -336,7 +366,7 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                               color: AppColors.textColor,
                               fontFamily: 'PoppinsMedium'),
                         )),
-                     CustomTextField(
+                    CustomTextField(
                       controller: _stateController,
                       hintText: 'State',
                     ),
@@ -350,8 +380,8 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                               color: AppColors.textColor,
                               fontFamily: 'PoppinsMedium'),
                         )),
-                     CustomTextField(
-                       controller: _cityController,
+                    CustomTextField(
+                      controller: _cityController,
                       hintText: 'City',
                     ),
                     const SizedBox(height: 15),
@@ -364,8 +394,8 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                               color: AppColors.textColor,
                               fontFamily: 'PoppinsMedium'),
                         )),
-                     CustomTextField(
-                       controller: _pincodeController,
+                    CustomTextField(
+                      controller: _pincodeController,
                       hintText: 'Pincode',
                     ),
                     const SizedBox(height: 15),
@@ -387,7 +417,7 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                             flex: 10,
                             child:  CustomElevatedButton(
                               onPressed: () {
-                                if(selectClientId==null){
+                                if (selectClientId == null){
                                   Utils.toastMessage('Please select client name');
                                 }
                                 else if(_subClientNameController.text.isEmpty){
@@ -432,12 +462,13 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                                     'industry_type': "1",
                                     'email': _emailController.text.toString(),
                                     'contact_no': _contactController.text.toString(),
+                                    'companysub_id': widget.subClient.entityId,
                                     'token': _userData?.token.toString(),
                                   };
                                   clientViewModel.addSubClientApi(data, context);
                                 }
                               },
-                              buttonText: 'Save Subsidiary',
+                              buttonText: 'Update Subsidiary',
                               loading: clientViewModel.loading,
                             ))
                       ],
@@ -449,4 +480,5 @@ class _AddSubsidiary extends State<Addsubsidiary>{
       ),
     );
   }
+
 }

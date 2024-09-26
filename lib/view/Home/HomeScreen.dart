@@ -595,38 +595,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<UserModel> getUserData() => UserViewModel().getUser();
-  /*Future<String?> getUserName() async {
-    try {
-      UserModel value = await getUserData();
-      if (kDebugMode){
-        print("ffffffff Username: test logs are prints or not");
-        print("ffffffff UserId: "+value.data!.userId!);
-        print("ffffffff token: "+value.token!);
-      }
 
-      setState(() {
-        print("ffffffff if case is working ");
-        print("ffffffff then name is--- "+value.data!.firstName!);
-        userName = value.data!.firstName ?? "No User Data";
-
-      });
-    } catch (error) {
-      if (kDebugMode) {
-        print(error);
-      }
-      return "No User Data"; // or handle the error as per your requirement
-    }
-    return "Param";
-  }*/
 
 
   void getUserName(BuildContext context) async {
     getUserData().then((value) {
       if (kDebugMode){
-        print("ffffffff Username: test logs are prints or not");
-        print("ffffffff UserId: "+value.data!.userId!);
-        print("ffffffff token: "+value.token!);
-        print("ffffffff userName: "+value.data!.firstName!);
+        print(value);
       }
 
       setState(() {
@@ -640,11 +615,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
   }
-
-
-
-
-
 
 }
 

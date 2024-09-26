@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:intrasense/utils/AppColors.dart';
 
 class CheckboxWithLabel extends StatefulWidget {
   final String label;
   final bool initialValue;
   final Function(bool?)? onChanged;
+  final bool isDisabled;
 
   const CheckboxWithLabel({
     Key? key,
     required this.label,
     this.initialValue = false,
     this.onChanged,
+    this.isDisabled = false,
   }) : super(key: key);
 
   @override
@@ -37,9 +40,11 @@ class _CheckboxWithLabelState extends State<CheckboxWithLabel> {
         children: [
           Checkbox(
             value: isChecked,
-            onChanged: (bool? value) {
+            activeColor: AppColors.primaryColor,
+            onChanged: widget.isDisabled
+                ? null:(bool? value) {
               setState(() {
-                isChecked = value!;
+                isChecked = value?? false;
               });
               if (widget.onChanged != null) {
                 widget.onChanged!(value);

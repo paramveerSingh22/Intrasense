@@ -1,20 +1,75 @@
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
+import 'package:intrasense/model/RoleListModel.dart';
+import 'package:intrasense/utils/Utils.dart';
+import '../../model/user_model.dart';
 import '../../res/component/CheckboxWithLabel.dart';
 import '../../res/component/CustomElevatedButton.dart';
 import '../../res/component/CustomTextField.dart';
 import '../../utils/AppColors.dart';
 import '../../utils/Images.dart';
+import '../../view_models/UserProvider.dart';
+import '../../view_models/teams_view_model.dart';
+import '../../view_models/user_view_model.dart';
+import 'package:provider/provider.dart';
 
-class EditRoleScreen extends StatefulWidget{
+class EditRoleScreen extends StatefulWidget {
+  final RoleListModel roleDetails;
+
+  const EditRoleScreen({Key? key, required this.roleDetails}) : super(key: key);
+
   _EditRoleScreen createState() => _EditRoleScreen();
-
 }
 
-class _EditRoleScreen extends State<EditRoleScreen>{
+class _EditRoleScreen extends State<EditRoleScreen> {
+  final TextEditingController _roleNameController = TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
+  List<String> selectedPermissions = [];
+  UserModel? _userData;
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    getUserDetails(context);
+    _roleNameController.text = widget.roleDetails.roleName.toString();
+    _notesController.text = widget.roleDetails.description.toString();
+    final permissions = widget.roleDetails.permissions.toString();
+    if (permissions.startsWith('[') && permissions.endsWith(']')) {
+      try {
+        selectedPermissions = List<String>.from(jsonDecode(permissions));
+      } catch (e) {
+        selectedPermissions = _formatPermissionsString(permissions);
+      }
+    } else {
+      selectedPermissions = _formatPermissionsString(permissions);
+    }
+    selectedPermissions = List<String>.from(
+        jsonDecode(widget.roleDetails.permissions.toString()));
+  }
+
+  List<String> _formatPermissionsString(String permissions) {
+    String cleanedPermissions =
+        permissions.replaceAll('[', '').replaceAll(']', '');
+    List<String> formattedPermissions =
+        cleanedPermissions.split(',').map((s) => s.trim()).toList();
+    return formattedPermissions;
+  }
+
+  Future<UserModel> getUserData() => UserViewModel().getUser();
+  void getUserDetails(BuildContext context) async {
+    _userData = await getUserData();
+    if (kDebugMode) {
+      print(_userData);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final teamViewModel = Provider.of<TeamsViewModel>(context);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -97,7 +152,8 @@ class _EditRoleScreen extends State<EditRoleScreen>{
             top: 140,
             left: 20,
             right: 20,
-            bottom: 70, // Make space for the button at the bottom
+            bottom: 70,
+            // Make space for the button at the bottom
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -110,7 +166,8 @@ class _EditRoleScreen extends State<EditRoleScreen>{
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
+                  CustomTextField(
+                    controller: _roleNameController,
                     hintText: 'Role Name',
                   ),
                   const SizedBox(height: 15),
@@ -123,51 +180,62 @@ class _EditRoleScreen extends State<EditRoleScreen>{
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
+                  CustomTextField(
+                    controller: _notesController,
                     hintText: 'Additional Notes',
                   ),
                   const SizedBox(height: 15),
-
                   const Align(
                       alignment: Alignment.topLeft,
-                      child:  Text(
+                      child: Text(
                         'User Role Permissions',
                         style: TextStyle(
                             fontSize: 14,
                             color: AppColors.secondaryOrange,
                             fontFamily: 'PoppinsMedium'),
-                      )
+                      )),
+                  const CheckboxWithLabel(
+                    label: 'View',
+                    initialValue: true,
+                    isDisabled: true,
+                    onChanged: null,
                   ),
-
                   CheckboxWithLabel(
                     label: 'Create',
+                    initialValue: selectedPermissions.contains('Create'),
                     onChanged: (bool? value) {
                       setState(() {
-                        // Handle checkbox change
+                        if (value == true) {
+                          selectedPermissions.add('Create');
+                        } else {
+                          selectedPermissions.remove('Create');
+                        }
                       });
                     },
                   ),
                   CheckboxWithLabel(
                     label: 'Approve',
+                    initialValue: selectedPermissions.contains('Approve'),
                     onChanged: (bool? value) {
                       setState(() {
-                        // Handle checkbox change
-                      });
-                    },
-                  ),
-                  CheckboxWithLabel(
-                    label: 'View',
-                    onChanged: (bool? value) {
-                      setState(() {
-                        // Handle checkbox change
+                        if (value == true) {
+                          selectedPermissions.add('Approve');
+                        } else {
+                          selectedPermissions.remove('Approve');
+                        }
                       });
                     },
                   ),
                   CheckboxWithLabel(
                     label: 'Manage Support',
+                    initialValue: selectedPermissions.contains('Support'),
                     onChanged: (bool? value) {
                       setState(() {
-                        // Handle checkbox change
+                        if (value == true) {
+                          selectedPermissions.add('Support');
+                        } else {
+                          selectedPermissions.remove('Support');
+                        }
                       });
                     },
                   ),
@@ -182,8 +250,28 @@ class _EditRoleScreen extends State<EditRoleScreen>{
             right: 20,
             child: CustomElevatedButton(
               onPressed: () {
+                if(_roleNameController.text.isEmpty){
+                  Utils.toastMessage("Please enter role name");
+                }
+                else if (_notesController.text.isEmpty){
+                  Utils.toastMessage("Please enter notes");
+                }
+                else{
+                  final permissionsString = jsonEncode(selectedPermissions);
+                  Map data = {
+                    'user_id' : _userData?.data?.userId.toString(),
+                    'usr_role_track_id' : _userData?.data?.roleTrackId.toString(),
+                    'role_name' : _roleNameController.text.toString(),
+                    'description' : _notesController.text.toString(),
+                    'permission' :  permissionsString,
+                    'role_id' : widget.roleDetails.roleId,
+                    'token' : _userData?.token.toString(),
+                  };
+                  teamViewModel.addRoleApi(data,context);
+                }
               },
               buttonText: 'Update Role',
+              loading: teamViewModel.loading,
             ),
           ),
         ],

@@ -27,34 +27,9 @@ class AuthViewModel with ChangeNotifier {
       if (kDebugMode) {
         print(onValue.toString());
       }
+      UserModel userModel=UserModel.fromJson(onValue);
+      userViewModel.saveUser(userModel);
 
-
-      UserModel userT=UserModel.fromJson(onValue);
-
-     /* UserModel userModel = UserModel(
-        token: onValue['token'],
-        data: UserData(
-          userId: onValue['user_id'],
-          firstName: onValue['user_first_name'],
-          lastName: onValue['user_last_name'],
-          email: onValue['user_email'],
-          roleTrackId: onValue['user_role_track_id'],
-          customerTrackId: onValue['user_customer_track_id'],
-          userType: onValue['user_type'],
-          teamTrackId: onValue['usr_team_track_id'],
-          isLoggedIn: onValue['is_logged_in'],
-            canCreate: onValue['can_create'],
-            canView: onValue['can_view'],
-            canSupport: onValue['can_support'],
-        ),
-      );
-      */
-
-      userViewModel.saveUser(userT);
-
-
-
-      // Navigator.pushNamed(context, RoutesName.home);
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => HomeScreen()));
     }).onError((error, stackTrace) {

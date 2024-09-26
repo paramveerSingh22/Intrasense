@@ -28,9 +28,9 @@ class NetworkApiService extends BaseApiService {
       responseJson = returnResponse(response);
 
       if (kDebugMode) {
-        print('Request URL: ${response.request?.url}');
-        print('Status Code: ${response.statusCode}');
-        print('Response Body: ${response.body}');
+        print('Api Request URL: ${response.request?.url}');
+        print('Api Status Code: ${response.statusCode}');
+        print('Api Response Body: ${response.body}');
       }
     } on SocketException {
       throw FetchDataException('No internet connection');
@@ -49,9 +49,9 @@ class NetworkApiService extends BaseApiService {
           .timeout(Duration(seconds: 10));
       responseJson = returnResponse(response);
       if (kDebugMode) {
-        print('Request URL: ${response.request?.url}');
-        print('Status Code: ${response.statusCode}');
-        print('Response Body: ${response.body}');
+        print('Api Request URL: ${response.request?.url}');
+        print('Api Status Code: ${response.statusCode}');
+        print('Api Response Body: ${response.body}');
       }
 
     } on SocketException {
@@ -62,6 +62,11 @@ class NetworkApiService extends BaseApiService {
 
   dynamic returnResponse(http.Response response) {
     switch (response.statusCode) {
+
+      case 201:
+        dynamic responseJson = jsonDecode(response.body);
+        return responseJson;
+
       case 200:
         dynamic responseJson = jsonDecode(response.body);
         return responseJson;
@@ -70,6 +75,8 @@ class NetworkApiService extends BaseApiService {
         throw BadRequestException(response.body.toString());
 
       case 500:
+        throw FetchDataException(
+            'internal server error ${response.statusCode}');
         
       case 404:
         throw UnAuthorisedException(response.body.toString());

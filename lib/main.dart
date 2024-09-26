@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intrasense/utils/AppColors.dart';
 import 'package:intrasense/view/Login/SplashScreen.dart';
+import 'package:intrasense/view_models/UserProvider.dart';
 import 'package:intrasense/view_models/auth_view_model.dart';
+import 'package:intrasense/view_models/client_view_model.dart';
+import 'package:intrasense/view_models/common_view_model.dart';
+import 'package:intrasense/view_models/teams_view_model.dart';
 import 'package:intrasense/view_models/user_view_model.dart';
 import 'package:provider/provider.dart';
 
-
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 void main() {
   runApp(const MyApp());
 }
@@ -18,7 +22,11 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_)=> AuthViewModel()),
-          ChangeNotifierProvider(create: (_)=> UserViewModel())
+          ChangeNotifierProvider(create: (_)=> UserViewModel()),
+          ChangeNotifierProvider(create: (_)=> CommonViewModel()),
+          ChangeNotifierProvider(create: (_)=> ClientViewModel()),
+          ChangeNotifierProvider(create: (_)=> UserProvider()),
+          ChangeNotifierProvider(create: (_)=> TeamsViewModel()),
         ],
       child: (MaterialApp(
         theme: ThemeData(
@@ -38,6 +46,7 @@ class MyApp extends StatelessWidget {
         ),
         debugShowCheckedModeBanner: false,
         home: const SplashScreen(),
+        navigatorObservers: [routeObserver]
       )
     ));
   }

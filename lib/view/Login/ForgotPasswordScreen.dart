@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intrasense/res/component/CustomTextField.dart';
 import 'package:intrasense/view/Login/OtpScreen.dart';
 
 import '../../utils/AppColors.dart';
@@ -101,34 +102,12 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                     ),
                   ),
                   const SizedBox(height: 5),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: TextField(
-                      style: const TextStyle(
-                        fontFamily: 'PoppinsRegular',
-                        fontSize: 14.0,
-                      ),
-                      decoration: InputDecoration(
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 30.0),
+                    child:CustomTextField(
                         hintText: 'Enter Email',
-                        contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 15.0),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(
-                            color: Colors.blue,
-                            width: 2.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(
-                            color: Colors.blue,
-                            width: 2.0,
-                          ),
-                        ),
-                        suffixIcon: const Icon(Icons.email,
-                            color: AppColors.secondaryOrange),
-                      ),
+                        suffixIcon: Icon(Icons.email,
+                        color: AppColors.secondaryOrange)
                     ),
                   ),
                   const SizedBox(height: 20),

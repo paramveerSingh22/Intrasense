@@ -1,10 +1,17 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intrasense/model/projects/ProjectListModel.dart';
+import 'package:intrasense/model/projects/ProjectTypesModel.dart';
 import 'package:intrasense/view/manageProjects/AddProjectScreen.dart';
+import 'package:intrasense/view_models/projects_view_model.dart';
 
+import '../../model/user_model.dart';
 import '../../res/component/CustomElevatedButton.dart';
 import '../../utils/AppColors.dart';
 import '../../utils/Images.dart';
+import '../../view_models/user_view_model.dart';
+import 'package:provider/provider.dart';
 
 class MyProjectListScreen extends StatefulWidget {
   @override
@@ -12,6 +19,59 @@ class MyProjectListScreen extends StatefulWidget {
 }
 
 class _MyProjectListScreen extends State<MyProjectListScreen> {
+  UserModel? _userData;
+  bool _isLoading = false;
+  List<ProjectListModel> projectList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getUserDetails(context);
+  }
+
+  Future<UserModel> getUserData() => UserViewModel().getUser();
+
+  void getUserDetails(BuildContext context) async {
+    _userData = await getUserData();
+    if (kDebugMode) {
+      print(_userData);
+    }
+    getProjectsList();
+  }
+
+  void setLoading(bool loading) {
+    setState(() {
+      _isLoading = loading;
+    });
+  }
+
+  Future<void> getProjectsList() async {
+    setLoading(true);
+    try {
+      Map data = {
+        'user_id': _userData?.data?.userId,
+        'usr_role_track_id': _userData?.data?.roleTrackId,
+        'usr_customer_track_id': _userData?.data?.customerTrackId,
+        'token': _userData?.token,
+      };
+      final projectViewModel =
+          Provider.of<ProjectsViewModel>(context, listen: false);
+      final response = await projectViewModel.getProjectListApi(data, context);
+      if (response != null) {
+        setState(() {
+          projectList = response;
+          setLoading(false);
+        });
+      }
+    } catch (error) {
+      if (kDebugMode) {
+        print('Error fetching employee list: $error');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,15 +103,15 @@ class _MyProjectListScreen extends State<MyProjectListScreen> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(5.0),
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                     color: Colors.blue,
                                     width: 1.0,
                                   ),
                                 ),
                                 filled: true,
                                 fillColor: Colors.white,
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(12.0, 5.0, 50.0, 5.0),
+                                contentPadding: const EdgeInsets.fromLTRB(
+                                    12.0, 5.0, 50.0, 5.0),
                               ),
                             ),
                             const SizedBox(height: 10),
@@ -66,7 +126,7 @@ class _MyProjectListScreen extends State<MyProjectListScreen> {
                                           color: AppColors.secondaryOrange,
                                           fontFamily: 'PoppinsMedium'),
                                     ))),
-                            Container(
+                            /*Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 border: Border.all(color: Colors.white),
@@ -99,24 +159,22 @@ class _MyProjectListScreen extends State<MyProjectListScreen> {
                                   isExpanded: true,
                                 ),
                               ),
-                            )
+                            )*/
                           ],
                         )),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Expanded(
                       child: Container(
-                        color: AppColors.lightBlue,
-
+                          color: AppColors.lightBlue,
                           child: ListView.separated(
-                            itemCount: 5,
+                            itemCount: projectList.length,
                             separatorBuilder:
                                 (BuildContext context, int index) {
-                              return const SizedBox(
-                                  height:
-                                  10); // List items ke beech mein 10 dp ka gap
+                              return const SizedBox(height: 10);
                             },
                             itemBuilder: (context, index) {
-                              return CustomProjectListTile();
+                              return CustomProjectListTile(
+                                  item: projectList[index]);
                             },
                           )),
                     ),
@@ -132,7 +190,7 @@ class _MyProjectListScreen extends State<MyProjectListScreen> {
                             ),
                           );
                         },
-                        buttonText: 'Add New Team',
+                        buttonText: 'Add New Project',
                       ),
                     )
                   ],
@@ -145,7 +203,8 @@ class _MyProjectListScreen extends State<MyProjectListScreen> {
 }
 
 class CustomProjectListTile extends StatelessWidget {
-  const CustomProjectListTile({super.key});
+  final ProjectListModel item;
+  const CustomProjectListTile({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -172,22 +231,23 @@ class CustomProjectListTile extends StatelessWidget {
                       child: Row(
                         children: [
                           Text(
-                            'AHD',
-                            style: TextStyle(
+                            "${item.prShortName} - ",
+                            style: const TextStyle(
                               fontSize: 14,
                               color: AppColors.secondaryOrange,
                               fontFamily: 'PoppinsRegular',
                             ),
                           ),
                           Text(
-                            ' - Access Health Dental',
-                            style: TextStyle(
+                            item.prName,
+                            style: const TextStyle(
                               fontSize: 14,
                               color: AppColors.textColor,
                               fontFamily: 'PoppinsRegular',
                             ),
                           )
-                        ],)),
+                        ],
+                      )),
                   Expanded(
                       flex: 1,
                       child: Image.asset(
@@ -197,28 +257,26 @@ class CustomProjectListTile extends StatelessWidget {
                       ))
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 children: [
-                  Expanded(
+                  const Expanded(
                     flex: 1,
-                    child: Container(
-                      child: Text(
-                        'Client',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontWeight: FontWeight.w400,
-                        ),
+                    child: Text(
+                      'Client',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textColor,
+                        fontFamily: 'PoppinsRegular',
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ),
                   Expanded(
                       flex: 1,
                       child: Text(
-                        'Danny Wu',
-                        style: TextStyle(
+                        item.clientName,
+                        style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textColor,
                           fontFamily: 'PoppinsRegular',
@@ -227,15 +285,15 @@ class CustomProjectListTile extends StatelessWidget {
                       ))
                 ],
               ),
-              SizedBox(height: 10),
-              Divider(),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+              const Divider(),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                       flex: 1,
                       child: Container(
-                        child: Text(
+                        child: const Text(
                           'Project Manager',
                           style: TextStyle(
                             fontSize: 14,
@@ -248,8 +306,8 @@ class CustomProjectListTile extends StatelessWidget {
                   Expanded(
                       flex: 1,
                       child: Text(
-                        'Himanshu',
-                        style: TextStyle(
+                        item.projectManagerName,
+                        style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textColor,
                           fontFamily: 'PoppinsRegular',
@@ -258,15 +316,15 @@ class CustomProjectListTile extends StatelessWidget {
                       ))
                 ],
               ),
-              SizedBox(height: 10),
-              Divider(),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+              const Divider(),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                       flex: 1,
                       child: Container(
-                        child: Text(
+                        child: const Text(
                           'Project Type',
                           style: TextStyle(
                             fontSize: 14,
@@ -276,10 +334,10 @@ class CustomProjectListTile extends StatelessWidget {
                           ),
                         ),
                       )),
-                  Expanded(
+                  const Expanded(
                       flex: 1,
                       child: Text(
-                        'Web App',
+                        '-',
                         style: TextStyle(
                           fontSize: 14,
                           color: AppColors.textColor,
@@ -289,29 +347,27 @@ class CustomProjectListTile extends StatelessWidget {
                       ))
                 ],
               ),
-              SizedBox(height: 10),
-              Divider(),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+              const Divider(),
+              const SizedBox(height: 10),
               Row(
                 children: [
-                  Expanded(
+                  const Expanded(
                       flex: 1,
-                      child: Container(
-                        child: Text(
-                          'Start Date',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textColor,
-                            fontFamily: 'PoppinsRegular',
-                            fontWeight: FontWeight.w400,
-                          ),
+                      child: Text(
+                        'Start Date',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textColor,
+                          fontFamily: 'PoppinsRegular',
+                          fontWeight: FontWeight.w400,
                         ),
                       )),
                   Expanded(
                       flex: 1,
                       child: Text(
-                        '5/03/2022',
-                        style: TextStyle(
+                        item.prStartDate,
+                        style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textColor,
                           fontFamily: 'PoppinsRegular',
@@ -320,15 +376,15 @@ class CustomProjectListTile extends StatelessWidget {
                       ))
                 ],
               ),
-              SizedBox(height: 10),
-              Divider(),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+              const Divider(),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                       flex: 1,
                       child: Container(
-                        child: Text(
+                        child: const Text(
                           'Delievry Date',
                           style: TextStyle(
                             fontSize: 14,
@@ -341,8 +397,8 @@ class CustomProjectListTile extends StatelessWidget {
                   Expanded(
                       flex: 1,
                       child: Text(
-                        '5/05/2022',
-                        style: TextStyle(
+                        item.prClosedDate.toString(),
+                        style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textColor,
                           fontFamily: 'PoppinsRegular',
@@ -351,15 +407,15 @@ class CustomProjectListTile extends StatelessWidget {
                       ))
                 ],
               ),
-              SizedBox(height: 10),
-              Divider(),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+              const Divider(),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                       flex: 1,
                       child: Container(
-                        child: Text(
+                        child: const Text(
                           'Hours',
                           style: TextStyle(
                             fontSize: 14,
@@ -372,8 +428,8 @@ class CustomProjectListTile extends StatelessWidget {
                   Expanded(
                       flex: 1,
                       child: Text(
-                        '178.45',
-                        style: TextStyle(
+                        item.prBudgetedHours,
+                        style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textColor,
                           fontFamily: 'PoppinsRegular',
@@ -382,15 +438,15 @@ class CustomProjectListTile extends StatelessWidget {
                       ))
                 ],
               ),
-              SizedBox(height: 10),
-              Divider(),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+              const Divider(),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                       flex: 1,
                       child: Container(
-                        child: Text(
+                        child: const Text(
                           'Status',
                           style: TextStyle(
                             fontSize: 14,
@@ -403,8 +459,8 @@ class CustomProjectListTile extends StatelessWidget {
                   Expanded(
                       flex: 1,
                       child: Text(
-                        'ON HOLD',
-                        style: TextStyle(
+                        item.status,
+                        style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textColor,
                           fontFamily: 'PoppinsRegular',

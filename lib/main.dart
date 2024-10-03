@@ -5,6 +5,7 @@ import 'package:intrasense/view_models/UserProvider.dart';
 import 'package:intrasense/view_models/auth_view_model.dart';
 import 'package:intrasense/view_models/client_view_model.dart';
 import 'package:intrasense/view_models/common_view_model.dart';
+import 'package:intrasense/view_models/projects_view_model.dart';
 import 'package:intrasense/view_models/teams_view_model.dart';
 import 'package:intrasense/view_models/user_view_model.dart';
 import 'package:provider/provider.dart';
@@ -27,14 +28,17 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_)=> ClientViewModel()),
           ChangeNotifierProvider(create: (_)=> UserProvider()),
           ChangeNotifierProvider(create: (_)=> TeamsViewModel()),
+          ChangeNotifierProvider(create: (_)=> ProjectsViewModel()),
         ],
       child: (MaterialApp(
         theme: ThemeData(
             primaryColor: AppColors.primaryColor,
+            colorScheme: ColorScheme.fromSwatch().copyWith(
+              primary: AppColors.primaryColor,  // Use your custom primary color
+            ),
             dividerColor: Colors.grey[200],
-            textSelectionTheme: const TextSelectionThemeData(
+            textSelectionTheme: TextSelectionThemeData(
               cursorColor: AppColors.primaryColor,
-              // Set your desired cursor color here
             ),
             inputDecorationTheme: InputDecorationTheme(
                 border: OutlineInputBorder(

@@ -342,10 +342,9 @@ class FragmentContacts extends StatelessWidget {
           Expanded(child: Consumer<ClientViewModel>(
             builder: (context, clientViewModel, child) {
               final contactList = clientViewModel
-                  .contactList; // Assuming you have a List<ClientModel> or similar
+                  .contactList;
               return ListView.separated(
                 itemCount: contactList.length,
-                // Dynamically set item count based on fetched data
                 separatorBuilder: (BuildContext context, int index) {
                   return const SizedBox(height: 10);
                 },
@@ -393,12 +392,24 @@ class CustomClientListTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(
+        decoration:  BoxDecoration(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             bottomRight: Radius.circular(20),
           ),
           color: Colors.white,
+          border: Border.all(
+            color: Colors.grey.shade300,
+            width: 1.0,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: ListTile(
           contentPadding:
@@ -696,25 +707,11 @@ class CustomClientListTile extends StatelessWidget {
 }
 
 class CustomSubsidiaryListTile extends StatelessWidget {
-/*  final String shortName;
-  final String noOfProjects;
-  final String industry;
-  final String clientContact;
-  final String clientEmail;
-  final String location;
-  final String entityId;*/
   final ClientSubsDiaryModel subClient;
 
   const CustomSubsidiaryListTile({
     super.key,
     required this.subClient,
-   /* required this.shortName,
-    required this.noOfProjects,
-    required this.industry,
-    required this.clientContact,
-    required this.clientEmail,
-    required this.location,
-    required this.entityId,*/
   });
 
   @override
@@ -722,12 +719,24 @@ class CustomSubsidiaryListTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(
+        decoration:  BoxDecoration(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             bottomRight: Radius.circular(20),
           ),
           color: Colors.white,
+          border: Border.all(
+            color: Colors.grey.shade300,
+            width: 1.0,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: ListTile(
           contentPadding:
@@ -1026,20 +1035,10 @@ class CustomSubsidiaryListTile extends StatelessWidget {
 
 class CustomContactListTile extends StatelessWidget {
   final ContactListModel contactItem;
-  /*final String contactName;
-  final String contactDesignation;
-  final String contactEmail;
-  final String contactMobile;
-  final String contactId;*/
 
   const CustomContactListTile({
     super.key,
     required this.contactItem,
-    /*required this.contactName,
-    required this.contactDesignation,
-    required this.contactEmail,
-    required this.contactMobile,
-    required this.contactId,*/
   });
 
   @override
@@ -1047,12 +1046,24 @@ class CustomContactListTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(
+        decoration:  BoxDecoration(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             bottomRight: Radius.circular(20),
           ),
           color: Colors.white,
+          border: Border.all(
+            color: Colors.grey.shade300,
+            width: 1.0,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: ListTile(
           contentPadding:

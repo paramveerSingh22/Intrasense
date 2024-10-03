@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intrasense/res/component/CustomTextField.dart';
 import 'package:intrasense/utils/AppColors.dart';
 import 'package:intrasense/utils/Images.dart';
 import 'package:intrasense/utils/Utils.dart';
@@ -137,38 +138,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 5),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: TextField(
+                    child: CustomTextField(
+                        hintText: "Enter Email",
                       controller: _emailController,
-                      focusNode: emailFocusNode,
-                      onSubmitted: (value) {
-                        Utils.fieldFocus(
-                            context, emailFocusNode, passwordFocusNode);
-                      },
-                      style: const TextStyle(
-                        fontFamily: 'PoppinsRegular',
-                        fontSize: 14.0,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Enter Email',
-                        contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 15.0),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(
-                            color: Colors.blue,
-                            width: 2.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(
-                            color: Colors.blue,
-                            width: 2.0,
-                          ),
-                        ),
                         suffixIcon: const Icon(Icons.email,
-                            color: AppColors.secondaryOrange),
-                      ),
+                            color: AppColors.secondaryOrange)
                     ),
                   ),
                   const SizedBox(height: 15),
@@ -185,41 +159,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 5),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: TextField(
-                      controller: _passwordController,
-                      focusNode: passwordFocusNode,
-                      style: const TextStyle(
-                        fontFamily: 'PoppinsRegular',
-                        fontSize: 14.0,
-                      ),
+                    child:CustomTextField(
+                        hintText: "Enter Password",
+                        controller: _passwordController,
                       obscureText: _isPasswordVisible,
-                      decoration: InputDecoration(
-                        hintText: 'Enter Password',
-                        contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 15.0),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(
-                            color: Colors.blue,
-                            width: 2.0,
-                          ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: AppColors.secondaryOrange,
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(
-                            color: Colors.blue,
-                            width: 2.0,
-                          ),
-                        ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: AppColors.secondaryOrange,
-                          ),
-                          onPressed: _togglePasswordVisibility,
-                        ),
+                        onPressed: _togglePasswordVisibility,
                       ),
                     ),
                   ),

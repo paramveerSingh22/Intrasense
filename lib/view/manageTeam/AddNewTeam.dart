@@ -1,10 +1,19 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intrasense/utils/Utils.dart';
+import '../../model/RoleListModel.dart';
+import '../../model/country_list_model.dart';
+import '../../model/user_model.dart';
 import '../../res/component/CustomDropdown.dart';
 import '../../res/component/CustomElevatedButton.dart';
 import '../../res/component/CustomTextField.dart';
 import '../../utils/AppColors.dart';
 import '../../utils/Images.dart';
+import '../../view_models/common_view_model.dart';
+import '../../view_models/teams_view_model.dart';
+import '../../view_models/user_view_model.dart';
+import 'package:provider/provider.dart';
 
 class AddNewTeam extends StatefulWidget{
   @override
@@ -13,10 +22,90 @@ class AddNewTeam extends StatefulWidget{
 }
 
 class _AddNewTeam extends State<AddNewTeam> {
+  UserModel? _userData;
+  bool _isLoading = false;
+  List<RoleListModel> roleList = [];
+  List<String> roleNamesList = [];
+
   String? selectRoleValue;
   String? selectCountryValue;
-  String? selectStateValue;
-  String? selectCityValue;
+
+  List<String> countryNamesList = [];
+
+  TextEditingController nameController = TextEditingController();
+  TextEditingController designationController = TextEditingController();
+  TextEditingController dojController = TextEditingController();
+  TextEditingController employeeIdController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController skypeIdController = TextEditingController();
+  TextEditingController dobController = TextEditingController();
+  TextEditingController doaController = TextEditingController();
+  TextEditingController address1Controller = TextEditingController();
+  TextEditingController address2Controller = TextEditingController();
+  TextEditingController stateController = TextEditingController();
+  TextEditingController cityController = TextEditingController();
+  TextEditingController pinCodeController = TextEditingController();
+  
+  @override
+  void initState() {
+    super.initState();
+    getUserDetails(context);
+    fetchCountries();
+  }
+
+  void fetchCountries() async {
+    final commonViewModel = Provider.of<CommonViewModel>(context, listen: false);
+    await commonViewModel.countryListApi(context);
+    setState(() {
+     final  countryList = commonViewModel.countryList;
+      countryNamesList= countryList.map((country) => country.countryName).toList();
+    });
+  }
+
+  Future<UserModel> getUserData() => UserViewModel().getUser();
+  void getUserDetails(BuildContext context) async {
+    _userData = await getUserData();
+    if (kDebugMode) {
+      print(_userData);
+    }
+    getRoleList();
+  }
+
+  void getRoleList() async {
+    setLoading(true);
+    try {
+      Map data = {
+        'user_id': _userData?.data?.userId,
+        'usr_role_track_id': _userData?.data?.roleTrackId,
+        'token': _userData?.token,
+      };
+      final teamViewModel = Provider.of<TeamsViewModel>(context, listen: false);
+      await teamViewModel.getRoleListApi(data, context);
+      setState(() {
+        roleList= teamViewModel.roleList;
+        if(roleList.isNotEmpty){
+          roleNamesList = roleList.map((item) => item.roleName.toString()).toList();
+        }
+
+      });
+    } catch (error, stackTrace) {
+      if (kDebugMode) {
+        print(error);
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load Role list')),
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  void setLoading(bool loading) {
+    setState(() {
+      _isLoading = loading;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,8 +204,9 @@ class _AddNewTeam extends State<AddNewTeam> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
+                   CustomTextField(
                     hintText: 'Name',
+                    controller: nameController,
                   ),
                   const SizedBox(height: 15),
                   const Align(
@@ -128,8 +218,9 @@ class _AddNewTeam extends State<AddNewTeam> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
+                   CustomTextField(
                     hintText: 'Designation',
+                    controller: designationController,
                   ),
                   const SizedBox(height: 15),
                   const Align(
@@ -141,7 +232,8 @@ class _AddNewTeam extends State<AddNewTeam> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
+                   CustomTextField(
+                     controller: dojController,
                     hintText: 'Date of Joining',
                   ),
                   const SizedBox(height: 15),
@@ -156,7 +248,7 @@ class _AddNewTeam extends State<AddNewTeam> {
                       )),
                   CustomDropdown(
                     value: selectRoleValue,
-                    items: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
+                    items: roleNamesList,
                     onChanged: (String? newValue) {
                       setState(() {
                         selectRoleValue = newValue;
@@ -175,11 +267,11 @@ class _AddNewTeam extends State<AddNewTeam> {
                             fontFamily: 'PoppinsMedium'),
                       )),
                   CustomDropdown(
-                    value: selectRoleValue,
+                    value: null,
                     items: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
                     onChanged: (String? newValue) {
                       setState(() {
-                        selectRoleValue = newValue;
+                       // selectRoleValue = newValue;
                       });
                     },
                     hint: 'Select Manager',
@@ -194,7 +286,8 @@ class _AddNewTeam extends State<AddNewTeam> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
+                   CustomTextField(
+                     controller: employeeIdController,
                     hintText: 'Employee ID',
                   ),
                   const SizedBox(height: 15),
@@ -207,7 +300,8 @@ class _AddNewTeam extends State<AddNewTeam> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
+                   CustomTextField(
+                     controller: phoneController,
                     hintText: 'Phone Number',
                   ),
                   const SizedBox(height: 15),
@@ -220,7 +314,8 @@ class _AddNewTeam extends State<AddNewTeam> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
+                   CustomTextField(
+                     controller: emailController,
                     hintText: 'Email',
                   ),
                   const SizedBox(height: 15),
@@ -233,7 +328,8 @@ class _AddNewTeam extends State<AddNewTeam> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
+                   CustomTextField(
+                     controller: skypeIdController,
                     hintText: 'SkypeId',
                   ),
                   const SizedBox(height: 15),
@@ -246,21 +342,57 @@ class _AddNewTeam extends State<AddNewTeam> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
+                   CustomTextField(
                     hintText: 'Date of Birth',
+                     controller: dobController,
+                   readOnly: true,
+                    onTap: () async{
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime.now(),
+                      );
+
+                      if (pickedDate != null) {
+                        String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+                        setState(() {
+                          dobController.text = formattedDate; // Set the selected date to the text field
+                        });
+                      }
+                    },
                   ),
                   const SizedBox(height: 15),
                   const Align(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        'Marriage Anniversary',
+                        'Date of  Anniversary',
                         style: TextStyle(
                             fontSize: 14,
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
-                    hintText: 'Marriage Anniversary',
+                   CustomTextField(
+                    hintText: 'Date of Anniversary',
+                    controller: doaController,
+                    readOnly: true,
+                    onTap: () async{
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime.now(),
+                      );
+
+                      if (pickedDate != null) {
+                        String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+                        setState(() {
+                          doaController.text = formattedDate; // Set the selected date to the text field
+                        });
+                      }
+
+                    },
+
                   ),
                   const SizedBox(height: 15),
                   const Align(
@@ -272,7 +404,8 @@ class _AddNewTeam extends State<AddNewTeam> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
+                   CustomTextField(
+                     controller: address1Controller,
                     hintText: 'Address 1',
                   ),
                   const SizedBox(height: 15),
@@ -285,7 +418,8 @@ class _AddNewTeam extends State<AddNewTeam> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
+                   CustomTextField(
+                     controller: address2Controller,
                     hintText: 'Address 2',
                   ),
                   const SizedBox(height: 15),
@@ -300,7 +434,7 @@ class _AddNewTeam extends State<AddNewTeam> {
                       )),
                   CustomDropdown(
                     value: selectCountryValue,
-                    items: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
+                    items: countryNamesList,
                     onChanged: (String? newValue) {
                       setState(() {
                         selectCountryValue = newValue;
@@ -318,15 +452,9 @@ class _AddNewTeam extends State<AddNewTeam> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  CustomDropdown(
-                    value: selectStateValue,
-                    items: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectStateValue = newValue;
-                      });
-                    },
-                    hint: 'Select State',
+                   CustomTextField(
+                     controller: stateController,
+                    hintText: 'State',
                   ),
                   const SizedBox(height: 15),
                   const Align(
@@ -338,15 +466,9 @@ class _AddNewTeam extends State<AddNewTeam> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  CustomDropdown(
-                    value: selectCityValue,
-                    items: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectCityValue = newValue;
-                      });
-                    },
-                    hint: 'Select City',
+                   CustomTextField(
+                     controller: cityController,
+                    hintText: 'City',
                   ),
                   const SizedBox(height: 15),
                   const Align(
@@ -358,7 +480,8 @@ class _AddNewTeam extends State<AddNewTeam> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                  const CustomTextField(
+                   CustomTextField(
+                     controller: pinCodeController,
                     hintText: 'Pincode',
                   ),
                   const SizedBox(height: 15),
@@ -403,6 +526,51 @@ class _AddNewTeam extends State<AddNewTeam> {
             right: 20,
             child: CustomElevatedButton(
               onPressed: () {
+                if(nameController.text.toString().isEmpty){
+                  Utils.toastMessage("Please enter name");
+                }
+                else if(designationController.text.toString().isEmpty){
+                  Utils.toastMessage("Please enter designation");
+                }
+                else if(dojController.text.toString().isEmpty){
+                  Utils.toastMessage("Please select date of joining");
+                }
+                else if(employeeIdController.text.toString().isEmpty){
+                  Utils.toastMessage("Please enter employee Id");
+                }
+                else if(phoneController.text.toString().isEmpty){
+                  Utils.toastMessage("Please enter phone number");
+                }
+                else if(emailController.text.toString().isEmpty){
+                  Utils.toastMessage("Please enter email Id");
+                }
+                else if(skypeIdController.text.toString().isEmpty){
+                  Utils.toastMessage("Please enter skype Id");
+                }
+                else if(dobController.text.toString().isEmpty){
+                  Utils.toastMessage("Please select date of birth");
+                }
+                else if(doaController.text.toString().isEmpty){
+                  Utils.toastMessage("Please select date of anniversary");
+                }
+                else if(address1Controller.text.toString().isEmpty){
+                  Utils.toastMessage("Please enter address 1");
+                }
+                else if(address2Controller.text.toString().isEmpty){
+                  Utils.toastMessage("Please enter address 2");
+                }
+                else if(stateController.text.toString().isEmpty){
+                  Utils.toastMessage("Please enter state");
+                }
+                else if(cityController.text.toString().isEmpty){
+                  Utils.toastMessage("Please enter city");
+                }
+                else if(pinCodeController.text.toString().isEmpty){
+                  Utils.toastMessage("Please enter pincode");
+                }
+                else{
+                  ///APi
+                }
               },
               buttonText: 'Save Team',
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intrasense/res/component/CustomTextField.dart';
 
 import '../../utils/AppColors.dart';
 import '../../utils/Images.dart';
@@ -116,39 +117,17 @@ class _NewPasswordScreen extends State<NewPasswordScreen> {
                   const SizedBox(height: 5),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: TextField(
-                      style: const TextStyle(
-                        fontFamily: 'PoppinsRegular',
-                        fontSize: 14.0,
-                      ),
-                      obscureText: _newPasswordVisible,
-                      decoration: InputDecoration(
+                    child: CustomTextField(
                         hintText: 'Enter New Password',
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 15.0),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(
-                            color: Colors.blue,
-                            width: 2.0,
-                          ),
+                      obscureText: _newPasswordVisible,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _newPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: AppColors.secondaryOrange,
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(
-                            color: Colors.blue,
-                            width: 2.0,
-                          ),
-                        ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _newPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: AppColors.secondaryOrange,
-                          ),
-                          onPressed: newPasswordVisibility,
-                        ),
+                        onPressed: newPasswordVisibility,
                       ),
                     ),
                   ),
@@ -166,39 +145,17 @@ class _NewPasswordScreen extends State<NewPasswordScreen> {
                   const SizedBox(height: 5),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: TextField(
-                      style: const TextStyle(
-                        fontFamily: 'PoppinsRegular',
-                        fontSize: 14.0,
-                      ),
-                      obscureText: _confirmPasswordVisible,
-                      decoration: InputDecoration(
+                    child: CustomTextField(
                         hintText: 'Confirm Your Password',
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 15.0),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(
-                            color: Colors.blue,
-                            width: 2.0,
-                          ),
+                      obscureText: _confirmPasswordVisible,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _confirmPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: AppColors.secondaryOrange,
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(
-                            color: Colors.blue,
-                            width: 2.0,
-                          ),
-                        ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _confirmPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: AppColors.secondaryOrange,
-                          ),
-                          onPressed: confirmPasswordVisibility,
-                        ),
+                        onPressed: confirmPasswordVisibility,
                       ),
                     ),
                   ),

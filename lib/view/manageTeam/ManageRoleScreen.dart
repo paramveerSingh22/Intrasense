@@ -171,12 +171,24 @@ class CustomRoleListTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(
+        decoration:  BoxDecoration(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             bottomRight: Radius.circular(20),
           ),
           color: Colors.white,
+          border: Border.all(
+            color: Colors.grey.shade300, // Border color
+            width: 1.0, // Border width
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: ListTile(
           contentPadding:

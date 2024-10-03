@@ -25,4 +25,11 @@ class AppUrl{
   static var groupDetailsUrl= baseUrl + 'groups/GroupDetail';
   static var updateGroupUrl= baseUrl + 'groups/GroupUpdate';
   static var deleteGroupUrl= baseUrl + 'groups/GroupDelete';
+
+  ///for Projects
+  static var projectManagersListUrl= baseUrl + 'employees/pmList';
+  static var projectTypesListUrl = baseUrl + 'projects/projectActivityTypeList';
+  static var addProjectUrl = baseUrl + 'projects/createProject';
+  static var projectListUrl = baseUrl + 'projects/projectList';
+
 }

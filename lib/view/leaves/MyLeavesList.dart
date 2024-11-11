@@ -448,6 +448,7 @@ class CustomLeaveListTile extends StatelessWidget {
                      child: Row(
                        children: [
                          Expanded(
+
                              flex: 1,
                              child: Container(
                                child: const Text(

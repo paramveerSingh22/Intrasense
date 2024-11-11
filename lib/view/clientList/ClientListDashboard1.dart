@@ -143,12 +143,10 @@ class _Clientlistdashboard1 extends State<Clientlistdashboard1>
         'client_id': selectClientId,
         'token': _userData?.token,
       };
-      final clientViewModel =
-          Provider.of<ClientViewModel>(context, listen: false);
+      final clientViewModel = Provider.of<ClientViewModel>(context, listen: false);
       await clientViewModel.getContactListApi(data, context);
-      //setLoading(false);
       Utils.hideLoadingDialog(context);
-    } catch (error, stackTrace) {
+    } catch (error) {
       if (kDebugMode) {
         print(error);
       }

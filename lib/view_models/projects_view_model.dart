@@ -24,7 +24,7 @@ class ProjectsViewModel with ChangeNotifier{
     }
 
     try{
-      var response = await _myRepo.getProjectManagersApi(data);
+      var response = await _myRepo.getProjectManagersApi(data,context);
       List<ProjectManagersModel> groupList = (response['data'] as List)
           .map((group) => ProjectManagersModel.fromJson(group))
           .toList();
@@ -51,7 +51,7 @@ class ProjectsViewModel with ChangeNotifier{
       print("Api params---$data");
     }
     try{
-      var response = await _myRepo.getProjectTypesApi(data);
+      var response = await _myRepo.getProjectTypesApi(data,context);
       List<ProjectTypesModel> projectTypeList = (response['data'] as List)
           .map((group) => ProjectTypesModel.fromJson(group))
           .toList();
@@ -77,7 +77,7 @@ class ProjectsViewModel with ChangeNotifier{
     if (kDebugMode) {
       print("Api params---$data");
     }
-    _myRepo.addProjectApi(data).then((onValue) {
+    _myRepo.addProjectApi(data,context).then((onValue) {
       setLoading(false);
       if (kDebugMode) {
         print("Api Response---$onValue");
@@ -97,7 +97,7 @@ class ProjectsViewModel with ChangeNotifier{
   Future<List<ProjectListModel>?> getProjectListApi(dynamic data,BuildContext context) async {
     setLoading(true);
     try{
-      var response = await _myRepo.getProjectListApi(data);
+      var response = await _myRepo.getProjectListApi(data,context);
       List<ProjectListModel> projectList = (response['data'] as List)
           .map((group) => ProjectListModel.fromJson(group))
           .toList();

@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 import '../data/network/BaseApiService.dart';
 import '../data/network/NetworkApiService.dart';
 import '../data/network/app_url.dart';
@@ -5,9 +7,9 @@ import '../data/network/app_url.dart';
 class ProjectsRepository{
   BaseApiService apiService = NetworkApiService();
 
-  Future <dynamic> getProjectManagersApi(dynamic data) async {
+  Future <dynamic> getProjectManagersApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.projectManagersListUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.projectManagersListUrl, data,context);
       return response;
     }
     catch (e) {
@@ -15,9 +17,9 @@ class ProjectsRepository{
     }
   }
 
-  Future <dynamic> getProjectTypesApi(dynamic data) async {
+  Future <dynamic> getProjectTypesApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.projectTypesListUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.projectTypesListUrl, data,context);
       return response;
     }
     catch (e) {
@@ -25,9 +27,9 @@ class ProjectsRepository{
     }
   }
 
-  Future <dynamic> addProjectApi(dynamic data) async {
+  Future <dynamic> addProjectApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.addProjectUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.addProjectUrl, data,context);
       return response;
     }
     catch (e) {
@@ -35,9 +37,9 @@ class ProjectsRepository{
     }
   }
 
-  Future <dynamic> getProjectListApi(dynamic data) async {
+  Future <dynamic> getProjectListApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.projectListUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.projectListUrl, data,context);
       return response;
     }
     catch (e) {

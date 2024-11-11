@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intrasense/utils/AppColors.dart';
 import 'package:intrasense/utils/Images.dart';
+import 'package:intrasense/utils/Utils.dart';
 import 'package:intrasense/view/Home/DashboardScreen.dart';
 import 'package:intrasense/view/appraisal/AppraisalList.dart';
 import 'package:intrasense/view/clientList/ClientListDashboard.dart';
@@ -21,6 +22,7 @@ import 'package:intrasense/view/support/SupportList.dart';
 
 import '../../model/user_model.dart';
 import '../../view_models/user_view_model.dart';
+import '../Login/LoginScreen.dart';
 import '../clientList/ClientListDashboard1.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -31,14 +33,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String? userName="Param1";
+  String? userName = "Param1";
 
   @override
   void initState() {
     super.initState();
     getUserName(context);
   }
-
 
   int _selectedIndex = 0;
 
@@ -89,466 +90,528 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _titles[_selectedIndex],
-          style: TextStyle(color: Colors.white,
-            fontSize: 18
-          ),
-
-        ),
-        iconTheme: IconThemeData(
-          color: Colors.white, // Drawer icon color set to white
-        ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(Images.headerBg),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-      ),
-      drawer: Drawer(
-        child: Container(
-            decoration: BoxDecoration(color: AppColors.white),
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: <Widget>[
-                DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      CircleAvatar(
-                        backgroundImage: AssetImage("assets/profile_image.jpg"),
-                        // Replace with actual image path
-                        radius: 30,
+    return WillPopScope(
+        onWillPop: () async {
+          return await showExitPopup(context) ?? false;
+        },
+        child: Scaffold(
+          appBar: AppBar(
+              title: Text(
+                _titles[_selectedIndex],
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontFamily: 'PoppinsMedium',
+                ),
+              ),
+              leading: Builder(
+                builder: (context) =>
+                    IconButton(
+                      icon: SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: Image.asset(Images
+                            .drawerIcon), // Apni custom image ka path yahan set karein
                       ),
-                      SizedBox(width: 10),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      onPressed: () {
+                        Scaffold.of(context)
+                            .openDrawer(); // Drawer ko open karne ka function
+                      },
+                    ),
+              ),
+              titleSpacing: 0,
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(Images.headerBg),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 10.0),
+                  child: IconButton(
+                    icon: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Image.asset(
+                        Images.notificationIcon,
+                        color: Colors.white,
+                      ),
+                    ),
+                    onPressed: () {
+
+                    },
+                  ),
+                ),
+              ],
+          ),
+          drawer: Drawer(
+            child: Container(
+                decoration: BoxDecoration(color: AppColors.white),
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: <Widget>[
+                    DrawerHeader(
+                      decoration: BoxDecoration(
+                        color: AppColors.lightGrey,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          Text(
-                            'Welcome', // Replace with actual user's name
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontFamily: 'PoppinsRegular',
-                            ),
+                          CircleAvatar(
+                            backgroundImage: AssetImage(Images.dummyImage),
+                            // Replace with actual image path
+                            radius: 30,
                           ),
-                          Text(
-                              userName ?? "Loading...", // Replace with additional text
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontFamily: 'PoppinsRegular',
-                            ),
+                          SizedBox(width: 10),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                'Welcome', // Replace with actual user's name
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontFamily: 'PoppinsRegular',
+                                ),
+                              ),
+                              Text(
+                                userName ?? "Loading...",
+                                // Replace with additional text
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontFamily: 'PoppinsRegular',
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-                ListTile(
-                  leading: Image.asset(
-                    Images.clients,
-                    width: 20,
-                    height: 20,
-                  ),
-                  title: const Text('DashBoard',
-                      style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontSize: 15)),
-                  onTap: () {
-                    _onItemTapped(0);
+                    ),
+                    ListTile(
+                      leading: Image.asset(
+                        Images.clients,
+                        width: 20,
+                        height: 20,
+                      ),
+                      title: const Text('DashBoard',
+                          style: TextStyle(
+                              color: AppColors.skyBlueTextColor,
+                              fontFamily: 'PoppinsRegular',
+                              fontSize: 15)),
+                      onTap: () {
+                        _onItemTapped(0);
 
-                    /* Navigator.push(
+                        /* Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) =>  Dashboardscreen()
                       ),
                     );*/
 
-                    // Navigator.pop(context);
-                  },
-                ),
-                Container(
-                  child: Theme(
-                      data: ThemeData(
-                        dividerColor: AppColors
-                            .white, // Set the default divider color for the theme
-                      ),
-                      child: ExpansionTile(
-                        leading: Image.asset(
-                          Images.myTask,
-                          width: 20,
-                          height: 20,
-                        ),
-                        title: const Text('Manage tasks',
-                            style: TextStyle(
-                                color: AppColors.primaryColor,
-                                fontFamily: 'PoppinsRegular',
-                                fontSize: 15)),
-                        children: [
-                          Padding(
-                              padding: const EdgeInsets.only(left: 40.0),
-                              child: ListTile(
-                                leading: const Text('•',
-                                    style: TextStyle(
-                                        color: AppColors.secondaryOrange,
-                                        fontFamily: 'PoppinsRegular',
-                                        fontSize: 15)),
-                                title: const Text('My Tasks',
-                                    style: TextStyle(
-                                        color: AppColors.primaryColor,
-                                        fontFamily: 'PoppinsRegular',
-                                        fontSize: 15)),
-                                onTap: () {
-                                  _onItemTapped(1);
-                                },
-                              )),
-
-                          Padding(
-                              padding: const EdgeInsets.only(left: 40.0),
-                              child: ListTile(
-                                leading: const Text('•',
-                                    style: TextStyle(
-                                        color: AppColors.secondaryOrange,
-                                        fontFamily: 'PoppinsRegular',
-                                        fontSize: 15)),
-                                title: const Text('My Timesheet',
-                                    style: TextStyle(
-                                        color: AppColors.primaryColor,
-                                        fontFamily: 'PoppinsRegular',
-                                        fontSize: 15)),
-                                onTap: () {
-                                  _onItemTapped(2);
-                                },
-                              ))
-
-                          // Add more ListTiles as needed
-                        ],
-                      )),
-                ),
-                ListTile(
-                  leading: Image.asset(
-                    Images.clients,
-                    width: 20,
-                    height: 20,
-                  ),
-                  title: const Text('Clients',
-                      style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontSize: 15)),
-                  onTap: () {
-                    _onItemTapped(3);
-                  },
-                ),
-                Container(
-                    child: Theme(
-                        data: ThemeData(
-                          dividerColor: AppColors
-                              .white, // Set the default divider color for the theme
-                        ),
-                        child: ExpansionTile(
-                          leading: Image.asset(
-                            Images.myTask,
-                            width: 20,
-                            height: 20,
+                        // Navigator.pop(context);
+                      },
+                    ),
+                    const DividerColor(),
+                    Container(
+                      child: Theme(
+                          data: ThemeData(
+                            dividerColor: AppColors
+                                .white, // Set the default divider color for the theme
                           ),
-                          title: const Text('Manage Teams',
-                              style: TextStyle(
-                                  color: AppColors.primaryColor,
-                                  fontFamily: 'PoppinsRegular',
-                                  fontSize: 15)),
-                          children: [
-                            Padding(
-                                padding: const EdgeInsets.only(left: 40.0),
-                                child: ListTile(
-                                  leading: const Text('•',
-                                      style: TextStyle(
-                                          color: AppColors.secondaryOrange,
-                                          fontFamily: 'PoppinsRegular',
-                                          fontSize: 15)),
-                                  title: const Text('Manage Team',
-                                      style: TextStyle(
-                                          color: AppColors.primaryColor,
-                                          fontFamily: 'PoppinsRegular',
-                                          fontSize: 15)),
-                                  onTap: () {
-                                    _onItemTapped(4);
-                                  },
-                                )),
+                          child: ExpansionTile(
+                            leading: Image.asset(
+                              Images.myTask,
+                              width: 20,
+                              height: 20,
+                            ),
+                            iconColor: AppColors.secondaryOrange,
+                            collapsedIconColor: AppColors.secondaryOrange,
+                            title: const Text('Manage tasks',
+                                style: TextStyle(
+                                    color: AppColors.skyBlueTextColor,
+                                    fontFamily: 'PoppinsRegular',
+                                    fontSize: 15)),
+                            children: [
+                              Padding(
+                                  padding: const EdgeInsets.only(left: 40.0),
+                                  child: ListTile(
+                                    leading: const Text('•',
+                                        style: TextStyle(
+                                            color: AppColors.secondaryOrange,
+                                            fontFamily: 'PoppinsRegular',
+                                            fontSize: 15)),
+                                    title: const Text('My Tasks',
+                                        style: TextStyle(
+                                            color: AppColors.skyBlueTextColor,
+                                            fontFamily: 'PoppinsRegular',
+                                            fontSize: 15)),
+                                    onTap: () {
+                                      _onItemTapped(1);
+                                    },
+                                  )),
 
-                            Padding(
-                                padding: const EdgeInsets.only(left: 40.0),
-                                child: ListTile(
-                                  leading: const Text('•',
-                                      style: TextStyle(
-                                          color: AppColors.secondaryOrange,
-                                          fontFamily: 'PoppinsRegular',
-                                          fontSize: 15)),
-                                  title: const Text('Manage Role',
-                                      style: TextStyle(
-                                          color: AppColors.primaryColor,
-                                          fontFamily: 'PoppinsRegular',
-                                          fontSize: 15)),
-                                  onTap: () {
-                                    _onItemTapped(5);
-                                  },
-                                )),
+                              Padding(
+                                  padding: const EdgeInsets.only(left: 40.0),
+                                  child: ListTile(
+                                    leading: const Text('•',
+                                        style: TextStyle(
+                                            color: AppColors.secondaryOrange,
+                                            fontFamily: 'PoppinsRegular',
+                                            fontSize: 15)),
+                                    title: const Text('My Timesheet',
+                                        style: TextStyle(
+                                            color: AppColors.skyBlueTextColor,
+                                            fontFamily: 'PoppinsRegular',
+                                            fontSize: 15)),
+                                    onTap: () {
+                                      _onItemTapped(2);
+                                    },
+                                  ))
 
-                            Padding(
-                                padding: const EdgeInsets.only(left: 40.0),
-                                child: ListTile(
-                                  leading: const Text('•',
-                                      style: TextStyle(
-                                          color: AppColors.secondaryOrange,
-                                          fontFamily: 'PoppinsRegular',
-                                          fontSize: 15)),
-                                  title: const Text('Manage Groups',
-                                      style: TextStyle(
-                                          color: AppColors.primaryColor,
-                                          fontFamily: 'PoppinsRegular',
-                                          fontSize: 15)),
-                                  onTap: () {
-                                    _onItemTapped(6);
-                                  },
-                                ))
-
-                            // Add more ListTiles as needed
-                          ],
-                        ))),
-                ListTile(
-                  leading: Image.asset(
-                    Images.manageProducts,
-                    width: 20,
-                    height: 20,
-                  ),
-                  title: const Text('Manage Projects',
-                      style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontSize: 15)),
-                  onTap: () {
-                    _onItemTapped(7);
-                  },
-                ),
-                ListTile(
-                  leading: Image.asset(
-                    Images.manageDocuments,
-                    width: 20,
-                    height: 20,
-                  ),
-                  title: const Text('Manage Documents',
-                      style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontSize: 15)),
-                  onTap: () {
-                    _onItemTapped(8);
-                  },
-                ),
-                ListTile(
-                  leading: Image.asset(
-                    Images.training,
-                    width: 20,
-                    height: 20,
-                  ),
-                  title: const Text('Manage Meetings',
-                      style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontSize: 15)),
-                  onTap: () {
-                    _onItemTapped(9);
-                  },
-                ),
-                ListTile(
-                  leading: Image.asset(
-                    Images.manageExpense,
-                    width: 20,
-                    height: 20,
-                  ),
-                  title: const Text('Manage Expenses',
-                      style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontSize: 15)),
-                  onTap: () {
-                    _onItemTapped(10);
-                  },
-                ),
-                ListTile(
-                  leading: Image.asset(
-                    Images.myLeaves,
-                    width: 20,
-                    height: 20,
-                  ),
-                  title: const Text('My Leaves',
-                      style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontSize: 15)),
-                  onTap: () {
-                    _onItemTapped(11);
-                  },
-                ),
-                Container(
-                  child: Theme(
-                      data: ThemeData(
-                        dividerColor: AppColors
-                            .white, // Set the default divider color for the theme
+                              // Add more ListTiles as needed
+                            ],
+                          )),
+                    ),
+                    const DividerColor(),
+                    ListTile(
+                      leading: Image.asset(
+                        Images.clients,
+                        width: 20,
+                        height: 20,
                       ),
-                      child: ExpansionTile(
-                        leading: Image.asset(
-                          Images.myTask,
-                          width: 20,
-                          height: 20,
-                        ),
-                        title: const Text('Appraisal',
-                            style: TextStyle(
-                                color: AppColors.primaryColor,
-                                fontFamily: 'PoppinsRegular',
-                                fontSize: 15)),
-                        children: [
-                          Padding(
-                              padding: const EdgeInsets.only(left: 40.0),
-                              child: ListTile(
-                                leading: const Text('•',
-                                    style: TextStyle(
-                                        color: AppColors.secondaryOrange,
-                                        fontFamily: 'PoppinsRegular',
-                                        fontSize: 15)),
-                                title: const Text('Appraisal List',
-                                    style: TextStyle(
-                                        color: AppColors.primaryColor,
-                                        fontFamily: 'PoppinsRegular',
-                                        fontSize: 15)),
-                                onTap: () {
-                                  _onItemTapped(12);
-                                },
-                              )),
+                      title: const Text('Clients',
+                          style: TextStyle(
+                              color: AppColors.skyBlueTextColor,
+                              fontFamily: 'PoppinsRegular',
+                              fontSize: 15)),
+                      onTap: () {
+                        _onItemTapped(3);
+                      },
+                    ),
+                    const DividerColor(),
+                    Container(
+                        child: Theme(
+                            data: ThemeData(
+                              dividerColor: AppColors
+                                  .white, // Set the default divider color for the theme
+                            ),
+                            child: ExpansionTile(
+                              leading: Image.asset(
+                                Images.myTask,
+                                width: 20,
+                                height: 20,
+                              ),
+                              iconColor: AppColors.secondaryOrange,
+                              collapsedIconColor: AppColors.secondaryOrange,
+                              title: const Text('Manage Teams',
+                                  style: TextStyle(
+                                      color: AppColors.skyBlueTextColor,
+                                      fontFamily: 'PoppinsRegular',
+                                      fontSize: 15)),
+                              children: [
+                                Padding(
+                                    padding: const EdgeInsets.only(left: 40.0),
+                                    child: ListTile(
+                                      leading: const Text('•',
+                                          style: TextStyle(
+                                              color: AppColors.secondaryOrange,
+                                              fontFamily: 'PoppinsRegular',
+                                              fontSize: 15)),
+                                      title: const Text('Manage Team',
+                                          style: TextStyle(
+                                              color: AppColors.skyBlueTextColor,
+                                              fontFamily: 'PoppinsRegular',
+                                              fontSize: 15)),
+                                      onTap: () {
+                                        _onItemTapped(4);
+                                      },
+                                    )),
 
-                          Padding(
-                              padding: const EdgeInsets.only(left: 40.0),
-                              child: ListTile(
-                                leading: const Text('•',
-                                    style: TextStyle(
-                                        color: AppColors.secondaryOrange,
-                                        fontFamily: 'PoppinsRegular',
-                                        fontSize: 15)),
-                                title: const Text('Self Appraisal',
-                                    style: TextStyle(
-                                        color: AppColors.primaryColor,
-                                        fontFamily: 'PoppinsRegular',
-                                        fontSize: 15)),
-                                onTap: () {
-                                  Navigator.pop(context);
-                                },
-                              ))
+                                Padding(
+                                    padding: const EdgeInsets.only(left: 40.0),
+                                    child: ListTile(
+                                      leading: const Text('•',
+                                          style: TextStyle(
+                                              color: AppColors.secondaryOrange,
+                                              fontFamily: 'PoppinsRegular',
+                                              fontSize: 15)),
+                                      title: const Text('Manage Role',
+                                          style: TextStyle(
+                                              color: AppColors.skyBlueTextColor,
+                                              fontFamily: 'PoppinsRegular',
+                                              fontSize: 15)),
+                                      onTap: () {
+                                        _onItemTapped(5);
+                                      },
+                                    )),
 
-                          // Add more ListTiles as needed
-                        ],
-                      )),
-                ),
-                ListTile(
-                  leading: Image.asset(
-                    Images.training,
-                    width: 20,
-                    height: 20,
-                  ),
-                  title: const Text('Training',
-                      style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontSize: 15)),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  leading: Image.asset(
-                    Images.reports,
-                    width: 20,
-                    height: 20,
-                  ),
-                  title: const Text('Reports',
-                      style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontSize: 15)),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  leading: Image.asset(
-                    Images.support,
-                    width: 20,
-                    height: 20,
-                  ),
-                  title: const Text('Support',
-                      style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontSize: 15)),
-                  onTap: () {
-                    _onItemTapped(13);
-                  },
-                ),
-                ListTile(
-                  leading: Image.asset(
-                    Images.knowledgeBase,
-                    width: 20,
-                    height: 20,
-                  ),
-                  title: const Text('Knowledge Base',
-                      style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontSize: 15)),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  leading: Image.asset(
-                    Images.knowledgeBase,
-                    width: 20,
-                    height: 20,
-                  ),
-                  title: const Text('Logout',
-                      style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontSize: 15)),
-                  onTap: () {
-                    UserViewModel().remove();
-                    SystemNavigator.pop();
-                  },
-                )
-              ],
-            )),
-      ),
+                                Padding(
+                                    padding: const EdgeInsets.only(left: 40.0),
+                                    child: ListTile(
+                                      leading: const Text('•',
+                                          style: TextStyle(
+                                              color: AppColors.secondaryOrange,
+                                              fontFamily: 'PoppinsRegular',
+                                              fontSize: 15)),
+                                      title: const Text('Manage Groups',
+                                          style: TextStyle(
+                                              color: AppColors.skyBlueTextColor,
+                                              fontFamily: 'PoppinsRegular',
+                                              fontSize: 15)),
+                                      onTap: () {
+                                        _onItemTapped(6);
+                                      },
+                                    ))
 
-      body: Container(
-        color: AppColors.primaryColor, // Background color set to blue
-        child: IndexedStack(
-          index: _selectedIndex,
-          children: _pages,
-        ),
-      ),
+                                // Add more ListTiles as needed
+                              ],
+                            ))),
+                    const DividerColor(),
+                    ListTile(
+                      leading: Image.asset(
+                        Images.manageProducts,
+                        width: 20,
+                        height: 20,
+                      ),
+                      title: const Text('Manage Projects',
+                          style: TextStyle(
+                              color: AppColors.skyBlueTextColor,
+                              fontFamily: 'PoppinsRegular',
+                              fontSize: 15)),
+                      onTap: () {
+                        _onItemTapped(7);
+                      },
+                    ),
+                    const DividerColor(),
+                    ListTile(
+                      leading: Image.asset(
+                        Images.manageDocuments,
+                        width: 20,
+                        height: 20,
+                      ),
+                      title: const Text('Manage Documents',
+                          style: TextStyle(
+                              color: AppColors.skyBlueTextColor,
+                              fontFamily: 'PoppinsRegular',
+                              fontSize: 15)),
+                      onTap: () {
+                        _onItemTapped(8);
+                      },
+                    ),
+                    const DividerColor(),
+                    ListTile(
+                      leading: Image.asset(
+                        Images.training,
+                        width: 20,
+                        height: 20,
+                      ),
+                      title: const Text('Manage Meetings',
+                          style: TextStyle(
+                              color: AppColors.skyBlueTextColor,
+                              fontFamily: 'PoppinsRegular',
+                              fontSize: 15)),
+                      onTap: () {
+                        _onItemTapped(9);
+                      },
+                    ),
+                    const DividerColor(),
+                    ListTile(
+                      leading: Image.asset(
+                        Images.manageExpense,
+                        width: 20,
+                        height: 20,
+                      ),
+                      title: const Text('Manage Expenses',
+                          style: TextStyle(
+                              color: AppColors.skyBlueTextColor,
+                              fontFamily: 'PoppinsRegular',
+                              fontSize: 15)),
+                      onTap: () {
+                        _onItemTapped(10);
+                      },
+                    ),
+                    const DividerColor(),
+                    ListTile(
+                      leading: Image.asset(
+                        Images.myLeaves,
+                        width: 20,
+                        height: 20,
+                      ),
+                      title: const Text('My Leaves',
+                          style: TextStyle(
+                              color: AppColors.skyBlueTextColor,
+                              fontFamily: 'PoppinsRegular',
+                              fontSize: 15)),
+                      onTap: () {
+                        _onItemTapped(11);
+                      },
+                    ),
+                    const DividerColor(),
+                    Container(
+                      child: Theme(
+                          data: ThemeData(
+                            dividerColor: AppColors
+                                .white, // Set the default divider color for the theme
+                          ),
+                          child: ExpansionTile(
+                            leading: Image.asset(
+                              Images.myTask,
+                              width: 20,
+                              height: 20,
+                            ),
+                            iconColor: AppColors.secondaryOrange,
+                            collapsedIconColor: AppColors.secondaryOrange,
+                            title: const Text('Appraisal',
+                                style: TextStyle(
+                                    color: AppColors.skyBlueTextColor,
+                                    fontFamily: 'PoppinsRegular',
+                                    fontSize: 15)),
+                            children: [
+                              Padding(
+                                  padding: const EdgeInsets.only(left: 40.0),
+                                  child: ListTile(
+                                    leading: const Text('•',
+                                        style: TextStyle(
+                                            color: AppColors.secondaryOrange,
+                                            fontFamily: 'PoppinsRegular',
+                                            fontSize: 15)),
+                                    title: const Text('Appraisal List',
+                                        style: TextStyle(
+                                            color: AppColors.skyBlueTextColor,
+                                            fontFamily: 'PoppinsRegular',
+                                            fontSize: 15)),
+                                    onTap: () {
+                                      _onItemTapped(12);
+                                    },
+                                  )),
 
-      //  body: IndexedStack(),
-     /* bottomNavigationBar: BottomNavigationBar(
+                              Padding(
+                                  padding: const EdgeInsets.only(left: 40.0),
+                                  child: ListTile(
+                                    leading: const Text('•',
+                                        style: TextStyle(
+                                            color: AppColors.secondaryOrange,
+                                            fontFamily: 'PoppinsRegular',
+                                            fontSize: 15)),
+                                    title: const Text('Self Appraisal',
+                                        style: TextStyle(
+                                            color: AppColors.skyBlueTextColor,
+                                            fontFamily: 'PoppinsRegular',
+                                            fontSize: 15)),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ))
+
+                              // Add more ListTiles as needed
+                            ],
+                          )),
+                    ),
+                    const DividerColor(),
+                    ListTile(
+                      leading: Image.asset(
+                        Images.training,
+                        width: 20,
+                        height: 20,
+                      ),
+                      title: const Text('Training',
+                          style: TextStyle(
+                              color: AppColors.skyBlueTextColor,
+                              fontFamily: 'PoppinsRegular',
+                              fontSize: 15)),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    const DividerColor(),
+                    ListTile(
+                      leading: Image.asset(
+                        Images.reports,
+                        width: 20,
+                        height: 20,
+                      ),
+                      title: const Text('Reports',
+                          style: TextStyle(
+                              color: AppColors.skyBlueTextColor,
+                              fontFamily: 'PoppinsRegular',
+                              fontSize: 15)),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    const DividerColor(),
+                    ListTile(
+                      leading: Image.asset(
+                        Images.support,
+                        width: 20,
+                        height: 20,
+                      ),
+                      title: const Text('Support',
+                          style: TextStyle(
+                              color: AppColors.skyBlueTextColor,
+                              fontFamily: 'PoppinsRegular',
+                              fontSize: 15)),
+                      onTap: () {
+                        _onItemTapped(13);
+                      },
+                    ),
+                    const DividerColor(),
+                    ListTile(
+                      leading: Image.asset(
+                        Images.knowledgeBase,
+                        width: 20,
+                        height: 20,
+                      ),
+                      title: const Text('Knowledge Base',
+                          style: TextStyle(
+                              color: AppColors.skyBlueTextColor,
+                              fontFamily: 'PoppinsRegular',
+                              fontSize: 15)),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    const DividerColor(),
+                    ListTile(
+                      leading: Image.asset(
+                        Images.knowledgeBase,
+                        width: 20,
+                        height: 20,
+                      ),
+                      title: const Text('Logout',
+                          style: TextStyle(
+                              color: AppColors.skyBlueTextColor,
+                              fontFamily: 'PoppinsRegular',
+                              fontSize: 15)),
+                      onTap: () {
+                        UserViewModel().remove();
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginScreen()),
+                              (Route<dynamic> route) => false,
+                        );
+                      },
+                    )
+                  ],
+                )),
+          ),
+
+          body: Container(
+            color: AppColors.primaryColor, // Background color set to blue
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: _pages,
+            ),
+          ),
+
+          //  body: IndexedStack(),
+          /* bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: AppColors.primaryColor,
         unselectedItemColor: Colors.grey,
         selectedLabelStyle: const TextStyle(
@@ -591,24 +654,20 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         ],
       ),*/
-    );
+        ));
   }
 
   Future<UserModel> getUserData() => UserViewModel().getUser();
 
-
-
   void getUserName(BuildContext context) async {
     getUserData().then((value) {
-      if (kDebugMode){
+      if (kDebugMode) {
         print(value);
       }
 
       setState(() {
-        userName= value.data?.firstName;
+        userName = value.data?.firstName;
       });
-
-
     }).onError((error, StackTrace) {
       if (kDebugMode) {
         print(error);
@@ -616,6 +675,26 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<bool?> showExitPopup(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) =>
+          AlertDialog(
+            title: const Text("Are you sure?"),
+            content: const Text("Do you want to exit the app?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("No"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text("Yes"),
+              ),
+            ],
+          ),
+    );
+  }
 }
 
 class PlaceholderWidget extends StatelessWidget {
@@ -631,5 +710,14 @@ class PlaceholderWidget extends StatelessWidget {
   }
 }
 
+class DividerColor extends StatelessWidget {
+  const DividerColor({super.key});
 
-
+  @override
+  Widget build(BuildContext context) {
+    return const Divider(
+      color: AppColors.lightGrey,
+      height: 0.5,
+    );
+  }
+}

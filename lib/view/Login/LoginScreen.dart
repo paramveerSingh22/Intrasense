@@ -3,10 +3,8 @@ import 'package:intrasense/res/component/CustomTextField.dart';
 import 'package:intrasense/utils/AppColors.dart';
 import 'package:intrasense/utils/Images.dart';
 import 'package:intrasense/utils/Utils.dart';
-import 'package:intrasense/view/Home/HomeScreen.dart';
 import 'package:intrasense/view/Login/ForgotPasswordScreen.dart';
 import 'package:intrasense/view_models/auth_view_model.dart';
-
 import '../../res/component/CustomElevatedButton.dart';
 import 'package:provider/provider.dart';
 
@@ -37,6 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final authViewModel = Provider.of<AuthViewModel>(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           // Background Image Container
@@ -59,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
-                    fontFamily: 'PoppinsRegular'),
+                    fontFamily: 'PoppinsMedium'),
               ),
             ),
           ),
@@ -73,6 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   .of(context)
                   .size
                   .width,
+                fit: BoxFit.cover
             ),
           ),
           // Curve Container
@@ -115,11 +115,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 20),
                   const Padding(
-                    padding: EdgeInsets.only(left: 30.0),
+                    padding: EdgeInsets.only(left: 30.0,right: 20.0),
                     child: Text(
                       'Kindly login to access your account',
                       style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 15,
                           color: AppColors.textColor,
                           fontFamily: 'PoppinsRegular'),
                     ),
@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text(
                       'Email',
                       style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 13,
                           color: AppColors.textColor,
                           fontFamily: 'PoppinsRegular'),
                     ),
@@ -141,8 +141,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: CustomTextField(
                         hintText: "Enter Email",
                       controller: _emailController,
-                        suffixIcon: const Icon(Icons.email,
-                            color: AppColors.secondaryOrange)
+                        suffixIcon: SizedBox(
+                          width: 16, // Set the desired width
+                          height: 16, // Set the desired height
+                          child: Image.asset(
+                            Images.emailIcon,
+                            fit: BoxFit.contain,
+                          ),
+                        )
                     ),
                   ),
                   const SizedBox(height: 15),
@@ -151,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text(
                       'Password',
                       style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 13,
                           color: AppColors.textColor,
                           fontFamily: 'PoppinsRegular'),
                     ),
@@ -162,40 +168,67 @@ class _LoginScreenState extends State<LoginScreen> {
                     child:CustomTextField(
                         hintText: "Enter Password",
                         controller: _passwordController,
-                      obscureText: _isPasswordVisible,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _isPasswordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          color: AppColors.secondaryOrange,
+                      obscureText: !_isPasswordVisible,
+                      suffixIcon: SizedBox(
+                        width: 36,
+                        height: 36,
+                        child: IconButton(
+                          icon: Image.asset(
+                            _isPasswordVisible
+                                ? Images.passwordVisible
+                                : Images.passwordHide,
+                          ),
+                          onPressed: _togglePasswordVisibility,
                         ),
-                        onPressed: _togglePasswordVisibility,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 25.0),
+                    padding: const EdgeInsets.only(left: 20.0, right: 30.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Row(
                           children: <Widget>[
-                            Checkbox(
-                              value: _isCheckboxChecked,
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  _isCheckboxChecked = value!;
-                                });
-                              },
-                              activeColor: AppColors.secondaryOrange,
+                            const SizedBox(width: 10),
+                            Theme(
+                              data: ThemeData(
+                                checkboxTheme: CheckboxThemeData(
+                                  side: BorderSide(color: Colors.transparent, width: 0),
+                                ),
+                              ),
+                              child: Container(
+                                width: 18, // Set to a fixed width to avoid size changes
+                                height: 18, // Set to a fixed height to avoid size changes
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: _isCheckboxChecked ? Colors.transparent : AppColors.secondaryOrange,
+                                    width: 2, // Border width
+                                  ),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Center(
+                                  child: Checkbox(
+                                    value: _isCheckboxChecked,
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        _isCheckboxChecked = value!;
+                                      });
+                                    },
+                                    activeColor: AppColors.secondaryOrange,
+                                    checkColor: Colors.white,
+                                    materialTapTargetSize: MaterialTapTargetSize.padded, // Retain full click area
+                                    visualDensity: VisualDensity.standard, // Standard density for consistent size
+                                  ),
+                                ),
+                              ),
                             ),
-                            const SizedBox(width: 0),
+                            const SizedBox(width: 5),
                             const Text(
                               'Keep me logged in',
                               style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 13,
                                   color: AppColors.textColor,
                                   fontFamily: 'PoppinsRegular'),
                             ),
@@ -213,13 +246,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: const Text(
                             'Forgot Password?',
                             style: TextStyle(
-                                fontSize: 14, color: AppColors.secondaryOrange),
+                                fontSize: 12,
+                                color: AppColors.secondaryOrange,
+                                fontFamily:'PoppinsMedium' ,
+                                fontStyle: FontStyle.italic),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30.0),
                       child: CustomElevatedButton(
@@ -246,12 +282,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                       alignment: Alignment.center,
                       child: const Text(
-                        'OR, Sign in to continue',
+                        'OR, Sign in with...',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 14,
                             color: AppColors.textColor,
-                            fontFamily: 'PoppinsRegular'),
+                            fontFamily: 'PoppinsSemiBold'),
                       )),
                   const SizedBox(height: 20),
                   Padding(
@@ -280,7 +316,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             label: const Text(
                               'Facebook',
                               style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 13,
                                   color: AppColors.textColor,
                                   fontFamily: 'PoppinsRegular'),
                             ),
@@ -305,7 +341,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             label: const Text(
                               'Google',
                               style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 13,
                                   color: AppColors.textColor,
                                   fontFamily: 'PoppinsRegular'),
                             ),
@@ -315,36 +351,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          const Text(
-                            'New to intrasense?',
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsRegular'),
-                          ),
-                          const SizedBox(width: 5),
-                          GestureDetector(
-                            onTap: () {
-                              // Navigate to the sign-up screen or perform other actions
-                            },
-                            child: const Text(
-                              'Sign Up Here',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.blue,
-                                  fontFamily: 'PoppinsRegular'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),

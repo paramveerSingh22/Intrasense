@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:another_flushbar/flushbar_route.dart';
+import 'dart:convert';
 
 class Utils {
   static toastMessage(String message) {
@@ -82,4 +83,34 @@ class Utils {
     Navigator.of(context, rootNavigator: true).pop(); // Close the dialog
   }
 
+  String extractErrorMessage(String error) {
+    int jsonStartIndex = error.indexOf('{');
+    if (jsonStartIndex != -1) {
+      try {
+        String jsonPart = error.substring(jsonStartIndex);
+        var errorResponse = json.decode(jsonPart);
+        return errorResponse['message'] ?? 'An unexpected error occurred';
+      } catch (e) {
+        return 'An error occurred while processing the error response';
+      }
+    }
+    return 'An unknown error occurred';
+  }
+
+
+static void errorMessage(Object? error){
+  try {
+    String errorString = error.toString();
+    int jsonStartIndex = errorString.indexOf("{");
+    if (jsonStartIndex != -1) {
+      String jsonPart = errorString.substring(jsonStartIndex);
+      Map<String, dynamic> errorResponse = jsonDecode(jsonPart);
+      Utils.toastMessage(errorResponse['message']);
+    } else {
+      Utils.toastMessage(errorString);
+    }
+  } catch (e) {
+    Utils.toastMessage(e.toString());
+  }
+}
 }

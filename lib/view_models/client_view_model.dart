@@ -22,7 +22,7 @@ class ClientViewModel with ChangeNotifier{
     if (kDebugMode) {
       print("Api params---$data");
     }
-    _myRepo.addClientsApi(data).then((onValue) {
+    _myRepo.addClientsApi(data,context).then((onValue) {
       setLoading(false);
       if (kDebugMode) {
         print("Api Response---$onValue");
@@ -43,7 +43,7 @@ class ClientViewModel with ChangeNotifier{
   List<ClientListModel> get clientList => _clientList;
   Future<void> getClientListApi(dynamic data,BuildContext context) async {
     //setLoading(true);
-   await _myRepo.getClientListApi(data).then((onValue) {
+   await _myRepo.getClientListApi(data,context).then((onValue) {
       if (kDebugMode) {
         print("Api Response---"+onValue.toString());
       }
@@ -67,7 +67,7 @@ class ClientViewModel with ChangeNotifier{
     if (kDebugMode) {
       print("Api params---$data");
     }
-    await  _myRepo.deleteClientApi(data).then((onValue) {
+    await  _myRepo.deleteClientApi(data,context).then((onValue) {
       setLoading(false);
       if (kDebugMode) {
         print("Api Response---$onValue");
@@ -90,7 +90,7 @@ class ClientViewModel with ChangeNotifier{
     if (kDebugMode) {
       print("Api params---$data");
     }
-    _myRepo.addSubClientApi(data).then((onValue) {
+    _myRepo.addSubClientApi(data,context).then((onValue) {
       setLoading(false);
       if (kDebugMode) {
         print("Api Response---$onValue");
@@ -111,7 +111,7 @@ class ClientViewModel with ChangeNotifier{
   List<ClientSubsDiaryModel> get subsDiaryList => _subsDiaryList;
   Future<void> getSubClientListApi(dynamic data,BuildContext context) async {
     setLoading(true);
-    _myRepo.getSubClientListApi(data).then((onValue) {
+    _myRepo.getSubClientListApi(data,context).then((onValue) {
       if (kDebugMode) {
         print("Api Response---$onValue");
       }
@@ -136,7 +136,7 @@ class ClientViewModel with ChangeNotifier{
     if (kDebugMode) {
       print("Api params---$data");
     }
-    await  _myRepo.deleteSubClientApi(data).then((onValue) {
+    await  _myRepo.deleteSubClientApi(data,context).then((onValue) {
       setLoading(false);
       if (kDebugMode) {
         print("Api Response---$onValue");
@@ -158,7 +158,7 @@ class ClientViewModel with ChangeNotifier{
     if (kDebugMode) {
       print("Api params---$data");
     }
-    _myRepo.addContactApi(data).then((onValue) {
+    _myRepo.addContactApi(data,context).then((onValue) {
       setLoading(false);
       if (kDebugMode) {
         print("Api Response---$onValue");
@@ -177,11 +177,36 @@ class ClientViewModel with ChangeNotifier{
 
   List<ContactListModel> _contactList = [];
   List<ContactListModel> get contactList => _contactList;
-  Future<void> getContactListApi(dynamic data,BuildContext context) async {
+  Future<List<ContactListModel>?> getContactListApi(dynamic data,BuildContext context) async {
     setLoading(true);
-    _myRepo.getContactListApi(data).then((onValue) {
+    try{
+      var response = await _myRepo.getContactListApi(data,context);
+      List<ContactListModel> contactList = (response['data'] as List)
+          .map((employee) => ContactListModel.fromJson(employee))
+          .toList();
+      _contactList = contactList;
+
+      notifyListeners();
+
+      setLoading(false);
       if (kDebugMode) {
-        print("Api Response--ffffffff--"+onValue.toString());
+        print("Api Response---" + response.toString());
+      }
+      return contactList;
+    }
+    catch (error) {
+      setLoading(false);
+      if (kDebugMode) {
+        print("Api Error--" + error.toString());
+      }
+      Utils.toastMessage(error.toString());
+      return null;
+    }
+
+
+    /*_myRepo.getContactListApi(data).then((onValue) {
+      if (kDebugMode) {
+        print("Api Response--"+onValue.toString());
       }
       List<dynamic> dataList = onValue['data'] as List<dynamic>;
 
@@ -199,14 +224,14 @@ class ClientViewModel with ChangeNotifier{
         print("Api Error--"+error.toString());
       }
       Utils.toastMessage(error.toString());
-    });
+    });*/
   }
 
   Future<void> deleteClientContactApi(dynamic data, BuildContext context) async {
     if (kDebugMode) {
       print("Api params---$data");
     }
-    await  _myRepo.deleteClientContactApi(data).then((onValue) {
+    await  _myRepo.deleteClientContactApi(data,context).then((onValue) {
       setLoading(false);
       if (kDebugMode) {
         print("Api Response---$onValue");

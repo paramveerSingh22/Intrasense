@@ -21,7 +21,7 @@ class CommonViewModel with ChangeNotifier{
   Future<void> countryListApi(BuildContext context) async {
     setLoading(true);
     try {
-      final onValue = await _myRepo.countryListApi();
+      final onValue = await _myRepo.countryListApi(context);
       if (kDebugMode) {
         print("Api Response--" + onValue.toString());
       }
@@ -48,7 +48,7 @@ class CommonViewModel with ChangeNotifier{
   Future<void> industryListApi(BuildContext context) async {
     setLoading(true);
     try {
-      final onValue = await _myRepo.industryListApi();
+      final onValue = await _myRepo.industryListApi(context);
       if (kDebugMode) {
         print("Api Response--" + onValue.toString());
       }

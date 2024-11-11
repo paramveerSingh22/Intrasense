@@ -1,10 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intrasense/res/component/CustomElevatedButton.dart';
 import 'package:intrasense/res/component/CustomTextField.dart';
-import 'package:intrasense/view/Login/OtpScreen.dart';
-
 import '../../utils/AppColors.dart';
 import '../../utils/Images.dart';
+import '../../utils/Utils.dart';
+import '../../view_models/auth_view_model.dart';
+import 'package:provider/provider.dart';
+import 'package:validators/validators.dart' as validator;
+import 'OtpScreen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -14,12 +18,16 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPasswordScreen> {
+  TextEditingController _emailController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    final authViewModel = Provider.of<AuthViewModel>(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
-        children: <Widget>[
-          // Header Image
+        children: [
+          // Background Image Container
           Container(
             width: double.infinity,
             height: MediaQuery.of(context).size.height,
@@ -29,26 +37,17 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                 fit: BoxFit.cover,
               ),
             ),
-            padding: const EdgeInsets.only(top: 50, left: 30),
-            child: const Text(
-              'Forgot Password',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white,
-                fontFamily: 'PoppinsRegular',
-              ),
-            ),
           ),
-          // Image overlay on top of the header
           Positioned(
             top: 90.0,
             left: 0,
-            right: 0,
-            child: Center(
-              child: Image.asset(
+            child: Image.asset(
                 Images.curveOverlay,
-                width: MediaQuery.of(context).size.width,
-              ),
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                fit: BoxFit.cover
             ),
           ),
           Positioned(
@@ -62,8 +61,8 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
             ),
           ),
           Positioned(
-            bottom: 10.0, // adjust as needed
-            left: 10.0, // adjust as needed
+            bottom: 10.0,
+            left: 10.0,
             child: Image.asset(
               Images.bubbleImage,
               width: 150,
@@ -71,89 +70,113 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
               fit: BoxFit.cover,
             ),
           ),
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(00.0, 110.0, 00.0, 0.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
 
-                  const SizedBox(height: 20),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 30.0),
-                    child: Text(
-                      'Kindly enter your email to reset password',
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular'),
-                    ),
+          // Header Overlay with Text and Back Button
+          Positioned(
+            top: 36,
+            left: 30,
+            right: 10,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Forgot Password',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontFamily: 'PoppinsMedium',
                   ),
-                  const SizedBox(height: 20),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 30.0),
-                    child: Text(
-                      'Email',
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular'),
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 30.0),
-                    child:CustomTextField(
-                        hintText: 'Enter Email',
-                        suffixIcon: Icon(Icons.email,
-                        color: AppColors.secondaryOrange)
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) =>  const OtpScreen()),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        padding: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                        ),
-                      ),
-                      child: Ink(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(Images.buttonBg),
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: BorderRadius.circular(5.0),
-                        ),
-                        child: Container(
-                          constraints: const BoxConstraints(minHeight: 40.0),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            'GET OTP',
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white,
-                                fontFamily: 'PoppinsRegular'),
-                          ),
-                        ),
+          // Content Positioned Below Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0.0, 110.0, 0.0, 0.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(height: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 30.0, right: 20.0),
+                  child: Text(
+                    'Kindly enter your email to reset password',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: AppColors.textColor,
+                      fontFamily: 'PoppinsRegular',
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 30.0),
+                  child: Text(
+                    'Email',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textColor,
+                      fontFamily: 'PoppinsRegular',
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: CustomTextField(
+                    controller: _emailController,
+                    hintText: 'Enter Email',
+                    suffixIcon: SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: Image.asset(
+                        Images.emailIcon,
+                        fit: BoxFit.contain,
                       ),
                     ),
                   ),
-
-                ],
-              ),
+                ),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: CustomElevatedButton(
+                    onPressed: () async {
+                      if (_emailController.text.isEmpty) {
+                        Utils.toastMessage('Please enter email id');
+                      } else if (!validator.isEmail(_emailController.text)) {
+                        Utils.toastMessage('Please enter a valid email id');
+                      } else {
+                        Map data = {
+                          'user_email': _emailController.text.toString(),
+                        };
+                        var response = await authViewModel.forgotPasswordApi(data, context);
+                        var otp = response['data']['otp'].toString();
+                        if (response != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OtpScreen(
+                                email: _emailController.text,
+                                otp: otp,
+                              ),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    buttonText: "GET OTP",
+                    loading: authViewModel.loading,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

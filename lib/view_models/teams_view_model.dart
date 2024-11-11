@@ -23,7 +23,7 @@ class TeamsViewModel with ChangeNotifier{
     if (kDebugMode) {
       print("Api params---$data");
     }
-    _myRepo.addRoleApi(data).then((onValue) {
+    _myRepo.addRoleApi(data,context).then((onValue) {
       setLoading(false);
       if (kDebugMode) {
         print("Api Response---$onValue");
@@ -45,7 +45,7 @@ class TeamsViewModel with ChangeNotifier{
 
   Future<void> getRoleListApi(dynamic data,BuildContext context) async {
     setLoading(true);
-    await _myRepo.getRoleListApi(data).then((onValue) {
+    await _myRepo.getRoleListApi(data,context).then((onValue) {
       if (kDebugMode) {
         print("Api Response---"+onValue.toString());
       }
@@ -69,7 +69,7 @@ class TeamsViewModel with ChangeNotifier{
     if (kDebugMode) {
       print("Api params---$data");
     }
-    await  _myRepo.deleteRoleApi(data).then((onValue) {
+    await  _myRepo.deleteRoleApi(data,context).then((onValue) {
       setLoading(false);
       if (kDebugMode) {
         print("Api Response---$onValue");
@@ -90,7 +90,7 @@ class TeamsViewModel with ChangeNotifier{
   Future<List<EmployeesListModel>?> getEmployeesListApi(dynamic data,BuildContext context) async {
     setLoading(true);
     try{
-      var response = await _myRepo.getEmployeesListApi(data);
+      var response = await _myRepo.getEmployeesListApi(data,context);
       List<EmployeesListModel> employees = (response['data'] as List)
           .map((employee) => EmployeesListModel.fromJson(employee))
           .toList();
@@ -116,7 +116,7 @@ class TeamsViewModel with ChangeNotifier{
     if (kDebugMode) {
       print("Api params---$data");
     }
-    _myRepo.addGroupApi(data).then((onValue) {
+    _myRepo.addGroupApi(data,context).then((onValue) {
       setLoading(false);
       if (kDebugMode) {
         print("Api Response---$onValue");
@@ -137,7 +137,7 @@ class TeamsViewModel with ChangeNotifier{
   Future<List<GroupListModel>?> getGroupListApi(dynamic data,BuildContext context) async {
     setLoading(true);
     try{
-      var response = await _myRepo.getGroupListApi(data);
+      var response = await _myRepo.getGroupListApi(data,context);
       List<GroupListModel> groupList = (response['data'] as List)
           .map((group) => GroupListModel.fromJson(group))
           .toList();
@@ -166,7 +166,7 @@ class TeamsViewModel with ChangeNotifier{
     }
 
     try {
-      final onValue = await _myRepo.getGroupDetailsApi(data);
+      final onValue = await _myRepo.getGroupDetailsApi(data,context);
       setLoading(false);
 
       if (kDebugMode) {
@@ -191,7 +191,7 @@ class TeamsViewModel with ChangeNotifier{
     if (kDebugMode) {
       print("Api params---$data");
     }
-    _myRepo.updateGroupApi(data).then((onValue) {
+    _myRepo.updateGroupApi(data,context).then((onValue) {
       setLoading(false);
       if (kDebugMode) {
         print("Api Response---$onValue");
@@ -212,7 +212,7 @@ class TeamsViewModel with ChangeNotifier{
     if (kDebugMode) {
       print("Api params---$data");
     }
-    await  _myRepo.deleteGroupApi(data).then((onValue) {
+    await  _myRepo.deleteGroupApi(data,context).then((onValue) {
       setLoading(false);
       if (kDebugMode) {
         print("Api Response---$onValue");

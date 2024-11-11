@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:intrasense/utils/Images.dart';
 import '../../utils/AppColors.dart';
 
 class MultiSelectDropdown extends StatefulWidget {
@@ -25,16 +25,34 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey), // Grey border
+        border: Border.all(color: AppColors.editFieldBorderColour),
         borderRadius: BorderRadius.circular(8),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<List<String>>(
           isExpanded: true,
           hint: Padding(
-            padding: const EdgeInsets.only(left: 10.0), // Add left padding
-            child: Text(widget.hint),
+            padding: const EdgeInsets.only(left: 10.0),
+            child: Text(widget.hint,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis
+            ,style: TextStyle(
+                  color: widget.selectedItems.isEmpty ? AppColors.hintColor : AppColors.textColor,
+                  fontSize: 14.0,
+                  fontFamily: 'PoppinsRegular',
+                )),
           ),
+          icon: Padding(
+            padding: const EdgeInsets.only(right: 12.0), // Right padding
+            child: Image.asset(
+              Images.dropDownIcon,
+              color: AppColors.secondaryOrange,
+              width: 16,
+              height: 16,
+              fit: BoxFit.contain,
+            ),
+          ),
+
           items: [
             // Add the Done button
             DropdownMenuItem<List<String>>(

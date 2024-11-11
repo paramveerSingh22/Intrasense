@@ -5,13 +5,13 @@ import '../../utils/Images.dart';
 class CustomElevatedButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String buttonText;
- final bool loading ;
+  final bool loading;
 
   const CustomElevatedButton({
     Key? key,
     required this.onPressed,
     required this.buttonText,
-     this.loading =false,
+    this.loading = false,
   }) : super(key: key);
 
   @override
@@ -27,33 +27,29 @@ class CustomElevatedButton extends StatelessWidget {
         ),
       ),
       child: Ink(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(Images.buttonBg),
-            fit: BoxFit.cover,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(Images.buttonBg),
+              fit: BoxFit.cover,
+            ),
+            borderRadius: BorderRadius.circular(5.0),
           ),
-          borderRadius: BorderRadius.circular(5.0),
-        ),
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 40.0),
-          alignment: Alignment.center,
-
-          child: Center(
-            child: loading? CircularProgressIndicator(color: Colors.white,): Text(buttonText,
-              style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                  fontFamily: 'PoppinsRegular'),
-            )),
-          )
-          /*child: Text(
-            buttonText,
-            style: const TextStyle(
-                fontSize: 14,
-                color: Colors.white,
-                fontFamily: 'PoppinsRegular'),
-          )*/,
-      ),
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 40.0),
+            alignment: Alignment.center,
+            child: Center(
+                child: loading
+                    ? const CircularProgressIndicator(
+                        color: Colors.white,
+                      )
+                    : Text(
+                        buttonText,
+                        style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                            fontFamily: 'PoppinsMedium'),
+                      )),
+          )),
     );
   }
 }

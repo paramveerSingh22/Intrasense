@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 import '../data/network/BaseApiService.dart';
 import '../data/network/NetworkApiService.dart';
 import '../data/network/app_url.dart';
@@ -5,9 +7,9 @@ import '../data/network/app_url.dart';
 class TeamsRepository{
   BaseApiService apiService = NetworkApiService();
 
-  Future <dynamic> addRoleApi(dynamic data) async {
+  Future <dynamic> addRoleApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.addRoleUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.addRoleUrl, data,context);
       return response;
     }
     catch (e) {
@@ -15,9 +17,9 @@ class TeamsRepository{
     }
   }
 
-  Future <dynamic> getRoleListApi(dynamic data) async {
+  Future <dynamic> getRoleListApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.roleListUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.roleListUrl, data,context);
       return response;
     }
     catch (e) {
@@ -25,9 +27,9 @@ class TeamsRepository{
     }
   }
 
-  Future <dynamic> deleteRoleApi(dynamic data) async {
+  Future <dynamic> deleteRoleApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.deleteRoleUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.deleteRoleUrl, data,context);
       return response;
     }
     catch (e) {
@@ -35,9 +37,9 @@ class TeamsRepository{
     }
   }
 
-  Future <dynamic> getEmployeesListApi(dynamic data) async {
+  Future <dynamic> getEmployeesListApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.employeesListUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.employeesListUrl, data,context);
       return response;
     }
     catch (e) {
@@ -45,9 +47,9 @@ class TeamsRepository{
     }
   }
 
-  Future <dynamic> addGroupApi(dynamic data) async {
+  Future <dynamic> addGroupApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.addGroupUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.addGroupUrl, data,context);
       return response;
     }
     catch (e) {
@@ -55,9 +57,9 @@ class TeamsRepository{
     }
   }
 
-  Future <dynamic> getGroupListApi(dynamic data) async {
+  Future <dynamic> getGroupListApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.groupListUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.groupListUrl, data,context);
       return response;
     }
     catch (e) {
@@ -65,9 +67,9 @@ class TeamsRepository{
     }
   }
 
-  Future <dynamic> getGroupDetailsApi(dynamic data) async {
+  Future <dynamic> getGroupDetailsApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.groupDetailsUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.groupDetailsUrl, data,context);
       return response;
     }
     catch (e) {
@@ -75,9 +77,9 @@ class TeamsRepository{
     }
   }
 
-  Future <dynamic> updateGroupApi(dynamic data) async {
+  Future <dynamic> updateGroupApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.updateGroupUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.updateGroupUrl, data,context);
       return response;
     }
     catch (e) {
@@ -85,9 +87,9 @@ class TeamsRepository{
     }
   }
 
-  Future <dynamic> deleteGroupApi(dynamic data) async {
+  Future <dynamic> deleteGroupApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.deleteGroupUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.deleteGroupUrl, data,context);
       return response;
     }
     catch (e) {

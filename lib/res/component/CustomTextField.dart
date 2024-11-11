@@ -7,7 +7,9 @@ class CustomTextField extends StatelessWidget {
   final bool readOnly;
   final VoidCallback? onTap;
   final Widget? suffixIcon;
-  final bool obscureText; // Add obscureText property
+  final bool obscureText;
+  final int minLines;
+  final int maxLines;
 
   const CustomTextField({
     Key? key,
@@ -16,7 +18,9 @@ class CustomTextField extends StatelessWidget {
     this.readOnly = false,
     this.onTap,
     this.suffixIcon,
-    this.obscureText = false, // Default is false for normal text input
+    this.obscureText = false,
+    this.minLines = 1,  // Default to 1 line
+    this.maxLines = 1,  // Default to 1 line, keeps it single-line by default
   }) : super(key: key);
 
   @override
@@ -25,36 +29,49 @@ class CustomTextField extends StatelessWidget {
       controller: controller,
       readOnly: readOnly,
       onTap: onTap,
-      obscureText: obscureText,  // Use the obscureText property
+      obscureText: obscureText,
       style: const TextStyle(
         fontFamily: 'PoppinsRegular',
-        fontSize: 14.0,
+        fontSize: 13.0,
       ),
+      minLines: minLines,
+      maxLines: maxLines,
       decoration: InputDecoration(
         hintText: hintText,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 15.0),
+        hintStyle: const TextStyle(
+          color: AppColors.hintColor,
+          fontSize: 13.0,
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(5.0),
           borderSide: const BorderSide(
-            color: AppColors.grey,
-            width: 2.0,
+            color: AppColors.editFieldBorderColour,
+            width: 1.0,
           ),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(5.0),
           borderSide: const BorderSide(
-            color: AppColors.grey,
-            width: 2.0,
+            color: AppColors.editFieldBorderColour,
+            width: 1.0,
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(5.0),
           borderSide: const BorderSide(
-            color: AppColors.grey,
-            width: 2.0,
+            color: AppColors.editFieldBorderColour,
+            width: 1.0,
           ),
         ),
-        suffixIcon: suffixIcon,
+        suffixIcon: suffixIcon != null
+            ? Container(
+          width: 20,  // Desired width
+          height: 20,  // Desired height
+          alignment: Alignment.center,
+          child: suffixIcon,  // Ensure the icon is centered
+        )
+            : null,
       ),
     );
   }

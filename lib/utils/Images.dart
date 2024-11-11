@@ -30,5 +30,21 @@ class Images{
  static String  editIcon = "assets/images/ic_edit.png";
  static String  deleteIcon = "assets/images/ic_delete.png";
  static String  attachFile = "assets/images/file_attach.png";
+ static String  successTick = "assets/images/success_tick.png";
+ static String  emailIcon = "assets/images/email.png";
+ static String  passwordHide = "assets/images/password_hide.png";
+ static String  passwordVisible = "assets/images/password_visible.png";
+ static String  dummyImage = "assets/images/dummy_profile.png";
+ static String  calenderIcon = "assets/images/calender_icon.png";
+ static String  dropDownIcon = "assets/images/drop_down_icon.png";
+ static String  buttonOrangeBorder = "assets/images/button_orange_border_bg.png";
+ static String  deleteIconAlert = "assets/images/delete_icon.png";
+ static String  drawerIcon = "assets/images/drawer_icon.png";
+ static String  searchIconOrange = "assets/images/search_icon_orange.png";
+ static String  filterIcon = "assets/images/filter_icon.png";
+ static String  notificationIcon = "assets/images/notification_icon.png";
+ static String  uploadIcon = "assets/images/upload_icon.png";
+ static String  orangeRoundCrossIcon = "assets/images/round_cross.png";
+ static String  clockIcon = "assets/images/clock_icon.png";
 
 }

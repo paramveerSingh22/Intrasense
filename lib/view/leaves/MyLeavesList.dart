@@ -1,15 +1,97 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
+import 'package:intrasense/model/leave/LeaveListModel.dart';
+import 'package:intrasense/view/leaves/ApplyLeave.dart';
+import 'package:intrasense/view_models/leave_view_model.dart';
+import '../../model/user_model.dart';
+import '../../res/component/CustomElevatedButton.dart';
+import '../../res/component/CustomSearchTextField.dart';
 import '../../utils/AppColors.dart';
 import '../../utils/Images.dart';
+import '../../utils/Utils.dart';
+import '../../view_models/user_view_model.dart';
+import 'package:provider/provider.dart';
 
-class MyLeavesList extends StatefulWidget{
+class MyLeavesList extends StatefulWidget {
   @override
   _MyLeavesList createState() => _MyLeavesList();
-
 }
-class _MyLeavesList extends State<MyLeavesList>{
+
+class _MyLeavesList extends State<MyLeavesList> {
+  UserModel? _userData;
+  bool _isLoading = false;
+  List<LeaveListModel> leavesList = [];
+  List<LeaveListModel> filteredList = [];
+  TextEditingController searchController = TextEditingController();
+
+
+  @override
+  void initState() {
+    getUserDetails(context);
+    searchController.addListener(_filterList);
+    super.initState();
+  }
+  @override
+  void dispose() {
+    searchController.removeListener(_filterList);
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterList() {
+    String query = searchController.text.toLowerCase();
+    setState(() {
+      filteredList = leavesList
+          .where((item) =>
+          item.levPurpose.toLowerCase().contains(query)||
+              item.levType.toLowerCase().contains(query))
+          .toList();
+    });
+  }
+
+
+  Future<UserModel> getUserData() => UserViewModel().getUser();
+
+  void getUserDetails(BuildContext context) async {
+    _userData = await getUserData();
+    if (kDebugMode) {
+      print(_userData);
+    }
+    getLeaveList();
+  }
+
+  void setLoading(bool loading) {
+    setState(() {
+      _isLoading = loading;
+    });
+  }
+
+  Future<void> getLeaveList() async {
+    Utils.showLoadingDialog(context);
+    try {
+      Map data = {
+        'user_id': _userData?.data?.userId,
+        'usr_role_track_id': _userData?.data?.roleTrackId,
+        'usr_customer_track_id': _userData?.data?.customerTrackId,
+        'token': _userData?.token,
+      };
+      final leaveViewModel =
+          Provider.of<LeaveViewModel>(context, listen: false);
+      final response = await leaveViewModel.getLeaveListApi(data, context);
+      Utils.hideLoadingDialog(context);
+      setState(() {
+        if (response != null) {
+          leavesList = response.toList();
+          filteredList = leavesList;
+        }
+      });
+    } catch (error) {
+      Utils.hideLoadingDialog(context);
+      print('Error fetching leaves list: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,274 +99,594 @@ class _MyLeavesList extends State<MyLeavesList>{
         children: <Widget>[
           Positioned(
             top: 20.0,
-            // Adjust this value as needed
             left: 0.0,
             right: 0.0,
-            bottom: 0.0,
+            bottom: 70.0,
             child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        padding: const EdgeInsets.only(left: 10.0),
                         child: Column(
                           children: [
                             const Align(
                                 alignment: Alignment.centerLeft,
-                                child: Padding(
-                                    padding: EdgeInsets.only(left: 0.0),
-                                    child: Text(
-                                      'Leave History',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          color: AppColors.secondaryOrange,
-                                          fontFamily: 'PoppinsMedium'),
-                                    ))),
+                                child: Text(
+                                  'Leave History',
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      color: AppColors.secondaryOrange,
+                                      fontFamily: 'PoppinsMedium'),
+                                )),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: CustomSearchTextField(
+                                    controller: searchController,
+                                    hintText: 'Search',
+                                    suffixIcon: SizedBox(
+                                      height: 16,
+                                      width: 16,
+                                      child:
+                                          Image.asset(Images.searchIconOrange),
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: SizedBox(
+                                    height: 45,
+                                    width: 45,
+                                    child: Image.asset(Images.filterIcon),
+                                  ),
+                                  onPressed: () {
+                                    // Filter action
+                                  },
+                                ),
+                              ],
+                            ),
                           ],
                         )),
-                    SizedBox(height: 20),
                     Expanded(
-                      child: Container(
-                          color: AppColors.lightBlue,
-                          child: ListView.separated(
-                            itemCount: 5,
-                            separatorBuilder:
-                                (BuildContext context, int index) {
-                              return const SizedBox(
-                                  height:
-                                  10); // List items ke beech mein 10 dp ka gap
-                            },
-                            itemBuilder: (context, index) {
-                              return CustomLeaveListTile();
-                            },
-                          )),
-                    )
+                      child: filteredList.isEmpty
+                          ? const Center(
+                              child: Text(
+                                'No data found',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: AppColors.textColor,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: 'PoppinsMedium',
+                                ),
+                              ),
+                            )
+                          : ListView.separated(
+                              itemCount: filteredList.length,
+                              separatorBuilder:
+                                  (BuildContext context, int index) {
+                                return const SizedBox(height: 10);
+                              },
+                              itemBuilder: (context, index) {
+                                final item = filteredList[index];
+                                return CustomLeaveListTile(
+                                  item: item
+                                );
+                              },
+                            ),
+                    ),
                   ],
                 )),
           ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 20.0,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: CustomElevatedButton(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ApplyLeave()),
+                  );
+                  if (result == true) {
+                    getLeaveList();
+                  }
+                },
+                buttonText: 'APPLY LEAVE',
+              ),
+            ),
+          )
         ],
       ),
     );
   }
-
 }
 
 class CustomLeaveListTile extends StatelessWidget {
-  const CustomLeaveListTile({super.key});
+  final LeaveListModel item;
+
+  const CustomLeaveListTile({
+    super.key,
+    required this.item
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-          ),
-          color: Colors.white,
-        ),
-        child: ListTile(
-          contentPadding:
-          const EdgeInsets.only(bottom: 20, top: 10, left: 20, right: 20),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                      flex: 5,
-                      child: Text(
-                        'Full day',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.primaryColor,
-                          fontFamily: 'PoppinsRegular',
-                        ),
-                      )),
-                  Expanded(
-                      flex: 1,
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            Images.editIcon,
-                            width: 20.0,
-                            height: 20.0, // Update with your asset path
-                          ),
-                          SizedBox(width: 10),
-                          Image.asset(
-                            Images.threeDotsRed,
-                            width: 12.0,
-                            height: 20.0, // Update with your asset path
-                          )
-                        ],
-                      )),
-                ],
+
+    String getStatusText(String status) {
+      switch (status) {
+        case "1":
+          return 'PENDING';
+        case "2":
+          return 'APProved';
+        case "3":
+          return 'CANCELED';
+        case "4":
+          return 'REJECTED';
+        default:
+          return 'CANCEL';
+      }
+    }
+
+    DateTime startDate = DateTime.parse(item.levStartDate);
+    DateTime endDate = DateTime.parse(item.levEndDate);
+    int numberOfDays = endDate.difference(startDate).inDays + 1;
+
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
               ),
-              SizedBox(height: 10),
-              Row(
+              color: Colors.white,
+              border: Border.all(
+                color: AppColors.dividerColor,
+                width: 1.0,
+              ),
+            ),
+            child: ListTile(
+              contentPadding: const EdgeInsets.only(
+                bottom: 10,
+                top: 0,
+              ),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      child: Text(
-                        'From',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontWeight: FontWeight.w400,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 10,
+                            child: Text(
+                              'Staff ID-${item.userId}',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.skyBlueTextColor,
+                                fontFamily: 'PoppinsMedium',
+                              ),
+                            )),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 0.0),
+                          child: Expanded(
+                              flex: 1,
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                    icon: SizedBox(
+                                      height: 20.0,
+                                      width: 20.0,
+                                      child: Image.asset(Images.editIcon),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ApplyLeave(leaveDetail: item),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              )),
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                  Expanded(
-                      flex: 1,
-                      child: Text(
-                        '22 Feb 2022',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ))
-                ],
-              ),
-              SizedBox(height: 10),
-              Divider(),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Align(
-                        alignment: Alignment.topLeft,
-                        child: Container(
-                          child: Text(
-                            'To',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsRegular',
-                              fontWeight: FontWeight.w400,
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            child: const Text(
+                              'Employee Name',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsRegular',
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
                           ),
-                        )
-                    ),),
-                  Expanded(
-                      flex: 1,
-                      child: Text(
-                        '22 Feb 2022.',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontWeight: FontWeight.w500,
                         ),
-                      ))
-                ],
-              ),
-              SizedBox(height: 10),
-              Divider(),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: Container(
-                        child: Text(
-                          'Purpose',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textColor,
-                            fontFamily: 'PoppinsRegular',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      )
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                              "${item.userFirstName} ${item.userLastName}",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsRegular',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ))
+                      ],
+                    ),
                   ),
-                  Expanded(
-                      flex: 1,
-                      child: Text(
-                        'Personal work',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontWeight: FontWeight.w500,
+                  const SizedBox(height: 10),
+                  const DividerColor(),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Align(
+                              alignment: Alignment.topLeft,
+                              child: Container(
+                                child: const Text(
+                                  'Leave Type',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: AppColors.textColor,
+                                    fontFamily: 'PoppinsRegular',
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              )),
                         ),
-                      ))
-                ],
-              ),
-              SizedBox(height: 10),
-              Divider(),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: Container(
-                        child: Text(
-                          'Description',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textColor,
-                            fontFamily: 'PoppinsRegular',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      )
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                              item.levType,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsRegular',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ))
+                      ],
+                    ),
                   ),
-                  Expanded(
-                      flex: 1,
-                      child: Text(
-                        "Mostrud exercitation by ullamco laboris nisi nostrud lorem ipsum.",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ))
+                  const SizedBox(height: 10),
+                  const DividerColor(),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 1,
+                            child: Container(
+                              child: const Text(
+                                'Purpose',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textColor,
+                                  fontFamily: 'PoppinsRegular',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            )),
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                              item.levPurpose,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsRegular',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ))
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const DividerColor(),
+                  const SizedBox(height: 10),
+                 if(item.levType=="Half Day"|| item.levType=="Short leave")...{
+                   Padding(
+                     padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                     child: Row(
+                       children: [
+                         Expanded(
+                             flex: 1,
+                             child: Container(
+                               child: const Text(
+                                 'Date',
+                                 style: TextStyle(
+                                   fontSize: 14,
+                                   color: AppColors.textColor,
+                                   fontFamily: 'PoppinsRegular',
+                                   fontWeight: FontWeight.w400,
+                                 ),
+                               ),
+                             )),
+                         Expanded(
+                             flex: 1,
+                             child: Text(
+                               item.levStartDate,
+                               style: const TextStyle(
+                                 fontSize: 14,
+                                 color: AppColors.textColor,
+                                 fontFamily: 'PoppinsRegular',
+                                 fontWeight: FontWeight.w500,
+                               ),
+                             ))
+                       ],
+                     ),
+                   ),
+                   const SizedBox(height: 10),
+                   const DividerColor(),
+                   const SizedBox(height: 10),
+                   Padding(
+                     padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                     child: Row(
+                       children: [
+                         Expanded(
+                             flex: 1,
+                             child: Container(
+                               child: const Text(
+                                 'Start time',
+                                 style: TextStyle(
+                                   fontSize: 14,
+                                   color: AppColors.textColor,
+                                   fontFamily: 'PoppinsRegular',
+                                   fontWeight: FontWeight.w400,
+                                 ),
+                               ),
+                             )),
+                         Expanded(
+                             flex: 1,
+                             child: Text(
+                               item.levStartTime,
+                               style: const TextStyle(
+                                 fontSize: 14,
+                                 color: AppColors.textColor,
+                                 fontFamily: 'PoppinsRegular',
+                                 fontWeight: FontWeight.w500,
+                               ),
+                             ))
+                       ],
+                     ),
+                   ),
+                   const SizedBox(height: 10),
+                   const DividerColor(),
+                   const SizedBox(height: 10),
+                   Padding(
+                     padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                     child: Row(
+                       children: [
+                         Expanded(
+                             flex: 1,
+                             child: Container(
+                               child: const Text(
+                                 'End time',
+                                 style: TextStyle(
+                                   fontSize: 14,
+                                   color: AppColors.textColor,
+                                   fontFamily: 'PoppinsRegular',
+                                   fontWeight: FontWeight.w400,
+                                 ),
+                               ),
+                             )),
+                         Expanded(
+                             flex: 1,
+                             child: Text(
+                               item.levEndTime,
+                               style: const TextStyle(
+                                 fontSize: 14,
+                                 color: AppColors.textColor,
+                                 fontFamily: 'PoppinsRegular',
+                                 fontWeight: FontWeight.w500,
+                               ),
+                             ))
+                       ],
+                     ),
+                   ),
+                   const SizedBox(height: 10),
+                   const DividerColor(),
+                   const SizedBox(height: 10),
+                 }
+                 else...{
+                   Padding(
+                     padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                     child: Row(
+                       children: [
+                         Expanded(
+                             flex: 1,
+                             child: Container(
+                               child: const Text(
+                                 'From',
+                                 style: TextStyle(
+                                   fontSize: 14,
+                                   color: AppColors.textColor,
+                                   fontFamily: 'PoppinsRegular',
+                                   fontWeight: FontWeight.w400,
+                                 ),
+                               ),
+                             )),
+                         Expanded(
+                             flex: 1,
+                             child: Text(
+                               item.levStartDate,
+                               style: const TextStyle(
+                                 fontSize: 14,
+                                 color: AppColors.textColor,
+                                 fontFamily: 'PoppinsRegular',
+                                 fontWeight: FontWeight.w500,
+                               ),
+                             ))
+                       ],
+                     ),
+                   ),
+                   const SizedBox(height: 10),
+                   const DividerColor(),
+                   const SizedBox(height: 10),
+                   Padding(
+                     padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                     child: Row(
+                       children: [
+                         Expanded(
+                             flex: 1,
+                             child: Container(
+                               child: const Text(
+                                 'To',
+                                 style: TextStyle(
+                                   fontSize: 14,
+                                   color: AppColors.textColor,
+                                   fontFamily: 'PoppinsRegular',
+                                   fontWeight: FontWeight.w400,
+                                 ),
+                               ),
+                             )),
+                         Expanded(
+                             flex: 1,
+                             child: Text(
+                               item.levEndDate,
+                               style: const TextStyle(
+                                 fontSize: 14,
+                                 color: AppColors.textColor,
+                                 fontFamily: 'PoppinsRegular',
+                                 fontWeight: FontWeight.w500,
+                               ),
+                             ))
+                       ],
+                     ),
+                   ),
+                   const SizedBox(height: 10),
+                   const DividerColor(),
+                   const SizedBox(height: 10),
+                   Padding(
+                     padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                     child: Row(
+                       children: [
+                         Expanded(
+                             flex: 1,
+                             child: Container(
+                               child: const Text(
+                                 'No. of Days',
+                                 style: TextStyle(
+                                   fontSize: 14,
+                                   color: AppColors.textColor,
+                                   fontFamily: 'PoppinsRegular',
+                                   fontWeight: FontWeight.w400,
+                                 ),
+                               ),
+                             )),
+                         Expanded(
+                             flex: 1,
+                             child: Text(
+                               numberOfDays.toString(),
+                               style: const TextStyle(
+                                 fontSize: 14,
+                                 color: AppColors.textColor,
+                                 fontFamily: 'PoppinsRegular',
+                                 fontWeight: FontWeight.w500,
+                               ),
+                             ))
+                       ],
+                     ),
+                   ),
+                   const SizedBox(height: 10),
+                   const DividerColor(),
+                   const SizedBox(height: 10),
+                 },
+
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 1,
+                            child: Container(
+                              child: const Text(
+                                'Status',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textColor,
+                                  fontFamily: 'PoppinsRegular',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            )),
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                              getStatusText(item.levStatus),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.primaryColor,
+                                fontFamily: 'PoppinsRegular',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ))
+                      ],
+                    ),
+                  )
                 ],
               ),
-              SizedBox(height: 10),
-              Divider(),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: Container(
-                        child: Text(
-                          'Status',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textColor,
-                            fontFamily: 'PoppinsRegular',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      )),
-                  Expanded(
-                      flex: 1,
-                      child: Text(
-                        'IN PROGRESS',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.primaryColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ))
-                ],
-              ),
-            ],
+            ),
           ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+          child: IgnorePointer(
+            ignoring: true,
+            child: Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: 60,
+                decoration: BoxDecoration(
+                  color: AppColors.secondaryOrange.withOpacity(0.1),
+                  // Making it semi-transparent
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class DividerColor extends StatelessWidget {
+  const DividerColor({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Divider(
+      color: AppColors.dividerColor,
+      height: 0.5,
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 import '../data/network/BaseApiService.dart';
 import '../data/network/NetworkApiService.dart';
 import '../data/network/app_url.dart';
@@ -5,9 +7,9 @@ import '../data/network/app_url.dart';
 class ClientRepository{
   BaseApiService apiService = NetworkApiService();
 
-  Future <dynamic> addClientsApi(dynamic data) async {
+  Future <dynamic> addClientsApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.addClientListUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.addClientListUrl, data,context);
 
       return response;
     }
@@ -16,9 +18,9 @@ class ClientRepository{
     }
   }
 
-  Future <dynamic> getClientListApi(dynamic data) async {
+  Future <dynamic> getClientListApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.clientListUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.clientListUrl, data,context);
       return response;
     }
     catch (e) {
@@ -26,9 +28,9 @@ class ClientRepository{
     }
   }
 
-  Future <dynamic> deleteClientApi(dynamic data) async {
+  Future <dynamic> deleteClientApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.deleteClientUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.deleteClientUrl, data,context);
       return response;
     }
     catch (e) {
@@ -36,9 +38,9 @@ class ClientRepository{
     }
   }
 
-  Future <dynamic> addSubClientApi(dynamic data) async {
+  Future <dynamic> addSubClientApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.addSubClientUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.addSubClientUrl, data,context);
       return response;
     }
     catch (e) {
@@ -46,9 +48,9 @@ class ClientRepository{
     }
   }
 
-  Future <dynamic> getSubClientListApi(dynamic data) async {
+  Future <dynamic> getSubClientListApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.subClientListUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.subClientListUrl, data,context);
       return response;
     }
     catch (e) {
@@ -56,9 +58,9 @@ class ClientRepository{
     }
   }
 
-  Future <dynamic> deleteSubClientApi(dynamic data) async {
+  Future <dynamic> deleteSubClientApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.deleteSubClientUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.deleteSubClientUrl, data,context);
       return response;
     }
     catch (e) {
@@ -66,9 +68,9 @@ class ClientRepository{
     }
   }
 
-  Future <dynamic> addContactApi(dynamic data) async {
+  Future <dynamic> addContactApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.addContactUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.addContactUrl, data,context);
       return response;
     }
     catch (e) {
@@ -76,9 +78,9 @@ class ClientRepository{
     }
   }
 
-  Future <dynamic> getContactListApi(dynamic data) async {
+  Future <dynamic> getContactListApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.contactListUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.contactListUrl, data,context);
       return response;
     }
     catch (e) {
@@ -86,9 +88,9 @@ class ClientRepository{
     }
   }
 
-  Future <dynamic> deleteClientContactApi(dynamic data) async {
+  Future <dynamic> deleteClientContactApi(dynamic data,BuildContext context) async {
     try {
-      dynamic response = await apiService.getPostApiResponse(AppUrl.deleteClientContactUrl, data);
+      dynamic response = await apiService.getPostApiResponse(AppUrl.deleteClientContactUrl, data,context);
       return response;
     }
     catch (e) {

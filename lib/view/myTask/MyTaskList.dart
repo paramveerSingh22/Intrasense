@@ -129,12 +129,12 @@ class _MyTaskList extends State<MyTaskList> {
             top: 20.0,
             left: 0.0,
             right: 0.0,
-            bottom: 60.0, // Reserve space for the button
+            bottom: 10.0, // Reserve space for the button
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  padding: const EdgeInsets.only(left: 30.0,right: 20.0),
                   child: Column(
                     children: [
                       Row(
@@ -184,7 +184,7 @@ class _MyTaskList extends State<MyTaskList> {
                 Expanded(
                   child: Container(
                     color: AppColors.lightBlue,
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.only(left: 26.0,right: 26.0),
                     child: Column(
                       children: [
                         const SizedBox(height: 20),
@@ -238,36 +238,41 @@ class _MyTaskList extends State<MyTaskList> {
                             },
                           ),
                         ),
+                        const SizedBox(height: 5),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
+
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 10.0,
+                  child:
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 26.0),
+                    child: CustomElevatedButton(
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => CreateTask()),
+                        );
+                        if (result == true) {
+                          getTasksList(selectProjectId.toString());
+                        }
+                      },
+                      buttonText: 'CREATE TASK',
+                    ),
+                  ),
+                )
               ],
             ),
+
+
           ),
 
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 20.0,
-            child:
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: CustomElevatedButton(
-                onPressed: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CreateTask()),
-                  );
-                  if (result == true) {
-                    getTasksList(selectProjectId.toString());
-                  }
-                },
-                buttonText: 'CREATE TASK',
-              ),
-            ),
-          )
+
         ],
       ),
     );
@@ -391,7 +396,7 @@ class CustomMyTaskListTile extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
-                        'Are you sure, you want to delete this task.',
+                        'Are you sure, you want to delete this task?',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14,
@@ -461,7 +466,7 @@ class CustomMyTaskListTile extends StatelessWidget {
                           "[""${item.taskDetail![0].taskUniqueId} - ${item.taskDetail![0].projectShortName}""]",
                             style: const TextStyle(
                                 fontSize: 14,
-                                color: AppColors.primaryColor,
+                                color: AppColors.skyBlueTextColor,
                                 fontFamily: 'PoppinsRegular'),
                           )),
                       Expanded(
@@ -552,7 +557,7 @@ class CustomMyTaskListTile extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular',
+                          fontFamily: 'PoppinsMedium',
                           fontWeight: FontWeight.w500,
                         ),
                       )
@@ -582,7 +587,7 @@ class CustomMyTaskListTile extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular',
+                          fontFamily: 'PoppinsMedium',
                           fontWeight: FontWeight.w500,
                         ),
                       )
@@ -612,7 +617,7 @@ class CustomMyTaskListTile extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular',
+                          fontFamily: 'PoppinsMedium',
                           fontWeight: FontWeight.w500,
                         ),
                       )
@@ -642,7 +647,7 @@ class CustomMyTaskListTile extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular',
+                          fontFamily: 'PoppinsMedium',
                           fontWeight: FontWeight.w500,
                         ),
                       )
@@ -669,10 +674,12 @@ class CustomMyTaskListTile extends StatelessWidget {
                           )),
                       Text(
                         getStatusText(item.taskDetail![0].taskStatus!),
-                        style: const TextStyle(
+                        style:  TextStyle(
                           fontSize: 14,
-                          color: AppColors.secondaryOrange,
-                          fontFamily: 'PoppinsRegular',
+                          color: getStatusText(item.taskDetail![0].taskStatus!) == 'COMPLETED'
+                              ? AppColors.skyBlueTextColor
+                              : AppColors.secondaryOrange,
+                          fontFamily: 'PoppinsMedium',
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -712,7 +719,7 @@ class DividerColor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Divider(
-      color: AppColors.hintColor,
+      color: AppColors.dividerColor,
       height: 0.5,
     );
   }

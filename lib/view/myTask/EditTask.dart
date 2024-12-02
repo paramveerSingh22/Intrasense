@@ -45,7 +45,6 @@ class _EditTask extends State<EditTask> {
   final TextEditingController _dueDateController = TextEditingController();
   final TextEditingController _commDateController = TextEditingController();
   final TextEditingController _budgetedHoursController = TextEditingController();
-  final TextEditingController _budgetedMinutesController = TextEditingController();
   final TextEditingController _commentsController = TextEditingController();
   final TextEditingController _selectTeamNamesController = TextEditingController();
 
@@ -64,7 +63,6 @@ class _EditTask extends State<EditTask> {
 
   String? commSelectedHours;
   String? commSelectedMinutes;
-
   String? budgetedSelectedMinutes;
 
   String? selectStatusValue;
@@ -462,18 +460,15 @@ class _EditTask extends State<EditTask> {
       body: Stack(
         children: <Widget>[
           Container(
-              width: double.infinity,
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(Images.headerBg),
-                  fit: BoxFit.cover,
-                ),
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(Images.headerBg),
+                fit: BoxFit.cover,
               ),
-              ),
+            ),
+          ),
           Positioned(
             top: 90,
             left: 0,
@@ -481,10 +476,8 @@ class _EditTask extends State<EditTask> {
               children: [
                 Image.asset(
                   Images.curveOverlay,
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width,
+                  width: MediaQuery.of(context).size.width,
+                  fit: BoxFit.cover,
                 ),
               ],
             ),
@@ -499,7 +492,6 @@ class _EditTask extends State<EditTask> {
               fit: BoxFit.cover,
             ),
           ),
-
           Positioned(
             top: 36,
             left: 30,
@@ -537,11 +529,11 @@ class _EditTask extends State<EditTask> {
                       padding: const EdgeInsets.symmetric(horizontal: 30.0),
                       child: Column(
                         children: [
-                          const Align(
+                           Align(
                               alignment: Alignment.topLeft,
                               child: Text(
-                                'Edit Task',
-                                style: TextStyle(
+                                'Edit Task'+"["+widget.taskDetail.taskDetail![0].taskUniqueId.toString()+"]",
+                                style: const TextStyle(
                                     fontSize: 14,
                                     color: AppColors.secondaryOrange,
                                     fontFamily: 'PoppinsMedium'),
@@ -657,7 +649,7 @@ class _EditTask extends State<EditTask> {
                         'Enter Details of Communication Received',
                         style: TextStyle(
                           fontSize: 13,
-                          color: AppColors.primaryColor,
+                          color: AppColors.skyBlueTextColor,
                           fontFamily: 'PoppinsMedium',
                         ),
                       ),
@@ -986,24 +978,45 @@ class _EditTask extends State<EditTask> {
                                     fontFamily: 'PoppinsMedium'),
                               )
                           ),
+                          const SizedBox(height: 10),
                           Align(
                             alignment: Alignment.centerLeft,
+                            // Ensure it's aligned to the left edge
                             child: Row(
-                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Transform.translate(
-                                  offset: Offset(-10, 0),
-                                  child: Checkbox(
-                                    value: _isIndividualSelected,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        _isIndividualSelected = value ?? false;
-                                      });
-                                    },
-                                    materialTapTargetSize: MaterialTapTargetSize
-                                        .shrinkWrap, // Reduces checkbox's extra space
+                                Theme(
+                                  data: ThemeData(
+                                    checkboxTheme: CheckboxThemeData(
+                                      side: BorderSide(color: Colors.transparent, width: 0),
+                                    ),
+                                  ),
+                                  child: Container(
+                                    width: 18, // Set to a fixed width to avoid size changes
+                                    height: 18, // Set to a fixed height to avoid size changes
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: _isIndividualSelected ? Colors.transparent : AppColors.secondaryOrange,
+                                        width: 2, // Border width
+                                      ),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Center(
+                                      child: Checkbox(
+                                        value: _isIndividualSelected,
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            _isIndividualSelected = value ?? false;
+                                          });
+                                        },
+                                        activeColor: AppColors.secondaryOrange,
+                                        checkColor: Colors.white,
+                                        materialTapTargetSize: MaterialTapTargetSize.padded, // Retain full click area
+                                        visualDensity: VisualDensity.standard, // Standard density for consistent size
+                                      ),
+                                    ),
                                   ),
                                 ),
+                                const SizedBox(width: 10),
                                 const Text('Select Individuals',
                                     style: TextStyle(
                                         fontSize: 14,
@@ -1012,7 +1025,8 @@ class _EditTask extends State<EditTask> {
                               ],
                             ),
                           ),
-                          if (_isIndividualSelected)
+                          if (_isIndividualSelected)...[
+                            const SizedBox(height: 10),
                             MultiSelectDropdown(
                               items: employeeNamesList,
                               selectedItems: selectedTeamMemberNames,
@@ -1031,6 +1045,7 @@ class _EditTask extends State<EditTask> {
                               },
                               hint: _selectTeamNamesController.text.toString(),
                             )
+          ]
 
                         ],
                       ),
@@ -1099,7 +1114,7 @@ class _EditTask extends State<EditTask> {
                     ),
                     const SizedBox(height: 15),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
                       child: Column(
                         children: [
                           const Align(
@@ -1224,8 +1239,9 @@ class _EditTask extends State<EditTask> {
                             }
 
                             final budgetedHours = int.tryParse(_budgetedHoursController.text) ?? 0;
-                            final budgetedMinutes = int.tryParse(_budgetedMinutesController.text) ?? 0;
-                            final totalMinutes = (budgetedHours * 60) + budgetedMinutes;
+                            final budgetedMinutes = int.tryParse(budgetedSelectedMinutes.toString()) ?? 0;
+                            final totalHour= (budgetedHours * 60) ;
+                            final totalMinutes = totalHour + budgetedMinutes;
 
                             Map data = {
                               'user_id': _userData?.data?.userId.toString(),

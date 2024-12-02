@@ -47,5 +47,13 @@ class AppUrl{
   static var leaveListUrl= baseUrl + 'leaves/myleaves';
   static var leaveTypeListUrl= baseUrl + 'leaves/LeaveTypeList';
   static var applyLeaveUrl= baseUrl + 'leaves/applyLeave';
+  static var leaveRequestListUrl= baseUrl + 'leaves/leaveRequest';
+  static var acceptDeclineLeaveUrl= baseUrl + 'leaves/leaveAcceptDecline';
+  static var deleteLeaveUrl= baseUrl + 'leaves/cancelLeave';
+
+  ////for time sheet
+  static var timeSheetActivityUrl= baseUrl + 'timesheet/timeSheetActivityList';
+  static var addTimeSheetUrl= baseUrl + 'timesheet/createTimesheet';
+  static var timeSheetListUrl= baseUrl + 'timesheet/timesheet';
 
 }

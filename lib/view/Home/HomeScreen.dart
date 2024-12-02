@@ -34,6 +34,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? userName = "Param1";
+  UserModel? _userData;
 
   @override
   void initState() {
@@ -55,7 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
     MyDocumentList(),
     MyMeetingslist(),
     MyExpenseList(),
-    MyLeavesList(),
+    MyLeavesList("my_leave"),
+    MyLeavesList("leave_request"),
     AppraisalList(),
     //self Apprailsel
     //Training
@@ -77,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'Manage Meetings',
     'Manage Expenses',
     'My Leaves',
+    'Leave Requests',
     'Appraisal List',
     'Support',
   ];
@@ -111,11 +114,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 18,
                         width: 18,
                         child: Image.asset(Images
-                            .drawerIcon), // Apni custom image ka path yahan set karein
+                            .drawerIcon),
                       ),
                       onPressed: () {
                         Scaffold.of(context)
-                            .openDrawer(); // Drawer ko open karne ka function
+                            .openDrawer();
                       },
                     ),
               ),
@@ -162,7 +165,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: <Widget>[
                           CircleAvatar(
                             backgroundImage: AssetImage(Images.dummyImage),
-                            // Replace with actual image path
                             radius: 30,
                           ),
                           SizedBox(width: 10),
@@ -170,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(
+                              const Text(
                                 'Welcome', // Replace with actual user's name
                                 style: TextStyle(
                                   color: Colors.black,
@@ -181,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 userName ?? "Loading...",
                                 // Replace with additional text
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 20,
                                   fontFamily: 'PoppinsRegular',
@@ -269,7 +271,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                             fontFamily: 'PoppinsRegular',
                                             fontSize: 15)),
                                     onTap: () {
-                                      _onItemTapped(2);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => Mytimesheetlist(),
+                                        ),
+                                      );
+                                     // _onItemTapped(2);
                                     },
                                   ))
 
@@ -436,20 +444,81 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                     const DividerColor(),
-                    ListTile(
-                      leading: Image.asset(
-                        Images.myLeaves,
-                        width: 20,
-                        height: 20,
-                      ),
-                      title: const Text('My Leaves',
-                          style: TextStyle(
-                              color: AppColors.skyBlueTextColor,
-                              fontFamily: 'PoppinsRegular',
-                              fontSize: 15)),
-                      onTap: () {
-                        _onItemTapped(11);
-                      },
+
+                    Container(
+                      child: Theme(
+                          data: ThemeData(
+                            dividerColor: AppColors
+                                .white, // Set the default divider color for the theme
+                          ),
+                          child: ExpansionTile(
+                            leading: Image.asset(
+                              Images.myLeaves,
+                              width: 20,
+                              height: 20,
+                            ),
+                            iconColor: AppColors.secondaryOrange,
+                            collapsedIconColor: AppColors.secondaryOrange,
+                            title: const Text('Manage Leaves',
+                                style: TextStyle(
+                                    color: AppColors.skyBlueTextColor,
+                                    fontFamily: 'PoppinsRegular',
+                                    fontSize: 15)),
+                            children: [
+                              Padding(
+                                  padding: const EdgeInsets.only(left: 40.0),
+                                  child: ListTile(
+                                    leading: const Text('•',
+                                        style: TextStyle(
+                                            color: AppColors.secondaryOrange,
+                                            fontFamily: 'PoppinsRegular',
+                                            fontSize: 15)),
+                                    title: const Text('My Leaves',
+                                        style: TextStyle(
+                                            color: AppColors.skyBlueTextColor,
+                                            fontFamily: 'PoppinsRegular',
+                                            fontSize: 15)),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => MyLeavesList("my_leave"),
+                                        ),
+                                      );
+                                      //_onItemTapped(11);
+                                    },
+                                  )),
+
+                              if(_userData?.data?.roleTrackId=="2")...{
+                                Padding(
+                                    padding: const EdgeInsets.only(left: 40.0),
+                                    child: ListTile(
+                                      leading: const Text('•',
+                                          style: TextStyle(
+                                              color: AppColors.secondaryOrange,
+                                              fontFamily: 'PoppinsRegular',
+                                              fontSize: 15)),
+                                      title: const Text('Leave Requests',
+                                          style: TextStyle(
+                                              color: AppColors.skyBlueTextColor,
+                                              fontFamily: 'PoppinsRegular',
+                                              fontSize: 15)),
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                MyLeavesList("leave_request"),
+                                          ),
+                                        );
+                                        //_onItemTapped(12);
+                                      },
+                                    ))
+                              },
+
+                              // Add more ListTiles as needed
+                            ],
+                          )),
                     ),
                     const DividerColor(),
                     Container(
@@ -660,6 +729,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<UserModel> getUserData() => UserViewModel().getUser();
 
   void getUserName(BuildContext context) async {
+    _userData = await getUserData();
     getUserData().then((value) {
       if (kDebugMode) {
         print(value);

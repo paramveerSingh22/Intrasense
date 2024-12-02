@@ -9,6 +9,7 @@ import 'package:intrasense/view_models/leave_view_model.dart';
 import 'package:intrasense/view_models/projects_view_model.dart';
 import 'package:intrasense/view_models/tasks_view_model.dart';
 import 'package:intrasense/view_models/teams_view_model.dart';
+import 'package:intrasense/view_models/time_sheet_view_model.dart';
 import 'package:intrasense/view_models/user_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_)=> ProjectsViewModel()),
           ChangeNotifierProvider(create: (_)=> TasksViewModel()),
           ChangeNotifierProvider(create: (_)=> LeaveViewModel()),
+          ChangeNotifierProvider(create: (_)=> TimeSheetViewModel()),
         ],
       child: (MaterialApp(
         theme: ThemeData(

@@ -257,10 +257,6 @@ class _NewPasswordScreen extends State<NewPasswordScreen> {
         ),
       )
     );
-
-
-
-
   }
 
   void showPasswordUpdatedDialog(BuildContext context) {

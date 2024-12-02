@@ -572,7 +572,7 @@ class _CreateTask extends State<CreateTask> {
                       const SizedBox(height: 5),
                       CustomTextField(
                           controller: _commDateController,
-                          hintText: 'YYYY-MM-dd',
+                          hintText: 'YYYY-MM-DD',
                           suffixIcon: Image.asset(
                             Images.calenderIcon,
                             height: 24, // Optional: Adjust size as needed
@@ -720,15 +720,24 @@ class _CreateTask extends State<CreateTask> {
                                   suffixIcon: Image.asset(
                                     Images.calenderIcon,
                                     height: 24,
-                                    // Optional: Adjust size as needed
                                     width: 24,
                                   ),
                                   readOnly: true,
                                   onTap: () async {
+                                    if (_startDateController.text.isEmpty) {
+                                     Utils.toastMessage("Please select the Start Date first.");
+                                      return;
+                                    }
+
+                                    DateTime? startDate = _startDateController.text.isNotEmpty
+                                        ? DateTime.parse(_startDateController.text) // Parse the stored Start Date
+                                        : DateTime.now();
+
+
                                     DateTime? pickedDate = await showDatePicker(
                                       context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime.now(),
+                                      initialDate: startDate,
+                                      firstDate: startDate,
                                       lastDate: DateTime.now()
                                           .add(const Duration(days: 365 * 100)),
                                     );
@@ -956,7 +965,7 @@ class _CreateTask extends State<CreateTask> {
                 ),
                 const SizedBox(height: 15),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Column(
                     children: [
                       const Align(
@@ -989,6 +998,8 @@ class _CreateTask extends State<CreateTask> {
                         Utils.toastMessage("Please select task type");
                       } else if (selectClientValue == null) {
                         Utils.toastMessage("Please select client");
+                      } else if (selectProjectValue == null) {
+                        Utils.toastMessage("Please select project");
                       } else if (selectContactValue == null) {
                         Utils.toastMessage("Please select From");
                       } else if (selectEmployeeValue == null) {
@@ -1053,8 +1064,9 @@ class _CreateTask extends State<CreateTask> {
                           taskAlert = "3";
                         }
                         final budgetedHours = int.tryParse(_budgetedHoursController.text) ?? 0;
-                        final budgetedMinutes = int.tryParse(_budgetedMinutesController.text) ?? 0;
-                        final totalMinutes = (budgetedHours * 60) + budgetedMinutes;
+                        final budgetedMinutes = int.tryParse(budgetedSelectedMinutes.toString()) ?? 0;
+                        final totalHour= (budgetedHours * 60) ;
+                        final totalMinutes = totalHour + budgetedMinutes;
                         Map data = {
                           'user_id': _userData?.data?.userId.toString(),
                           'usr_role_track_id':

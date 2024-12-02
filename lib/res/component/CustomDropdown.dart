@@ -25,7 +25,9 @@ class CustomDropdown extends StatelessWidget {
       value: value,
       decoration: InputDecoration(
         filled: true,
-        fillColor: AppColors.white,
+        fillColor: enabled ? AppColors.white : AppColors.lightGrey, // Change background
+
+       // fillColor: AppColors.white,
         contentPadding: const EdgeInsets.symmetric(
           vertical: 8.0, // Reduced vertical padding to decrease dropdown height
           horizontal: 22.0,

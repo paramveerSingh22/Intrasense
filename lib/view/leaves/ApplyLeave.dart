@@ -1,21 +1,17 @@
-import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intrasense/model/leave/LeaveListModel.dart';
 import 'package:intrasense/model/leave/LeaveTypeModel.dart';
 import 'package:intrasense/utils/Utils.dart';
+import 'package:provider/provider.dart';
 import '../../model/user_model.dart';
 import '../../res/component/CustomDropdown.dart';
 import '../../res/component/CustomElevatedButton.dart';
 import '../../res/component/CustomTextField.dart';
 import '../../utils/AppColors.dart';
 import '../../utils/Images.dart';
-import 'package:file_picker/file_picker.dart';
 import '../../view_models/leave_view_model.dart';
 import '../../view_models/user_view_model.dart';
-import 'package:provider/provider.dart';
 
 class ApplyLeave extends StatefulWidget {
   final dynamic leaveDetail;
@@ -63,7 +59,24 @@ class _ApplyLeave extends State<ApplyLeave> {
       isUpdate = true;
       selectLeavePurposeValue = widget.leaveDetail.levPurpose.toString();
       _desController.text = widget.leaveDetail.levAppliedComment.toString();
-      selectLeaveTypeValue = widget.leaveDetail.levType.toString();
+
+      final leaveType= widget.leaveDetail.levType.toString();
+
+      if(leaveType=="1"){
+        selectLeaveTypeValue= "Full Day";
+      }
+      else if (leaveType=="2"){
+        selectLeaveTypeValue= "Half Day";
+      }
+      else if (leaveType=="3"){
+        selectLeaveTypeValue= "Short leave";
+      }
+      else if (leaveType=="4"){
+        selectLeaveTypeValue= "Paternity leave";
+      }
+      else if (leaveType=="5"){
+        selectLeaveTypeValue= "Maternity leave";
+      }
 
       if(selectLeaveTypeValue=="Half Day"||selectLeaveTypeValue=="Short leave"){
         _selectDateController.text= widget.leaveDetail.levStartDate.toString();
@@ -74,12 +87,6 @@ class _ApplyLeave extends State<ApplyLeave> {
         _fromDateController.text = widget.leaveDetail.levStartDate.toString();
         _toDateController.text = widget.leaveDetail.levEndDate.toString();
       }
-
-       /* selectLeaveTypeId = leaveTypeList
-            .firstWhere(
-                (item) => item.leaveType == selectLeaveTypeValue)
-            .leaveTypeId;*/
-
     }
 
     super.initState();
@@ -128,8 +135,7 @@ class _ApplyLeave extends State<ApplyLeave> {
         'customer_id': _userData?.data?.customerTrackId,
         'token': _userData?.token,
       };
-      final leaveViewModel =
-          Provider.of<LeaveViewModel>(context, listen: false);
+      final leaveViewModel = Provider.of<LeaveViewModel>(context, listen: false);
       final response = await leaveViewModel.getLeaveTypeListApi(data, context);
       Utils.hideLoadingDialog(context);
       setState(() {
@@ -385,13 +391,22 @@ class _ApplyLeave extends State<ApplyLeave> {
                                       ),
                                       readOnly: true,
                                       onTap: () async {
-                                        DateTime? pickedDate =
-                                            await showDatePicker(
+                                        if (_fromDateController.text.isEmpty) {
+                                          Utils.toastMessage("Please select the from Date first.");
+                                          return;
+                                        }
+
+                                        DateTime? startDate = _fromDateController.text.isNotEmpty
+                                            ? DateTime.parse(_fromDateController.text) // Parse the stored Start Date
+                                            : DateTime.now();
+
+
+                                        DateTime? pickedDate = await showDatePicker(
                                           context: context,
-                                          initialDate: DateTime.now(),
-                                          firstDate: DateTime.now(),
-                                          lastDate: DateTime.now().add(
-                                              const Duration(days: 365 * 100)),
+                                          initialDate: startDate,
+                                          firstDate: startDate,
+                                          lastDate: DateTime.now()
+                                              .add(const Duration(days: 365 * 100)),
                                         );
 
                                         if (pickedDate != null) {
@@ -530,16 +545,42 @@ class _ApplyLeave extends State<ApplyLeave> {
                         if (selectLeavePurposeValue == "Medical Emergency") ...[
                           Column(
                             children: [
-                              const SizedBox(height: 15),
-                              const Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Text(
-                                    'Upload documents',
-                                    style: TextStyle(
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  const Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Text(
+                                      'Upload documents',
+                                      style: TextStyle(
                                         fontSize: 14,
                                         color: AppColors.textColor,
-                                        fontFamily: 'PoppinsMedium'),
-                                  )),
+                                        fontFamily: 'PoppinsMedium',
+                                      ),
+                                    ),
+                                  ),
+                                  // Spacer to push content to the right
+                                  const Spacer(),
+
+                                  if (widget.leaveDetail != null && widget.leaveDetail.levPurpose == "Medical Emergency") ...[
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end, // Align to the right
+                                      children: [
+                                        IconButton(
+                                          icon: SizedBox(
+                                            height: 20.0,
+                                            width: 20.0,
+                                            child: Image.asset(Images.eyeIcon),
+                                          ),
+                                          onPressed: () async {
+                                            showDocumentDialog(context);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ],
+                              ),
                               const SizedBox(height: 5),
                               Container(
                                   decoration: BoxDecoration(
@@ -740,13 +781,56 @@ class _ApplyLeave extends State<ApplyLeave> {
                     }*/
                   }
                 },
-                buttonText: isUpdate ? 'UPDATE LEAVE' : 'APPLY FOR LEAVE',
+                buttonText: isUpdate ? 'UPDATE LEAVE' : 'SUBMIT',
                 loading: leaveViewModel.loading,
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  void showDocumentDialog(BuildContext context) {
+    final url =  "https://intrasense.co.uk/app/assets/uploads/medicalcertificate/"+widget.leaveDetail.medicalCertificate;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Medical Report'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.network(
+                url,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                          (loadingProgress.expectedTotalBytes ?? 1)
+                          : null,
+                    ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) => const Text(
+                  'Failed to load document.',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

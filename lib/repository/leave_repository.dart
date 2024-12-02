@@ -37,4 +37,35 @@ class LeaveRepository{
     }
 
   }
+
+  Future <dynamic> getLeavesRequestListApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.leaveRequestListUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
+  Future <dynamic> acceptDeclineLeaveApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.acceptDeclineLeaveUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+
+  }
+  Future <dynamic> deleteLeaveApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.deleteLeaveUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+
+  }
 }

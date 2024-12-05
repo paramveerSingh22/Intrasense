@@ -3,9 +3,14 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intrasense/model/tasks/TasksListModel.dart';
+import 'package:intrasense/res/component/ButtonOrangeBorder.dart';
 import 'package:intrasense/utils/AppColors.dart';
 import '../../model/timesheet/TimeSheetModel.dart';
 import '../../model/user_model.dart';
+import '../../res/component/CustomDropdown.dart';
+import '../../res/component/CustomElevatedButton.dart';
+import '../../res/component/CustomTextField.dart';
 import '../../utils/Images.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -50,11 +55,23 @@ class _TimeSheetDetail extends State<TimeSheetDetail> {
   List<Map<String, String>> getCurrentWeekDates(DateTime weekStart) {
     return List.generate(7, (index) {
       DateTime date = weekStart.add(Duration(days: index));
+      String fullDate = DateFormat('yyyy-MM-dd').format(date);
+
+      int totalMinutes = timeSheetList
+          .where((entry) => entry.timesheetDate == fullDate) // Match the date
+          .map((entry) {
+        return int.tryParse(entry.timespent ?? '0') ?? 0;
+      })
+          .fold(0, (sum, minutes) => sum + minutes); // Sum the minutes
+
+      String workHours = "${totalMinutes ~/ 60}:${(totalMinutes % 60).toString().padLeft(2, '0')}";
+
+
       return {
         'fullDate': DateFormat('yyyy-MM-dd').format(date),
         'date': DateFormat('dd MMM').format(date),
         'day': DateFormat('EEE').format(date),
-        'workHours': '0:00',
+        'workHours': workHours,
       };
     });
   }
@@ -64,7 +81,6 @@ class _TimeSheetDetail extends State<TimeSheetDetail> {
     String startDate = DateFormat('yyyy-MM-dd').format(weekStart);
     String endDate = DateFormat('yyyy-MM-dd').format(weekEnd);
     try {
-      Utils.toastMessage("API call start");
       Utils.showLoadingDialog(context);
       Map data = {
         'user_id': userData?.data?.userId,
@@ -79,57 +95,97 @@ class _TimeSheetDetail extends State<TimeSheetDetail> {
       final response = await timesheetViewModel.getTimeSheetListApi(data, context);
 
       if(response!=null){
-        //timeSheetList= response.toList();
         if (kDebugMode) {
           print("API Response-----Date1: ${jsonEncode(response)}");
         }
+        setState(() {
+          timeSheetList= response;
+        });
 
-        /*for (var timeSheet in response) {
-          String date = timeSheet.data[0].date;
-
-          // Print or process the date as needed
-          if (kDebugMode) {
-            print("Api repo-----Date: $date");
-          }
-        }*/
       }
       Utils.hideLoadingDialog(context);
 
-
-    /*   setState(() {
-         if (response != null) {
-           weekData = response;
-           List<Map<String, String>> weekDates = getCurrentWeekDates(weekStart);
-
-           for (var dayData in weekDates) {
-             String date = dayData['fullDate']!;
-
-             // Find the matching entry in the weekData
-             var matchingEntry = weekData?.firstWhere(
-                   (entry) {
-                 // Check if the entry is a map and contains the 'date' key
-                     if (entry is Map<String, dynamic> && entry.containsKey('date')) {
-                   // Compare date strings after formatting both dates to strings
-                   return entry['date'] == date;
-                 }
-                 return false; // Return false if 'date' key is missing or entry is not a Map
-               },
-               orElse: () => null, // Return null if no match is found
-             );
-
-             // If a matching entry is found, update the dayData with 'workHours'
-             if (matchingEntry != null) {
-               String timeSpent = matchingEntry['timespent'] ?? '0:00'; // Replace with actual field name
-               dayData['workHours'] = timeSpent;
-             }
-           }
-         }
-        });*/
     } catch (error) {
       if (kDebugMode) {
         print("Api Error fetching week data: $error");
       }
     }
+  }
+
+  void timeSheetDialog(List<TimeSheetModel> specificDateSheetList, String taskCreateDate, String taskCreateDay) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              color: AppColors.secondaryOrange.withOpacity(0.1),
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Timesheet-Work Hours Total',
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.secondaryOrange,
+                        fontFamily: 'PoppinsMedium'),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.close,
+                      color: AppColors.textColor,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            Expanded(
+              child: specificDateSheetList.isEmpty
+                  ? const Center(
+                child: Text(
+                  'No data found',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppColors.textColor,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: 'PoppinsMedium',
+                  ),
+                ),
+              )
+                  : ListView.separated(
+                itemCount: specificDateSheetList.length,
+                separatorBuilder:
+                    (BuildContext context, int index) {
+                      return const Divider(
+                        color: AppColors.dividerColor,
+                        height: 1,
+                        thickness: 1,
+                      );
+                },
+                itemBuilder: (context, index) {
+                  final item = specificDateSheetList[index];
+                  currentWeekStart = currentWeekStart.add(const Duration(days: 0));
+
+                  return DialogTimeSheetTile(taskDetail:widget.taskDetail, item:item,taskCreateDate:taskCreateDate,
+                      taskCreateDay:taskCreateDay,onTimeSheetUpdated: () {
+                       initState();
+                  });
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -338,6 +394,8 @@ class _TimeSheetDetail extends State<TimeSheetDetail> {
                       itemCount: weekDates.length,
                       itemBuilder: (context, index) {
                         final dayData = weekDates[index];
+
+
                         return Column(
                           children: [
                             Padding(
@@ -345,7 +403,6 @@ class _TimeSheetDetail extends State<TimeSheetDetail> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  // Date & Day Column
                                   Expanded(
                                     flex: 3,
                                     child: Column(
@@ -404,7 +461,7 @@ class _TimeSheetDetail extends State<TimeSheetDetail> {
                                               ),
                                             );
                                             if (result == true) {
-                                              // onTaskUpdated();
+
                                             }
                                           }
                                               : null,
@@ -412,29 +469,7 @@ class _TimeSheetDetail extends State<TimeSheetDetail> {
                                       },
                                     ),
                                   ),
-                                 /* Expanded(
-                                    flex: 3,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                        color: Colors.white,
-                                        border: Border.all(
-                                          color: AppColors.secondaryOrange,
-                                          width: 1,
-                                        ),
-                                      ),
-                                      child: Text(
-                                        "${dayData['workHours']}",
-                                        style: const TextStyle(
-                                          color: AppColors.secondaryOrange,
-                                          fontSize: 14.0,
-                                          fontFamily: 'PoppinsRegular',
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),*/
+
                                   Expanded(
                                     flex: 3,
                                     child: Center(
@@ -450,14 +485,29 @@ class _TimeSheetDetail extends State<TimeSheetDetail> {
                                               width: 1,
                                             ),
                                           ),
-                                          child: Text(
-                                            "${dayData['workHours']}",
-                                            style: const TextStyle(
-                                              color: AppColors.secondaryOrange,
-                                              fontSize: 14.0,
-                                              fontFamily: 'PoppinsRegular',
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              final createDate = "${dayData['fullDate']}";
+                                              List<TimeSheetModel> specificDateSheetList = [];
+                                              specificDateSheetList = timeSheetList.where((timeSheet) {
+                                                return timeSheet.timesheetDate == createDate;
+                                              }).toList();
+                                              final taskCreateDate = "${dayData['fullDate']}";
+                                              final taskCreateDay = "${dayData['day']}";
+
+                                              if("${dayData['workHours']}"!="0:00"){
+                                                timeSheetDialog(specificDateSheetList,taskCreateDate,taskCreateDay);
+                                              }
+                                            },
+                                            child: Text(
+                                              "${dayData['workHours']}",
+                                              style: const TextStyle(
+                                                color: AppColors.secondaryOrange,
+                                                fontSize: 14.0,
+                                                fontFamily: 'PoppinsRegular',
+                                              ),
+                                              textAlign: TextAlign.center,
                                             ),
-                                            textAlign: TextAlign.center,
                                           ),
                                         ),
                                       ),
@@ -483,6 +533,125 @@ class _TimeSheetDetail extends State<TimeSheetDetail> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class DialogTimeSheetTile extends StatelessWidget {
+  final TaskListModel taskDetail ;
+  final TimeSheetModel item ;
+  final String taskCreateDate ;
+  final String taskCreateDay ;
+  final VoidCallback onTimeSheetUpdated;
+
+  const DialogTimeSheetTile({
+    super.key,
+    required this.taskDetail,
+    required this.item,
+    required this.taskCreateDate,
+    required this.taskCreateDay,
+    required this.onTimeSheetUpdated,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2), // Container padding added
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+            title: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 50,
+                  height: 50,
+                  padding: const EdgeInsets.all(5.0),
+                  decoration: const BoxDecoration(
+                    color: AppColors.lightBlue,
+                    shape: BoxShape.circle, // Circular shape
+                  ),
+                  child: const Center( // Center widget to align text
+                    child: Text(
+                      "8:00", // Static time display
+                      style: TextStyle(
+                        color: AppColors.skyBlueTextColor, // Text color
+                        fontSize: 12.0, // Text size
+                        fontFamily: 'PoppinsMedium',
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 4),
+                      Text(
+                        "[${item.projectShortname} - ${item.taskName}]",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.skyBlueTextColor,
+                          fontFamily: 'PoppinsRegular',
+                        ),
+                      ),
+                      const SizedBox(height: 4), // Add spacing between rows
+                      Text(
+                        item.activityName,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textColor,
+                          fontFamily: 'PoppinsRegular',
+                        ),
+                      ),
+                      const SizedBox(height: 4), // Add spacing between rows
+                      Text(
+                        item.workDescription,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textColor,
+                          fontFamily: 'PoppinsRegular',
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      SizedBox(
+                        width: 100,
+                        child: ButtonOrangeBorder(
+                          onPressed: () async {
+                            Navigator.pop(context);
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    CreateTimeSheet(
+                                        taskDetail: taskDetail,
+                                        taskCreateDate: taskCreateDate,
+                                        createTaskDayName: taskCreateDay,
+                                        timesheetDetail: item),
+                              ),
+                            );
+                            if (result == true) {
+                              onTimeSheetUpdated();
+                            }
+                          },
+                          buttonText: 'Edit',
+                        ),
+                      )
+
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            onTap: () async {
+              // Add your onTap logic here
+            },
+          ),
+        ),
+      ],
     );
   }
 }

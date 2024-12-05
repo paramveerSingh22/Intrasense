@@ -24,6 +24,11 @@ class UnAuthorisedException extends AppException {
 
 }
 
+class SessionExpiredException extends AppException {
+  SessionExpiredException([String? message]): super(message,'');
+
+}
+
 class InvalidInputException extends AppException {
   InvalidInputException([String? message]): super(message,'Invalid input request');
 

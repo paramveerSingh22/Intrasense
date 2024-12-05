@@ -72,44 +72,23 @@ class TimeSheetViewModel extends ChangeNotifier{
     }
     setLoading(true);
 
-    try {
-      var response = await _myRepo.getTimeSheetListApi(data, context);
-
-      if (response['data'] != null && response['data'] is List) {
-        List<TimeSheetModel> list = (response['data'] as List)
-            .map((group) => TimeSheetModel.fromJson(group as Map<String, dynamic>))
-            .toList();
-        setLoading(false);
-
-        if (kDebugMode) {
-          print("Api Response--in viewmodel----" + response.toString());
-          print("Api Response--in viewmodel in list----" + jsonEncode(list));
-        }
-        return list;
+    try{
+      var response = await _myRepo.getTimeSheetListApi(data,context);
+      List<TimeSheetModel> list = (response['data'] as List)
+          .map((group) => TimeSheetModel.fromJson(group))
+          .toList();
+      setLoading(false);
+      if (kDebugMode) {
+        print("Api Response---" + response.toString());
       }
-
-     /* if (response['data'] != null && response['data'] is List) {
-        List<TimeSheetModel> list = (response['data'] as List)
-            .map((group) => TimeSheetModel.fromJson(group))
-            .toList();
-        setLoading(false);
-
-        if (kDebugMode) {
-          print("Api Response--in viewmodel----" + response.toString());
-          print("Api Response--in viewmodel in list----" + jsonEncode(list));
-        }
-        return list;
-      }*/ else {
-        setLoading(false);
-        Utils.toastMessage("Invalid response format");
-        return null;
-      }
-    } catch (error) {
+      return list;
+    }
+    catch (error) {
       setLoading(false);
       if (kDebugMode) {
         print("Api Error--" + error.toString());
       }
-      Utils.toastMessage(error.toString());
+      //Utils.toastMessage(error.toString());
       return null;
     }
   }

@@ -1,31 +1,4 @@
 class TimeSheetModel {
-  final Map<String, List<Timesheetlistmodel>> data;
-
-  TimeSheetModel({required this.data});
-
-  factory TimeSheetModel.fromJson(Map<String, dynamic> json) {
-    Map<String, List<Timesheetlistmodel>> parsedData = {};
-    if (json['data'] != null && json['data'] is Map) {
-      (json['data'] as Map).forEach((key, value) {
-        parsedData[key] = List<Timesheetlistmodel>.from(
-          (value as List).map((item) => Timesheetlistmodel.fromJson(item)),
-        );
-      });
-    }
-    return TimeSheetModel(data: parsedData);
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'data': data.map((key, value) => MapEntry(
-        key,
-        value.map((entry) => entry.toJson()).toList(),
-      )),
-    };
-  }
-}
-
-class Timesheetlistmodel {
   final String tmid;
   final String projectTrackId;
   final String? moduleTrackId;
@@ -46,49 +19,50 @@ class Timesheetlistmodel {
   final String taskName;
   final String activityName;
 
-  Timesheetlistmodel({
-    required this.tmid,
-    required this.projectTrackId,
-    this.moduleTrackId,
-    required this.taskTrackId,
-    required this.userTrackId,
-    required this.activityTrackId,
-    required this.timespent,
-    required this.worktype,
-    required this.workDescription,
-    required this.timesheetDate,
-    required this.timeRange,
-    required this.timeInsertDatetime,
-    this.timeUpdateDatetime,
-    required this.tmArchiveStatus,
-    required this.timesheetFlag,
-    required this.projectName,
-    required this.projectShortname,
-    required this.taskName,
-    required this.activityName,
+  TimeSheetModel({
+  required this.tmid,
+  required this.projectTrackId,
+  this.moduleTrackId,
+  required this.taskTrackId,
+  required this.userTrackId,
+  required this.activityTrackId,
+  required this.timespent,
+  required this.worktype,
+  required this.workDescription,
+  required this.timesheetDate,
+  required this.timeRange,
+  required this.timeInsertDatetime,
+  this.timeUpdateDatetime,
+  required this.tmArchiveStatus,
+  required this.timesheetFlag,
+  required this.projectName,
+  required this.projectShortname,
+  required this.taskName,
+  required this.activityName,
   });
 
-  factory Timesheetlistmodel.fromJson(Map<String, dynamic> json) {
-    return Timesheetlistmodel(
-      tmid: json['tmid'] ?? '',
-      projectTrackId: json['project_track_id'] ?? '',
+
+  factory TimeSheetModel.fromJson(Map<String, dynamic> json) {
+    return TimeSheetModel(
+      tmid: json['tmid'],
+      projectTrackId: json['project_track_id'],
       moduleTrackId: json['module_track_id'],
-      taskTrackId: json['task_track_id'] ?? '',
-      userTrackId: json['user_track_id'] ?? '',
-      activityTrackId: json['activity_track_id'] ?? '',
-      timespent: json['timespent'] ?? '',
-      worktype: json['worktype'] ?? '',
-      workDescription: json['work_description'] ?? '',
-      timesheetDate: json['timesheet_date'] ?? '',
-      timeRange: json['time_range'] ?? '',
-      timeInsertDatetime: json['time_insert_datetime'] ?? '',
+      taskTrackId: json['task_track_id'],
+      userTrackId: json['user_track_id'],
+      activityTrackId: json['activity_track_id'],
+      timespent: json['timespent'],
+      worktype: json['worktype'],
+      workDescription: json['work_description'],
+      timesheetDate: json['timesheet_date'],
+      timeRange: json['time_range'],
+      timeInsertDatetime: json['time_insert_datetime'],
       timeUpdateDatetime: json['time_update_datetime'],
-      tmArchiveStatus: json['tm_archive_status'] ?? '',
-      timesheetFlag: json['timesheet_flag'] ?? '',
-      projectName: json['project_name'] ?? '',
-      projectShortname: json['project_shortname'] ?? '',
-      taskName: json['task_name'] ?? '',
-      activityName: json['activity_name'] ?? '',
+      tmArchiveStatus: json['tm_archive_status'],
+      timesheetFlag: json['timesheet_flag'],
+      projectName: json['project_name'],
+      projectShortname: json['project_shortname'],
+      taskName: json['task_name'],
+      activityName: json['activity_name'],
     );
   }
 

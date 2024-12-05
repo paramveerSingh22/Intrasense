@@ -389,21 +389,9 @@ void showWeekPopup(BuildContext context, TaskListModel item, UserModel userDetai
        Utils.toastMessage("api---Before API call");
         final timesheetViewModel = Provider.of<TimeSheetViewModel>(context, listen: true);
         final response = await timesheetViewModel.getTimeSheetListApi(data, context);
-        Utils.toastMessage("api---after API call");
-        Utils.hideLoadingDialog(context);
-       /* setState(() {
-          if (response != null) {
-            timeSheetList = response.toList();
-          }
-        });*/
 
-       /* if (response != null) {
-          Future.delayed(Duration.zero, () {
-            setState(() {
-              timeSheetList = response.toList();
-            });
-          });
-        }*/
+        Utils.hideLoadingDialog(context);
+
     } catch (error) {
       if (kDebugMode) {
         print("Api Error fetching week data: $error");

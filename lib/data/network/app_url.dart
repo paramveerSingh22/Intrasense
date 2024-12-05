@@ -54,6 +54,7 @@ class AppUrl{
   ////for time sheet
   static var timeSheetActivityUrl= baseUrl + 'timesheet/timeSheetActivityList';
   static var addTimeSheetUrl= baseUrl + 'timesheet/createTimesheet';
-  static var timeSheetListUrl= baseUrl + 'timesheet/timesheet';
+  //static var timeSheetListUrl= baseUrl + 'timesheet/timesheet';
+  static var timeSheetListUrl= baseUrl + 'timesheet/timesheetmob';
 
 }

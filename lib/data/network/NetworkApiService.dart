@@ -17,8 +17,25 @@ class NetworkApiService extends BaseApiService {
 
   var token;
 
+  /*Future<void> ensureValidToken(BuildContext context) async {
+    if (token == null || token.isEmpty) {
+      await checkAuthentication(context);
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+  }
+
+  Future<void> checkAuthentication(BuildContext context) async {
+    UserModel user = await getUserData();
+    token = user.token ?? '';
+    if(token==null || token==""){
+      handleUnauthorized(context);
+    }
+  }*/
+
+
   @override
   Future getGetApiResponse(String url, BuildContext context) async {
+   // await ensureValidToken(context);
     dynamic responseJson;
     try {
       final response =
@@ -43,6 +60,7 @@ class NetworkApiService extends BaseApiService {
 
   @override
   Future getPostApiResponse(String url, dynamic data, BuildContext context) async {
+   // await ensureValidToken(context);
     dynamic responseJson;
     try {
         http.Response response = await http.post(
@@ -61,33 +79,12 @@ class NetworkApiService extends BaseApiService {
     } on SocketException {
       throw FetchDataException('No internet connection');
     }
-
     return responseJson;
-
-
-
-
-    /*try {
-
-      http.Response response = await http
-          .post(Uri.parse(url), body: data, headers: {
-        'Authorization': 'Bearer $token',
-      }).timeout(Duration(seconds: 10));
-      responseJson = returnResponse(response, context);
-      if (kDebugMode) {
-        print('Api Request URL: ${response.request?.url}');
-        print('Api Status Code: ${response.statusCode}');
-        print('Api Response Body: ${response.body}');
-      }
-
-    } on SocketException {
-      throw FetchDataException('No internet connection');
-    }
-    return responseJson;*/
   }
 
   @override
   Future getPostWithFileApiResponse(String url, dynamic data, BuildContext context, String? filePath) async {
+   // await ensureValidToken(context);
     dynamic responseJson;
 
     try {
@@ -95,15 +92,12 @@ class NetworkApiService extends BaseApiService {
         var request = http.MultipartRequest('POST', Uri.parse(url));
         request.headers['Authorization'] = 'Bearer $token';
 
-        // Add form fields from data map
         data.forEach((key, value) {
           request.fields[key] = value.toString();
         });
 
-        // Add file to the request
         request.files.add(await http.MultipartFile.fromPath('file', filePath));
 
-        // Send the request and capture the response
         var streamedResponse = await request.send();
         var response = await http.Response.fromStream(streamedResponse);
 
@@ -129,27 +123,9 @@ class NetworkApiService extends BaseApiService {
     }
 
     return responseJson;
-
-    /*try {
-
-      http.Response response = await http
-          .post(Uri.parse(url), body: data, headers: {
-        'Authorization': 'Bearer $token',
-      }).timeout(Duration(seconds: 10));
-      responseJson = returnResponse(response, context);
-      if (kDebugMode) {
-        print('Api Request URL: ${response.request?.url}');
-        print('Api Status Code: ${response.statusCode}');
-        print('Api Response Body: ${response.body}');
-      }
-
-    } on SocketException {
-      throw FetchDataException('No internet connection');
-    }
-    return responseJson;*/
   }
 
-  dynamic returnResponse(http.Response response, BuildContext context) {
+ /* dynamic returnResponse(http.Response response, BuildContext context) {
     switch (response.statusCode) {
 
       case 201:
@@ -164,12 +140,7 @@ class NetworkApiService extends BaseApiService {
         throw BadRequestException(response.body.toString());
 
       case 401:
-      Utils.toastMessage("Session expired. Please log in again.");
-      UserViewModel().remove();
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-            builder: (context) => LoginScreen()),(Route<dynamic> route) => false,);
+        handleUnauthorized(context);
         return null;
 
       case 500:
@@ -182,22 +153,65 @@ class NetworkApiService extends BaseApiService {
       default:
        // throw FetchDataException('Error accured while communicating with server with status code ${response.statusCode}');
     }
+  }*/
+
+
+  dynamic returnResponse(http.Response response, BuildContext context) {
+    if (response.body.isEmpty) {
+      throw FetchDataException('Empty response body from server');
+    }
+
+    try {
+      switch (response.statusCode) {
+        case 201:
+          dynamic responseJson = jsonDecode(response.body);
+          return responseJson;
+
+        case 200:
+          dynamic responseJson = jsonDecode(response.body);
+          return responseJson;
+
+        case 400:
+          throw BadRequestException(response.body.toString());
+
+        case 401:
+          handleUnauthorized(context);
+          throw SessionExpiredException('Session expired. Please log in again.');
+
+        case 500:
+          throw FetchDataException(
+              'Internal server error ${response.statusCode}');
+
+        case 404:
+          throw UnAuthorisedException('Resource not found: ${response.body}');
+
+        default:
+          throw FetchDataException(
+              'Unexpected server response with status code ${response.statusCode}');
+      }
+    } catch (e) {
+      if (e is FormatException) {
+        throw FetchDataException('Invalid JSON format: ${response.body}');
+      } else {
+        rethrow;
+      }
+    }
   }
 
-
-  Future<UserModel> getUserData() => UserViewModel().getUser();
-  void checkAuthentication(BuildContext context) async {
-    getUserData().then((value) {
-      if (value.token == null || value.token == '') {
-        token = '';
-      }
-      else {
-        token = value.token;
-      }
-    }).onError((error, StackTrace) {
-      if (kDebugMode) {
-        print(error);
+  void handleUnauthorized(BuildContext context) {
+    UserViewModel().remove();
+    Future.delayed(Duration(milliseconds: 200), () {
+      if (context != null) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+              (route) => false,
+        );
       }
     });
+
   }
+
+  Future<UserModel> getUserData() => UserViewModel().getUser();
+
 }

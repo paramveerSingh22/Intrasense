@@ -19,8 +19,10 @@ class CreateTimeSheet extends StatefulWidget {
   final dynamic taskDetail;
   final dynamic taskCreateDate;
   final dynamic createTaskDayName;
+  final dynamic timesheetDetail;
 
-  const CreateTimeSheet({Key? key, this.taskDetail, this.taskCreateDate, this.createTaskDayName}) : super(key: key);
+
+  const CreateTimeSheet({Key? key, this.taskDetail, this.taskCreateDate, this.createTaskDayName,this.timesheetDetail}) : super(key: key);
 
   @override
   _CreateTimeSheet createState() => _CreateTimeSheet();
@@ -41,6 +43,8 @@ class _CreateTimeSheet extends State<CreateTimeSheet> {
   List<String> timeSheetActivityNameList = [];
   String? selectedHours;
   String? selectedMinutes;
+  bool isUpdate = false;
+
   final TextEditingController _fromTimeController = TextEditingController();
   final TextEditingController _toTimeController = TextEditingController();
   final TextEditingController _desController = TextEditingController();
@@ -48,6 +52,28 @@ class _CreateTimeSheet extends State<CreateTimeSheet> {
   @override
   void initState() {
     getUserDetails(context);
+    if(widget.timesheetDetail!=null){
+      isUpdate= true;
+      _desController.text=  widget.timesheetDetail.workDescription;
+     final timeRange=  widget.timesheetDetail.timeRange.split("-");
+      _fromTimeController.text= timeRange[0];
+      _toTimeController.text= timeRange[1];
+
+      selectBillingTypeValue= widget.timesheetDetail.worktype;
+      selectActivityTrackId= widget.timesheetDetail.activityTrackId;
+      selectActivityValue= widget.timesheetDetail.activityName;
+
+      final int timeSpentMinutes = int.tryParse( widget.timesheetDetail.timespent.toString()) ?? 0;
+      final int hours = timeSpentMinutes ~/ 60;
+      final int minutes = timeSpentMinutes % 60;
+
+      selectedHours=  hours.toString();
+      selectedMinutes= minutes.toString();
+
+      if (kDebugMode) {
+        print("timespent------"+hours.toString()+"h---"+minutes.toString());
+      }
+    }
     super.initState();
   }
 
@@ -84,8 +110,7 @@ class _CreateTimeSheet extends State<CreateTimeSheet> {
       setState(() {
         if (response != null) {
           timeSheetActivityList = response.toList();
-          timeSheetActivityNameList =
-              timeSheetActivityList.map((item) => item.activityName).toList();
+          timeSheetActivityNameList = timeSheetActivityList.map((item) => item.activityName).toList();
         }
       });
     } catch (error) {
@@ -140,9 +165,9 @@ class _CreateTimeSheet extends State<CreateTimeSheet> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  "Create Timesheet",
-                  style: TextStyle(
+                Text(
+                  isUpdate ? "Update Timesheet" : "Create Timesheet",
+                  style: const TextStyle(
                     fontSize: 16,
                     color: Colors.white,
                     fontFamily: 'PoppinsMedium',
@@ -165,13 +190,13 @@ class _CreateTimeSheet extends State<CreateTimeSheet> {
             child: SingleChildScrollView(
                 child: Column(
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Align(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        'Create Timesheet',
-                        style: TextStyle(
+                        isUpdate ? "Update Timesheet" : "Create Timesheet",
+                        style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.secondaryOrange,
                             fontFamily: 'PoppinsMedium'),
@@ -351,16 +376,65 @@ class _CreateTimeSheet extends State<CreateTimeSheet> {
                           child: CustomDropdown(
                             value: selectedMinutes,
                             items: [
+                              '1',
+                              '2',
+                              '3',
+                              '4',
                               '5',
+                              '6',
+                              '7',
+                              '8',
+                              '9',
                               '10',
+                              '11',
+                              '12',
+                              '13',
+                              '14',
                               '15',
+                              '16',
+                              '17',
+                              '18',
+                              '19',
                               '20',
+                              '21',
+                              '22',
+                              '23',
+                              '24',
                               '25',
+                              '26',
+                              '27',
+                              '28',
+                              '29',
                               '30',
+                              '31',
+                              '32',
+                              '33',
+                              '34',
                               '35',
-                              '40',
+                              '36',
+                              '37',
+                              '38',
+                              '39',
+                              '41',
+                              '42',
+                              '43',
+                              '44',
                               '45',
-                              '50'
+                              '46',
+                              '47',
+                              '48',
+                              '49',
+                              '50',
+                              '51',
+                              '52',
+                              '53',
+                              '54',
+                              '55',
+                              '56',
+                              '57',
+                              '58',
+                              '59',
+                              '60',
                             ],
                             onChanged: (String? newValue) {
                               setState(() {
@@ -567,11 +641,15 @@ class _CreateTimeSheet extends State<CreateTimeSheet> {
                             'time_range':
                                 "${_fromTimeController.text}-${_toTimeController.text}",
                             'token': _userData?.token.toString(),
+
+                            if(widget.timesheetDetail!=true)...{
+                              'timesheet_id': widget.timesheetDetail.tmid.toString(),
+                            }
                           };
                           timeSheetViewModel.addTimeSheetApi(data, context);
                         }
                       },
-                      buttonText: 'SAVE TIMESHEET',
+                      buttonText:  isUpdate ? "UPDATE TIMESHEET" : "SAVE TIMESHEET",
                       loading: timeSheetViewModel.loading),
                 ),
               ],

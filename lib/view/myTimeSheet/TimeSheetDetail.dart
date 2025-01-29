@@ -394,8 +394,6 @@ class _TimeSheetDetail extends State<TimeSheetDetail> {
                       itemCount: weekDates.length,
                       itemBuilder: (context, index) {
                         final dayData = weekDates[index];
-
-
                         return Column(
                           children: [
                             Padding(
@@ -553,6 +551,19 @@ class DialogTimeSheetTile extends StatelessWidget {
     required this.onTimeSheetUpdated,
   });
 
+  String convertMinutesToHours(String minutes) {
+    // Assuming item.timespent is a string that contains time in minutes
+    int totalMinutes = int.parse(minutes);
+    int hours = totalMinutes ~/ 60; // Integer division to get hours
+    int remainingMinutes = totalMinutes % 60; // Get the remainder minutes
+
+    // Format minutes to always have two digits
+    String formattedMinutes = remainingMinutes.toString().padLeft(2, '0');
+
+    // Return the formatted string in "hours:minutes" format
+    return "$hours:$formattedMinutes";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -572,10 +583,10 @@ class DialogTimeSheetTile extends StatelessWidget {
                     color: AppColors.lightBlue,
                     shape: BoxShape.circle, // Circular shape
                   ),
-                  child: const Center( // Center widget to align text
+                  child:  Center( // Center widget to align text
                     child: Text(
-                      "8:00", // Static time display
-                      style: TextStyle(
+                      convertMinutesToHours(item.timespent), // Static time display
+                      style: const TextStyle(
                         color: AppColors.skyBlueTextColor, // Text color
                         fontSize: 12.0, // Text size
                         fontFamily: 'PoppinsMedium',

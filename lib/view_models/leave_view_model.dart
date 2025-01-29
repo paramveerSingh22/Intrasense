@@ -20,6 +20,9 @@ class LeaveViewModel extends ChangeNotifier{
 
   Future<List<LeaveListModel>?> getLeaveListApi(dynamic data,BuildContext context) async {
     setLoading(true);
+    if (kDebugMode) {
+      print("Api params---$data");
+    }
     try{
       var response = await _myRepo.getLeavesListApi(data,context);
       List<LeaveListModel> list = (response['data'] as List)
@@ -44,6 +47,9 @@ class LeaveViewModel extends ChangeNotifier{
 
   Future<List<LeaveListModel>?> getLeaveRequestListApi(dynamic data,BuildContext context) async {
     setLoading(true);
+    if (kDebugMode) {
+      print("Api params---$data");
+    }
     try{
       var response = await _myRepo.getLeavesRequestListApi(data,context);
       List<LeaveListModel> list = (response['data'] as List)
@@ -106,8 +112,9 @@ class LeaveViewModel extends ChangeNotifier{
       setLoading(false);
       if (kDebugMode) {
         print(error.toString());
+        print("Api error---$error");
       }
-      Utils.toastMessage(error.toString());
+      Utils.errorMessage(error);
     });
   }
 
@@ -122,9 +129,12 @@ class LeaveViewModel extends ChangeNotifier{
         print("Api Response---$onValue");
       }
       Map<String, dynamic> response = onValue as Map<String, dynamic>;
-      Utils.toastMessage(response['message']);
       if (response['status'] == true) {
+        Utils.toastMessage("Leave status is updated.");
         Navigator.pop(context, true);
+      }
+      else{
+        Utils.toastMessage(response['message']);
       }
     }).onError((error, stackTrace) {
       setLoading(false);
@@ -158,4 +168,6 @@ class LeaveViewModel extends ChangeNotifier{
       }
     });
   }
+
+
 }

@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
     MyProjectListScreen(),
     MyDocumentList(),
     MyMeetingslist(),
-    MyExpenseList(),
+    MyExpensesList(),
     MyLeavesList("my_leave"),
     MyLeavesList("leave_request"),
     AppraisalList(),
@@ -440,7 +440,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontFamily: 'PoppinsRegular',
                               fontSize: 15)),
                       onTap: () {
-                        _onItemTapped(10);
+                       // _onItemTapped(10);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MyExpensesList(),
+                          ),
+                        );
                       },
                     ),
                     const DividerColor(),
@@ -479,12 +485,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                             fontFamily: 'PoppinsRegular',
                                             fontSize: 15)),
                                     onTap: () {
+                                      Navigator.pop(context);
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => MyLeavesList("my_leave"),
                                         ),
                                       );
+
                                       //_onItemTapped(11);
                                     },
                                   )),
@@ -504,6 +512,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               fontFamily: 'PoppinsRegular',
                                               fontSize: 15)),
                                       onTap: () {
+                                        Navigator.pop(context);
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -626,7 +635,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontFamily: 'PoppinsRegular',
                               fontSize: 15)),
                       onTap: () {
-                        _onItemTapped(13);
+                        //_onItemTapped(13);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SupportList(),
+                          ),
+                        );
                       },
                     ),
                     const DividerColor(),

@@ -224,8 +224,10 @@ class _MyTaskList extends State<MyTaskList> {
                             },
                             itemBuilder: (context, index) {
                               final item = tasksList[index];
+                              final userData= _userData;
                               return CustomMyTaskListTile(
                                 item: item,
+                                userData: userData,
                                 onDelete: () {
                                   deleteTaskApi(
                                       context, item.taskId.toString());
@@ -234,6 +236,7 @@ class _MyTaskList extends State<MyTaskList> {
                                   getTasksList(
                                       selectProjectId.toString());
                                 },
+
                               );
                             },
                           ),
@@ -309,12 +312,15 @@ class _MyTaskList extends State<MyTaskList> {
 
 class CustomMyTaskListTile extends StatelessWidget {
   final TaskListModel item;
+  final UserModel? userData;
   final Function onDelete;
   final VoidCallback onTaskUpdated;
+
 
   const CustomMyTaskListTile({
     super.key,
     required this.item,
+    required this.userData,
     required this.onDelete,
     required this.onTaskUpdated,
   });
@@ -482,10 +488,11 @@ class CustomMyTaskListTile extends StatelessWidget {
                                 details.globalPosition.dy + 20,
                               ),
                               items: [
+                                if (item.taskDetail![0].createdBy==userData?.data?.userId)...{
                                 const PopupMenuItem(
                                   value: 1,
                                   child: Text('Edit'),
-                                ),
+                                )},
                                 const PopupMenuItem(
                                   value: 2,
                                   child: Text('Delete'),
@@ -527,13 +534,15 @@ class CustomMyTaskListTile extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.only(left: 20,right: 40),
                   child: Text(
                     item.taskDetail![0].taskTitle.toString(),
                     style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textColor,
                         fontFamily: 'PoppinsRegular'),
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: false,
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -664,6 +673,66 @@ class CustomMyTaskListTile extends StatelessWidget {
                       Container(
                           width: 100,
                           child: const Text(
+                            'Assigned By',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textColor,
+                              fontFamily: 'PoppinsRegular',
+                              fontWeight: FontWeight.w400,
+                            ),
+                          )),
+                      Text(
+                        "${item.taskDetail![0].taskSentToFirstName} ${item.taskDetail![0].taskSentToLastName}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textColor,
+                          fontFamily: 'PoppinsMedium',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const DividerColor(),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
+                      Container(
+                          width: 100,
+                          child: const Text(
+                            'Description',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textColor,
+                              fontFamily: 'PoppinsRegular',
+                              fontWeight: FontWeight.w400,
+                            ),
+                          )),
+                      Text(
+                        item.taskDetail![0].taskComments.toString(),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textColor,
+                          fontFamily: 'PoppinsMedium',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const DividerColor(),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
+                      Container(
+                          width: 100,
+                          child: const Text(
                             'Status',
                             style: TextStyle(
                               fontSize: 14,
@@ -677,7 +746,7 @@ class CustomMyTaskListTile extends StatelessWidget {
                         style:  TextStyle(
                           fontSize: 14,
                           color: getStatusText(item.taskDetail![0].taskStatus!) == 'COMPLETED'
-                              ? AppColors.skyBlueTextColor
+                              ? AppColors.statusCompletedColor
                               : AppColors.secondaryOrange,
                           fontFamily: 'PoppinsMedium',
                           fontWeight: FontWeight.w500,

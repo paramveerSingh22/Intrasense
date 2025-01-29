@@ -441,6 +441,7 @@ class _CreateTask extends State<CreateTask> {
                                 .firstWhere((item) => item.cmpName == newValue)
                                 .companyId;
                             selectProjectValue = null;
+                            selectContactValue=null;
                             getProjectsList(selectClientId);
                             getContactList(selectClientId);
                           });
@@ -630,6 +631,7 @@ class _CreateTask extends State<CreateTask> {
                               child: CustomDropdown(
                                 value: commSelectedMinutes,
                                 items: [
+                                  '00',
                                   '5',
                                   '10',
                                   '15',
@@ -703,8 +705,7 @@ class _CreateTask extends State<CreateTask> {
                                   );
 
                                   if (pickedDate != null) {
-                                    String formattedDate =
-                                        "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+                                    String formattedDate = "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
                                     setState(() {
                                       _startDateController.text = formattedDate;
                                     });
@@ -723,7 +724,7 @@ class _CreateTask extends State<CreateTask> {
                                     width: 24,
                                   ),
                                   readOnly: true,
-                                  onTap: () async {
+                                  onTap: () async /*{
                                     if (_startDateController.text.isEmpty) {
                                      Utils.toastMessage("Please select the Start Date first.");
                                       return;
@@ -749,7 +750,33 @@ class _CreateTask extends State<CreateTask> {
                                         _dueDateController.text = formattedDate;
                                       });
                                     }
-                                  }))
+                                  }*/
+
+                                  {
+                                    if (_startDateController.text.isEmpty) {
+                                      Utils.toastMessage("Please select the Start Date first.");
+                                      return;
+                                    }
+
+                                    DateTime? startDate = DateTime.tryParse(_startDateController.text) ??
+                                        DateTime.now();
+
+                                    DateTime? pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: startDate,
+                                      firstDate: startDate,
+                                      lastDate: DateTime.now().add(const Duration(days: 365 * 100)),
+                                    );
+
+                                    if (pickedDate != null) {
+                                      String formattedDate =
+                                          "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+                                      setState(() {
+                                        _dueDateController.text = formattedDate;
+                                      });
+                                    }
+                                  }
+                              ))
                         ],
                       ),
                       const SizedBox(height: 15),
@@ -776,6 +803,7 @@ class _CreateTask extends State<CreateTask> {
                               child: CustomDropdown(
                                 value: budgetedSelectedMinutes,
                                 items: [
+                                  '00',
                                   '5',
                                   '10',
                                   '15',
@@ -822,6 +850,7 @@ class _CreateTask extends State<CreateTask> {
                         },
                         hint: 'Select an option',
                       ),
+                      if(_userData?.data?.roleTrackId!="1")...{
                       const SizedBox(height: 15),
                       const Align(
                           alignment: Alignment.topLeft,
@@ -878,7 +907,9 @@ class _CreateTask extends State<CreateTask> {
                                     fontFamily: 'PoppinsMedium')),
                           ],
                         ),
-                      ),
+                      )},
+
+
                       if (_isIndividualSelected)...[
                         const SizedBox(height: 10),
                         MultiSelectDropdown(

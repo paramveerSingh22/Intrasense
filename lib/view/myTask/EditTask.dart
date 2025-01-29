@@ -49,7 +49,8 @@ class _EditTask extends State<EditTask> {
   final TextEditingController _selectTeamNamesController = TextEditingController();
 
   final List<String> minutesOptions = [
-    '5',
+    '00',
+    '05',
     '10',
     '15',
     '20',
@@ -123,7 +124,7 @@ class _EditTask extends State<EditTask> {
     if (minutesOptions.contains(timeParts[1])) {
       commSelectedMinutes = timeParts[1];
     } else {
-      commSelectedMinutes = "5";
+      commSelectedMinutes = "05";
     }
 
     var totalMinutes = int.tryParse(widget.taskDetail.taskDetail![0].taskHours ?? '0') ?? 0;
@@ -135,7 +136,7 @@ class _EditTask extends State<EditTask> {
     if (minutesOptions.contains(minutes.toString())) {
       budgetedSelectedMinutes=minutes.toString();
     } else {
-      budgetedSelectedMinutes = "5";
+      budgetedSelectedMinutes = "05";
     }
    // _budgetedHoursController.text=widget.taskDetail.taskDetail![0].taskHours.toString();
 
@@ -929,7 +930,7 @@ class _EditTask extends State<EditTask> {
                                   flex: 10,
                                   child: CustomDropdown(
                                     value: budgetedSelectedMinutes,
-                                    items:minutesOptions,
+                                    items:minutesOptions??[],
                                     onChanged: (String? newValue) {
                                       setState(() {
                                         budgetedSelectedMinutes = newValue;

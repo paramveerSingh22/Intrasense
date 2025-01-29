@@ -252,7 +252,7 @@ class _CreateTimeSheet extends State<CreateTimeSheet> {
                        child: Align(
                            alignment: Alignment.topLeft,
                            child: Text(
-                             widget.createTaskDayName,
+                             widget.createTaskDayName.toUpperCase(),
                              style: const TextStyle(
                                fontSize: 16,
                                color: AppColors.secondaryOrange,
@@ -376,15 +376,16 @@ class _CreateTimeSheet extends State<CreateTimeSheet> {
                           child: CustomDropdown(
                             value: selectedMinutes,
                             items: [
-                              '1',
-                              '2',
-                              '3',
-                              '4',
-                              '5',
-                              '6',
-                              '7',
-                              '8',
-                              '9',
+                              '00',
+                              '01',
+                              '02',
+                              '03',
+                              '04',
+                              '05',
+                              '06',
+                              '07',
+                              '08',
+                              '09',
                               '10',
                               '11',
                               '12',
@@ -441,11 +442,12 @@ class _CreateTimeSheet extends State<CreateTimeSheet> {
                                 selectedMinutes = newValue;
                               });
                             },
-                            hint: 'MNS',
+                            hint: 'MINS',
                           ))
                     ],
                   ),
                 ),
+                const SizedBox(height: 15),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
                   child: Align(
@@ -473,7 +475,7 @@ class _CreateTimeSheet extends State<CreateTimeSheet> {
                         selectBillingTypeValue = newValue;
                       });
                     },
-                    hint: 'Select an option',
+                    hint: 'Select Billing Type',
                   ),
                 ),
                 const SizedBox(height: 15),
@@ -489,6 +491,7 @@ class _CreateTimeSheet extends State<CreateTimeSheet> {
                             fontFamily: 'PoppinsMedium'),
                       )),
                 ),
+                const SizedBox(height: 15),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Row(
@@ -599,7 +602,7 @@ class _CreateTimeSheet extends State<CreateTimeSheet> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: CustomTextField(
-                      hintText: 'Timesheet description',
+                      hintText: 'Timesheet description...',
                       controller: _desController,
                       minLines: 4,
                       maxLines: 4),
@@ -642,7 +645,7 @@ class _CreateTimeSheet extends State<CreateTimeSheet> {
                                 "${_fromTimeController.text}-${_toTimeController.text}",
                             'token': _userData?.token.toString(),
 
-                            if(widget.timesheetDetail!=true)...{
+                            if(widget.timesheetDetail!=null)...{
                               'timesheet_id': widget.timesheetDetail.tmid.toString(),
                             }
                           };

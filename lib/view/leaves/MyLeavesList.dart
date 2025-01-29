@@ -272,6 +272,7 @@ class _MyLeavesList extends State<MyLeavesList> {
                             ),
                           ],
                         )),
+
                     Expanded(
                       child: filteredList.isEmpty
                           ? const Center(
@@ -285,26 +286,30 @@ class _MyLeavesList extends State<MyLeavesList> {
                                 ),
                               ),
                             )
-                          : ListView.separated(
-                              itemCount: filteredList.length,
-                              separatorBuilder:
-                                  (BuildContext context, int index) {
-                                return const SizedBox(height: 10);
-                              },
-                              itemBuilder: (context, index) {
-                                final item = filteredList[index];
-                                return CustomLeaveListTile(
-                                    item: item,
-                                    type: widget.type,
-                                    onTaskUpdated: () {
-                                      getLeaveList();
-                                    },
-                                    onDelete: () {
-                                      deleteLeaveApi(
-                                          context, item.leaveId.toString(),item.levStartDate);
-                                    });
-                              },
-                            ),
+                          : Align(
+                        alignment: Alignment.topCenter,
+                        child: ListView.separated(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          itemCount: filteredList.length,
+                          separatorBuilder:
+                              (BuildContext context, int index) {
+                            return const SizedBox(height: 10);
+                          },
+                          itemBuilder: (context, index) {
+                            final item = filteredList[index];
+                            return CustomLeaveListTile(
+                                item: item,
+                                type: widget.type,
+                                onTaskUpdated: () {
+                                  getLeaveList();
+                                },
+                                onDelete: () {
+                                  deleteLeaveApi(
+                                      context, item.leaveId.toString(),item.levStartDate);
+                                });
+                          },
+                        ),
+                      ),
                     ),
                   ],
                 )),
@@ -546,14 +551,13 @@ class _MyLeavesList extends State<MyLeavesList> {
                         'leave_type': selectLeaveTypeId.toString()
                       },
                       if (selectLeaveFrequencyValue != null) ...{
-                        'leave_frequency': selectLeaveFrequencyValue.toString()
+                        'leave_frequency': selectLeaveFrequencyValue.toString().toLowerCase()
                       },
                     };
                     final leaveViewModel =
                         Provider.of<LeaveViewModel>(context, listen: false);
                     if (widget.type == "my_leave") {
-                      final response =
-                          await leaveViewModel.getLeaveListApi(data, context);
+                      final response = await leaveViewModel.getLeaveListApi(data, context);
                       setState(() {
                         if (response != null) {
                           leavesList = response.toList().reversed.toList();
@@ -561,9 +565,11 @@ class _MyLeavesList extends State<MyLeavesList> {
                         }
                       });
                     } else {
-                      final response = await leaveViewModel
-                          .getLeaveRequestListApi(data, context);
+
+                      final response = await leaveViewModel.getLeaveRequestListApi(data, context);
                       setState(() {
+                        leavesList.clear();
+                        filteredList.clear();
                         if (response != null) {
                           leavesList = response.toList().reversed.toList();
                           filteredList = leavesList;
@@ -623,7 +629,9 @@ class CustomLeaveListTile extends StatelessWidget {
   final Function onDelete;
 
   const CustomLeaveListTile(
-      {super.key, required this.item, required this.type, required this.onTaskUpdated,required this.onDelete,});
+      {super.key, required this.item, required this.type,
+        required this.onTaskUpdated,
+        required this.onDelete,});
 
   @override
   Widget build(BuildContext context) {
@@ -635,11 +643,11 @@ class CustomLeaveListTile extends StatelessWidget {
         case "2":
           return 'APPROVED';
         case "3":
-          return 'CANCELED';
+          return 'CANCELLED';
         case "4":
           return 'REJECTED';
         default:
-          return 'CANCEL';
+          return 'INPROGRESS';
       }
     }
 

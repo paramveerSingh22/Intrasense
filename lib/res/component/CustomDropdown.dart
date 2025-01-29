@@ -26,8 +26,6 @@ class CustomDropdown extends StatelessWidget {
       decoration: InputDecoration(
         filled: true,
         fillColor: enabled ? AppColors.white : AppColors.lightGrey, // Change background
-
-       // fillColor: AppColors.white,
         contentPadding: const EdgeInsets.symmetric(
           vertical: 8.0, // Reduced vertical padding to decrease dropdown height
           horizontal: 22.0,
@@ -47,7 +45,6 @@ class CustomDropdown extends StatelessWidget {
       ),
       dropdownColor: AppColors.white,
       items: items.map((String value) {
-        // Check if the item is a header by looking for asterisks
         bool isHeader = value.startsWith('**') && value.endsWith('**');
 
         return DropdownMenuItem<String>(
@@ -61,6 +58,8 @@ class CustomDropdown extends StatelessWidget {
               fontWeight: isHeader ? FontWeight.normal : FontWeight.normal,
               color: isHeader ? AppColors.secondaryOrange : Colors.black, // Header styling
             ),
+            overflow: TextOverflow.ellipsis, // Prevent text overflow
+            softWrap: true, // Enable soft wrapping
           ),
         );
       }).toList(),
@@ -76,7 +75,7 @@ class CustomDropdown extends StatelessWidget {
           ),
         ),
       ),
-      isExpanded: true,
+      isExpanded: true, // Ensure the dropdown takes full width
       icon: Images.dropDownIcon != null
           ? Image.asset(
         Images.dropDownIcon,

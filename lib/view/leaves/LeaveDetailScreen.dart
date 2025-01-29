@@ -39,6 +39,7 @@ class _LeaveDetailScreen extends State<LeaveDetailScreen> {
 
   void getUserDetails(BuildContext context) async {
     _userData = await getUserData();
+    setState(() {});
     if (kDebugMode) {
       print(_userData);
     }
@@ -65,13 +66,13 @@ class _LeaveDetailScreen extends State<LeaveDetailScreen> {
         case "1":
           return 'PENDING';
         case "2":
-          return 'APProved';
+          return 'APPROVED';
         case "3":
           return 'CANCELED';
         case "4":
           return 'REJECTED';
         default:
-          return 'CANCEL';
+          return 'INPROGRESS';
       }
     }
 
@@ -659,17 +660,14 @@ class _LeaveDetailScreen extends State<LeaveDetailScreen> {
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.start,
                                                   children: [
-                                                    Transform.translate(
-                                                      offset: const Offset(-10.0, 0.0), // X-axis pe -10 dp ka offset
-                                                      child: IconButton(
-                                                        icon: SizedBox(
-                                                          height: 20.0,
-                                                          width: 20.0,
-                                                          child: Image.asset(Images.eyeIcon),
-                                                        ),
-                                                        onPressed: () async {
-                                                          showDocumentDialog(context);
-                                                        },
+                                                    GestureDetector(
+                                                      onTap: () async {
+                                                        showDocumentDialog(context);
+                                                      },
+                                                      child: SizedBox(
+                                                        height: 20.0,
+                                                        width: 20.0,
+                                                        child: Image.asset(Images.eyeIcon),
                                                       ),
                                                     ),
                                                   ],
@@ -770,7 +768,7 @@ class _LeaveDetailScreen extends State<LeaveDetailScreen> {
                           maxLines: 4,
                           readOnly: true,
                         ),
-                        if (widget.leaveDetail.levStatus == "1") ...{
+                        if (widget.leaveDetail.levStatus.toString() == "1" && widget.leaveDetail.userId.toString()!=_userData?.data?.userId.toString() && (_userData?.data?.roleTrackId.toString()=="2"||_userData?.data?.roleTrackId.toString()=="3")) ...{
                           const SizedBox(height: 15),
                           const Align(
                               alignment: Alignment.topLeft,
@@ -806,7 +804,7 @@ class _LeaveDetailScreen extends State<LeaveDetailScreen> {
               ),
             ),
           ),
-          if (widget.leaveDetail.levStatus == "1") ...{
+          if (widget.leaveDetail.levStatus == "1" && widget.leaveDetail.userId.toString()!=_userData?.data?.userId.toString() && (_userData?.data?.roleTrackId.toString()=="2"||_userData?.data?.roleTrackId.toString()=="3")) ...{
             Positioned(
               left: 0,
               right: 0,
@@ -870,13 +868,13 @@ class _LeaveDetailScreen extends State<LeaveDetailScreen> {
     final leaveViewModel = Provider.of<LeaveViewModel>(context, listen: false);
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // Keyboard के अनुसार BottomSheet को स्क्रॉल करने की अनुमति देगा
+      isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,
       builder: (BuildContext context) {
         return Padding(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom, // कीबोर्ड स्पेस के लिए
+            bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
           child: SingleChildScrollView(
             child: Column(
@@ -969,35 +967,39 @@ class _LeaveDetailScreen extends State<LeaveDetailScreen> {
   }
 
   void showDocumentDialog(BuildContext context) {
-    final url = "https://intrasense.co.uk/app/assets/uploads/medicalcertificate/"+widget.leaveDetail.medicalCertificate;
+    final url = "https://intrasense.co.uk/app/assets/uploads/medicalcertificate/" +
+        widget.leaveDetail.medicalCertificate.replaceAll(r'\', '');
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('Medical Report'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Add loading indicator until the image loads
-              Image.network(
-                url,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                          (loadingProgress.expectedTotalBytes ?? 1)
-                          : null,
-                    ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) => const Text(
-                  'Failed to load document.',
-                  style: TextStyle(color: Colors.red),
+          content: SingleChildScrollView(  // Wrap content in SingleChildScrollView
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Add loading indicator until the image loads
+                Image.network(
+                  url,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                            (loadingProgress.expectedTotalBytes ?? 1)
+                            : null,
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) => const Text(
+                    'Failed to load document.',
+                    style: TextStyle(color: Colors.red),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           actions: [
             TextButton(

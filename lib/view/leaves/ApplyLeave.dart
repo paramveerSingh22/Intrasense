@@ -5,6 +5,7 @@ import 'package:intrasense/model/leave/LeaveTypeModel.dart';
 import 'package:intrasense/utils/Utils.dart';
 import 'package:provider/provider.dart';
 import '../../model/user_model.dart';
+import '../../res/component/AlphaNumericTextField.dart';
 import '../../res/component/CustomDropdown.dart';
 import '../../res/component/CustomElevatedButton.dart';
 import '../../res/component/CustomTextField.dart';
@@ -42,6 +43,7 @@ class _ApplyLeave extends State<ApplyLeave> {
   final TextEditingController _toDateController = TextEditingController();
   final TextEditingController _selectDateController = TextEditingController();
   final TextEditingController _desController = TextEditingController();
+  final TextEditingController _reasonController = TextEditingController();
 
   final TextEditingController _startTimeController = TextEditingController();
   final TextEditingController _endTimeController = TextEditingController();
@@ -291,8 +293,8 @@ class _ApplyLeave extends State<ApplyLeave> {
                                 hintText: 'DD/MM/YYYY',
                                 suffixIcon: Image.asset(
                                   Images.calenderIcon,
-                                  height: 24,
-                                  width: 24,
+                                  height: 20,
+                                  width: 20,
                                 ),
                                 readOnly: true,
                                 onTap: () async {
@@ -348,76 +350,75 @@ class _ApplyLeave extends State<ApplyLeave> {
                           Row(
                             children: [
                               Expanded(
-                                  flex: 10,
-                                  child: CustomTextField(
-                                    controller: _fromDateController,
-                                    hintText: 'DD/MM/YYYY',
-                                    suffixIcon: Image.asset(
-                                      Images.calenderIcon,
-                                      height: 24,
-                                      width: 24,
-                                    ),
-                                    readOnly: true,
-                                    onTap: () async {
-                                      DateTime? pickedDate =
-                                          await showDatePicker(
-                                        context: context,
-                                        initialDate: DateTime.now(),
-                                        firstDate: DateTime.now(),
-                                        lastDate: DateTime.now().add(
-                                            const Duration(days: 365 * 100)),
-                                      );
+                                flex: 10,
+                                child: CustomTextField(
+                                  controller: _fromDateController,
+                                  hintText: 'DD/MM/YYYY',
+                                  suffixIcon: Image.asset(
+                                    Images.calenderIcon,
+                                    height: 20,
+                                    width: 20,
+                                  ),
+                                  readOnly: true,
+                                  onTap: () async {
+                                    DateTime? pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime.now(),
+                                      lastDate: DateTime.now().add(const Duration(days: 365 * 100)),
+                                    );
 
-                                      if (pickedDate != null) {
-                                        String formattedDate =
-                                            "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
-                                        setState(() {
-                                          _fromDateController.text =
-                                              formattedDate;
-                                        });
-                                      }
-                                    },
-                                  )),
+                                    if (pickedDate != null) {
+                                      // Format date with leading zeros in month and day
+                                      String formattedDate =
+                                          "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+                                      setState(() {
+                                        _fromDateController.text = formattedDate;
+                                      });
+                                    }
+                                  },
+                                ),
+                              ),
                               Expanded(flex: 1, child: Container()),
                               Expanded(
-                                  flex: 10,
-                                  child: CustomTextField(
-                                      controller: _toDateController,
-                                      hintText: 'DD/MM/YYYY',
-                                      suffixIcon: Image.asset(
-                                        Images.calenderIcon,
-                                        height: 24,
-                                        width: 24,
-                                      ),
-                                      readOnly: true,
-                                      onTap: () async {
-                                        if (_fromDateController.text.isEmpty) {
-                                          Utils.toastMessage("Please select the from Date first.");
-                                          return;
-                                        }
+                                flex: 10,
+                                child: CustomTextField(
+                                  controller: _toDateController,
+                                  hintText: 'DD/MM/YYYY',
+                                  suffixIcon: Image.asset(
+                                    Images.calenderIcon,
+                                    height: 20,
+                                    width: 20,
+                                  ),
+                                  readOnly: true,
+                                  onTap: () async {
+                                    if (_fromDateController.text.isEmpty) {
+                                      Utils.toastMessage("Please select the from Date first.");
+                                      return;
+                                    }
 
-                                        DateTime? startDate = _fromDateController.text.isNotEmpty
-                                            ? DateTime.parse(_fromDateController.text) // Parse the stored Start Date
-                                            : DateTime.now();
+                                    // Ensure correct date parsing
+                                    DateTime? startDate = DateTime.tryParse(_fromDateController.text) ??
+                                        DateTime.now(); // Default to current date if parsing fails
 
+                                    DateTime? pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: startDate,
+                                      firstDate: startDate,
+                                      lastDate: DateTime.now().add(const Duration(days: 365 * 100)),
+                                    );
 
-                                        DateTime? pickedDate = await showDatePicker(
-                                          context: context,
-                                          initialDate: startDate,
-                                          firstDate: startDate,
-                                          lastDate: DateTime.now()
-                                              .add(const Duration(days: 365 * 100)),
-                                        );
-
-                                        if (pickedDate != null) {
-                                          String formattedDate =
-                                              "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
-                                          setState(() {
-                                            _toDateController.text =
-                                                formattedDate;
-                                          });
-                                        }
-                                      }))
+                                    if (pickedDate != null) {
+                                      // Format date with leading zeros in month and day
+                                      String formattedDate =
+                                          "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+                                      setState(() {
+                                        _toDateController.text = formattedDate;
+                                      });
+                                    }
+                                  },
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 15),
@@ -644,15 +645,18 @@ class _ApplyLeave extends State<ApplyLeave> {
                               const SizedBox(height: 5),
                               if (selectedFileName != null) ...[
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisSize: MainAxisSize.min,  // Minimize the Row size
                                   children: [
-                                    Text(
-                                      selectedFileName.toString(),
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        color: AppColors.hintColor,
-                                        fontFamily: 'PoppinsRegular',
+                                    Expanded( // Wrap Text widget in Expanded to avoid overflow
+                                      child: Text(
+                                        selectedFileName.toString(),
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          color: AppColors.hintColor,
+                                          fontFamily: 'PoppinsRegular',
+                                        ),
+                                        overflow: TextOverflow.ellipsis, // To handle long text overflow
                                       ),
                                     ),
                                     IconButton(
@@ -674,6 +678,29 @@ class _ApplyLeave extends State<ApplyLeave> {
                             ],
                           ),
                         ],
+                        if(selectLeavePurposeValue=="Other")...{
+                          const SizedBox(height: 15),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                            child: Column(
+                              children: [
+                                const Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Text(
+                                      'Reason',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: AppColors.textColor,
+                                          fontFamily: 'PoppinsMedium'),
+                                    )),
+                                const SizedBox(height: 5),
+                                CustomTextField(
+                                  controller: _reasonController,
+                                  hintText: 'Enter reason',),
+                              ],
+                            ),
+                          )
+                        },
                         const SizedBox(height: 15),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 0.0),
@@ -689,7 +716,7 @@ class _ApplyLeave extends State<ApplyLeave> {
                                         fontFamily: 'PoppinsMedium'),
                                   )),
                               const SizedBox(height: 5),
-                              CustomTextField(
+                              AlphaNumericTextField(
                                   controller: _desController,
                                   hintText: 'Enter description...',
                                   minLines: 4,
@@ -740,11 +767,16 @@ class _ApplyLeave extends State<ApplyLeave> {
                   } else if (selectLeavePurposeValue == null) {
                     Utils.toastMessage("Please select purpose");
                   } else if (selectLeavePurposeValue == "Medical Emergency" &&
-                      selectedFilePath == null) {
+                      selectedFilePath == null && isUpdate==false) {
                     Utils.toastMessage("Please upload medical document");
-                  } else if (_desController.text.isEmpty) {
+                  }
+                  else if(selectLeavePurposeValue=="Other" && _reasonController.text.isEmpty){
+                  Utils.toastMessage("Please enter reason");
+                  }
+                  else if (_desController.text.isEmpty) {
                     Utils.toastMessage("Please enter description");
-                  } else if (_desController.text.characters.length < 20) {
+                  }
+                  else if (_desController.text.characters.length < 20) {
                     Utils.toastMessage(
                         "Please enter description min 20 characters");
                   } else {
@@ -767,6 +799,10 @@ class _ApplyLeave extends State<ApplyLeave> {
                         'from_date': _fromDateController.text.toString(),
                         'to_date': _toDateController.text.toString(),
                       },
+
+                  if(selectLeavePurposeValue=="Other")...{
+                     'leave_purpose_other':_reasonController.text.toString()
+                  },
                       if(isUpdate==true)...{
                         'leave_id': widget.leaveDetail.leaveId.toString(),
                       }

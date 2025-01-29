@@ -5,10 +5,12 @@ import 'package:intrasense/view_models/UserProvider.dart';
 import 'package:intrasense/view_models/auth_view_model.dart';
 import 'package:intrasense/view_models/client_view_model.dart';
 import 'package:intrasense/view_models/common_view_model.dart';
+import 'package:intrasense/view_models/expense_view_model.dart';
 import 'package:intrasense/view_models/leave_view_model.dart';
 import 'package:intrasense/view_models/projects_view_model.dart';
 import 'package:intrasense/view_models/tasks_view_model.dart';
 import 'package:intrasense/view_models/teams_view_model.dart';
+import 'package:intrasense/view_models/ticket_view_model.dart';
 import 'package:intrasense/view_models/time_sheet_view_model.dart';
 import 'package:intrasense/view_models/user_view_model.dart';
 import 'package:provider/provider.dart';
@@ -35,6 +37,8 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_)=> TasksViewModel()),
           ChangeNotifierProvider(create: (_)=> LeaveViewModel()),
           ChangeNotifierProvider(create: (_)=> TimeSheetViewModel()),
+          ChangeNotifierProvider(create: (_)=> ExpenseViewModel()),
+          ChangeNotifierProvider(create: (_)=> TicketViewModel()),
         ],
       child: (MaterialApp(
         theme: ThemeData(

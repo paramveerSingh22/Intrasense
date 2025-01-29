@@ -17,7 +17,5 @@ class AppColors {
   static const darkBlueTextColor = Color(0xFF0B3B6B);
   static const skyBlueTextColor = Color(0xFF1A5695);
   static const dividerColor = Color(0xFFEBEBEB);
-
-
-
+  static const statusCompletedColor = Color(0xFF26BAA4);
 }

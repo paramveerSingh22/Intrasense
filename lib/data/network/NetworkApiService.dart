@@ -69,7 +69,7 @@ class NetworkApiService extends BaseApiService {
           headers: {
             'Authorization': 'Bearer $token',
           },
-        ).timeout(const Duration(seconds: 10));
+        ).timeout(const Duration(seconds: 60));
         responseJson = returnResponse(response, context);
 
       if (kDebugMode) {
@@ -162,6 +162,10 @@ class NetworkApiService extends BaseApiService {
     }
 
     try {
+      if (kDebugMode) {
+        print("Api StatusCode---${response.statusCode}");
+        print("Api response---${response.body}");
+      }
       switch (response.statusCode) {
         case 201:
           dynamic responseJson = jsonDecode(response.body);

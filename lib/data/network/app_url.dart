@@ -57,4 +57,18 @@ class AppUrl{
   //static var timeSheetListUrl= baseUrl + 'timesheet/timesheet';
   static var timeSheetListUrl= baseUrl + 'timesheet/timesheetmob';
 
+  ////for expenses
+  static var expenseListUrl= baseUrl + 'expenses/expenseList';
+  static var addExpenseUrl= baseUrl + 'expenses/addExpense';
+  static var deleteExpenseUrl= baseUrl + 'expenses/deleteExpense';
+  static var approveExpenseUrl= baseUrl + 'expenses/ApproveExpense';
+  static var paidExpenseUrl= baseUrl + 'expenses/paidExpense';
+
+ //// for tickets....
+  static var ticketListUrl= baseUrl + 'support/generateTicket/ticketlist';
+  static var addTicketUrl= baseUrl + 'support/generateTicket/';
+  static var addTicketCommentUrl= baseUrl + 'support/generateTicket/ticketresponse';
+  static var ticketDetailUrl= baseUrl + 'support/generateTicket/ticketdetailMobVer';
+  static var updateTicketStatusUrl= baseUrl + 'support/generateTicket/updateticketstatus';
+
 }

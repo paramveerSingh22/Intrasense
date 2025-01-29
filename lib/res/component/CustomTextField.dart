@@ -10,6 +10,7 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final int minLines;
   final int maxLines;
+  final TextInputType? keyboardType; // Optional input type
 
   const CustomTextField({
     Key? key,
@@ -21,6 +22,7 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.minLines = 1,  // Default to 1 line
     this.maxLines = 1,  // Default to 1 line, keeps it single-line by default
+    this.keyboardType, // Optional input type parameter
   }) : super(key: key);
 
   @override
@@ -30,6 +32,7 @@ class CustomTextField extends StatelessWidget {
       readOnly: readOnly,
       onTap: onTap,
       obscureText: obscureText,
+      keyboardType: keyboardType, // Set the keyboard type
       style: const TextStyle(
         fontFamily: 'PoppinsRegular',
         fontSize: 13.0,

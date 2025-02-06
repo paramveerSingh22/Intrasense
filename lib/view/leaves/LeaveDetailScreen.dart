@@ -8,6 +8,7 @@ import '../../res/component/CustomDropdown.dart';
 import '../../res/component/CustomElevatedButton.dart';
 import '../../res/component/CustomTextField.dart';
 import '../../utils/AppColors.dart';
+import '../../utils/Constants.dart';
 import '../../utils/Images.dart';
 import '../../utils/Utils.dart';
 import '../../view_models/leave_view_model.dart';
@@ -804,7 +805,7 @@ class _LeaveDetailScreen extends State<LeaveDetailScreen> {
               ),
             ),
           ),
-          if (widget.leaveDetail.levStatus == "1" && widget.leaveDetail.userId.toString()!=_userData?.data?.userId.toString() && (_userData?.data?.roleTrackId.toString()=="2"||_userData?.data?.roleTrackId.toString()=="3")) ...{
+          if (widget.leaveDetail.levStatus == "1" && widget.leaveDetail.userId.toString()!=_userData?.data?.userId.toString() && (_userData?.data?.roleTrackId.toString()==Constants.roleProjectManager||_userData?.data?.roleTrackId.toString()==Constants.roleHR)) ...{
             Positioned(
               left: 0,
               right: 0,

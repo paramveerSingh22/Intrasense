@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intrasense/utils/Constants.dart';
 import '../../model/user_model.dart';
 import '../../res/component/CustomDropdown.dart';
 import '../../res/component/CustomElevatedButton.dart';
@@ -637,7 +638,7 @@ class _ExpenseDetailScreen extends State<ExpenseDetailScreen> {
                             ),
                           ],
                         ),
-                        if (_userData?.data?.roleTrackId.toString() == "3" &&
+                        if (_userData?.data?.roleTrackId.toString() == Constants.roleHR &&
                             widget.expenseDetail.status.toString() == "1") ...{
                           Padding(
                             padding:
@@ -677,7 +678,7 @@ class _ExpenseDetailScreen extends State<ExpenseDetailScreen> {
               ),
             ),
           ),
-          if (_userData?.data?.roleTrackId.toString() == "3" &&
+          if (_userData?.data?.roleTrackId.toString() == Constants.roleHR &&
               widget.expenseDetail.status.toString() == "1") ...{
             Positioned(
               left: 0,

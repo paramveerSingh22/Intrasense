@@ -336,7 +336,7 @@ class _AddClients extends State<AddClients> {
                     Expanded(
                         flex: 10,
                         child:  CustomElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_nameController.text.isEmpty) {
                               Utils.toastMessage('Please enter name');
                             }

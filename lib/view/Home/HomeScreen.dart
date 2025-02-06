@@ -7,6 +7,7 @@ import 'package:intrasense/utils/Images.dart';
 import 'package:intrasense/utils/Utils.dart';
 import 'package:intrasense/view/Home/DashboardScreen.dart';
 import 'package:intrasense/view/appraisal/AppraisalList.dart';
+import 'package:intrasense/view/clientList/ClientList.dart';
 import 'package:intrasense/view/clientList/ClientListDashboard.dart';
 import 'package:intrasense/view/leaves/MyLeavesList.dart';
 import 'package:intrasense/view/manageExpenses/MyExpensesList.dart';
@@ -298,7 +299,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontFamily: 'PoppinsRegular',
                               fontSize: 15)),
                       onTap: () {
-                        _onItemTapped(3);
+                      //  _onItemTapped(3);
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ClientList(),
+                          ),
+                        );
                       },
                     ),
                     const DividerColor(),

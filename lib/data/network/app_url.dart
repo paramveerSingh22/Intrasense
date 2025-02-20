@@ -35,7 +35,9 @@ class AppUrl{
   static var projectManagersListUrl= baseUrl + 'employees/pmList';
   static var projectTypesListUrl = baseUrl + 'projects/projectActivityTypeList';
   static var addProjectUrl = baseUrl + 'projects/createProject';
+  static var addProjectQuotationUrl = baseUrl + 'projects/generateQuotes';
   static var projectListUrl = baseUrl + 'projects/projectList';
+  static var projectDeleteUrl = baseUrl + 'projects/projectDelete';
 
   ////for tasks
   static var taskListUrl= baseUrl + 'mytask/myTask';

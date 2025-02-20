@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intrasense/model/projects/ProjectManagersModel.dart';
 import 'package:intrasense/model/projects/ProjectTypesModel.dart';
+import 'package:intrasense/res/component/ButtonOrangeBorder.dart';
 import 'package:intrasense/view_models/projects_view_model.dart';
 import '../../model/client_list_model.dart';
 import '../../model/client_subs_diary_model.dart';
@@ -22,7 +23,6 @@ class AddProjectScreen extends StatefulWidget {
 }
 
 class _AddProjectScreen extends State<AddProjectScreen> {
-
   String? selectClientValue;
   String? selectClientId;
   List<ClientListModel> clientList = [];
@@ -49,12 +49,21 @@ class _AddProjectScreen extends State<AddProjectScreen> {
   TextEditingController shortNameController = TextEditingController();
   TextEditingController poNumberController = TextEditingController();
   TextEditingController clientContactController = TextEditingController();
-  TextEditingController hoursController = TextEditingController();
-  TextEditingController amountController = TextEditingController();
+
+  //TextEditingController hoursController = TextEditingController();
+  //TextEditingController amountController = TextEditingController();
   TextEditingController quotationController = TextEditingController();
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+  TextEditingController totalAmountController = TextEditingController();
+
+  List<TextEditingController> hoursControllers = [];
+  List<TextEditingController> amountControllers = [];
+
+  List<Map<String, String>> projectDetailsList = [
+    {'projectType': '', 'projectTypeId': '', 'hours': '', 'amount': ''},
+  ];
 
   void setLoading(bool loading) {
     setState(() {
@@ -65,7 +74,24 @@ class _AddProjectScreen extends State<AddProjectScreen> {
   @override
   void initState() {
     super.initState();
+
+    while (hoursControllers.length < projectDetailsList.length) {
+      hoursControllers.add(TextEditingController(text: projectDetailsList[hoursControllers.length]['hours'] ?? ''));
+    }
+
+    while (amountControllers.length < projectDetailsList.length) {
+      amountControllers.add(TextEditingController(text: projectDetailsList[amountControllers.length]['amount'] ?? ''));
+    }
+    updateTotalAmount();
     getUserDetails(context);
+  }
+
+  @override
+  void dispose() {
+    for (var controller in hoursControllers) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 
   Future<UserModel> getUserData() => UserViewModel().getUser();
@@ -87,10 +113,12 @@ class _AddProjectScreen extends State<AddProjectScreen> {
       };
       final clientViewModel =
           Provider.of<ClientViewModel>(context, listen: false);
-      await clientViewModel.getClientListApi(data, context);
-      clientList = clientViewModel.clientList;
+      final response = await clientViewModel.getClientListApi(data, context);
       setState(() {
-        clientNamesList = clientList.map((item) => item.cmpName).toList();
+        if (response != null) {
+          clientList = response.toList();
+          clientNamesList = clientList.map((item) => item.cmpName).toList();
+        }
       });
     } catch (error, stackTrace) {
       if (kDebugMode) {
@@ -114,11 +142,13 @@ class _AddProjectScreen extends State<AddProjectScreen> {
       };
       final clientViewModel =
           Provider.of<ClientViewModel>(context, listen: false);
-      await clientViewModel.getSubClientListApi(data, context);
-      subsDiaryList = clientViewModel.subsDiaryList;
+      final response = await clientViewModel.getSubClientListApi(data, context);
       setState(() {
-        subClientNamesList =
-            subsDiaryList.map((item) => item.entityName.toString()).toList();
+        if (response != null) {
+          subsDiaryList = response.toList();
+          subClientNamesList =
+              subsDiaryList.map((item) => item.entityName.toString()).toList();
+        }
       });
       // setLoading(false);
       Utils.hideLoadingDialog(context);
@@ -149,9 +179,11 @@ class _AddProjectScreen extends State<AddProjectScreen> {
 
       if (response != null) {
         setState(() {
-          projectManagerList = response;
-          projectManagerNamesList =
-              projectManagerList.map((item) => item.userName).toList();
+          projectManagerList = response.toList();
+          projectManagerNamesList = projectManagerList
+              .map((item) =>
+                  "${item.projectManagerFirstName} ${item.projectManagerLastName}")
+              .toList();
         });
       }
     } catch (error, stackTrace) {
@@ -175,7 +207,8 @@ class _AddProjectScreen extends State<AddProjectScreen> {
         'usr_role_track_id': _userData?.data?.roleTrackId,
         'token': _userData?.token,
       };
-      final projectViewModel = Provider.of<ProjectsViewModel>(context, listen: false);
+      final projectViewModel =
+          Provider.of<ProjectsViewModel>(context, listen: false);
       final response = await projectViewModel.getProjectTypesApi(data, context);
 
       if (response != null) {
@@ -183,7 +216,7 @@ class _AddProjectScreen extends State<AddProjectScreen> {
           projectTypesList = response;
           for (var item in projectTypesList) {
             projectTypesNamesList.add('**${item.moduleCatTitle}**');
-            for (var itemCategory in item.categoryType){
+            for (var itemCategory in item.categoryType) {
               projectTypesNamesList.add(itemCategory.moduleCatTitle);
             }
           }
@@ -199,6 +232,169 @@ class _AddProjectScreen extends State<AddProjectScreen> {
     } finally {
       setLoading(false);
     }
+  }
+
+  void addNewItem() {
+    setState(() {
+      projectDetailsList.add(
+          {'projectType': '', 'projectTypeId': '', 'hours': '', 'amount': ''});
+
+      hoursControllers.add(TextEditingController(text: ''));
+      amountControllers.add(TextEditingController(text: ''));
+    });
+  }
+
+  Widget buildProjectDetailItem(int index) {
+    return Container(
+      padding: const EdgeInsets.all(0.0),
+      // Padding for the content inside the container
+      decoration: BoxDecoration(
+        color: AppColors.lightOrange, // Set your desired background color here
+        borderRadius: BorderRadius.circular(0.0), // Optional: Rounded corners
+      ),
+      child: Column(
+        children: [
+          if (index == 0) const SizedBox(height: 10),
+          Row(
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      'Project Type',
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textColor,
+                          fontFamily: 'PoppinsMedium'),
+                    )),
+              ),
+              if (index != 0) Spacer(),
+              if (index != 0)
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: const Icon(
+                        Icons.close,
+                        color: AppColors.textColor,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          projectDetailsList.removeAt(index);
+                          hoursControllers.removeAt(index);
+                          amountControllers.removeAt(index);
+                        });
+
+                      },
+                    )
+                  ],
+                ),
+            ],
+          ),
+          const SizedBox(height: 5),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: CustomDropdown(
+              value:
+                  projectDetailsList[index]['projectType']?.isNotEmpty == true
+                      ? projectDetailsList[index]['projectType']
+                      : null,
+              items: projectTypesNamesList,
+              onChanged: (String? newValue) {
+                setState(() {
+                  projectDetailsList[index]['projectType'] = newValue ?? '';
+                  projectDetailsList[index]['projectTypeId'] = projectTypesList
+                      .firstWhere(
+                          (item) => item.categoryType.any((category) => category.moduleCatTitle == newValue)
+                  ).categoryType.firstWhere((category) => category.moduleCatTitle == newValue).moduleCategoryId;
+                });
+              },
+              hint: 'Project type',
+            ),
+          ),
+          const SizedBox(height: 15),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              children: [
+                Expanded(
+                    flex: 10,
+                    child: Container(
+                      child: const Text(
+                        'Hours',
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textColor,
+                            fontFamily: 'PoppinsMedium'),
+                      ),
+                    )),
+                Expanded(flex: 1, child: Container()),
+                const Expanded(
+                    flex: 10,
+                    child: Text(
+                      'Amount',
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textColor,
+                          fontFamily: 'PoppinsMedium'),
+                    ))
+              ],
+            ),
+          ),
+          const SizedBox(height: 5),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              children: [
+                Expanded(
+                    flex: 10,
+                    child: Container(
+                      child: CustomTextField(
+                          controller: hoursControllers[index],
+                          hintText: 'Hours',
+                          onChanged: (String newValue) {
+                            setState(() {
+                              projectDetailsList[index]['hours'] =
+                                  newValue; // Update the value in the list
+                            });
+                          }),
+                    )),
+                Expanded(flex: 1, child: Container()),
+                Expanded(
+                    flex: 10,
+                    child: Container(
+                      child: CustomTextField(
+                        controller: amountControllers[index],
+                        hintText: 'Amount',
+                          onChanged: (String newValue) {
+                            setState(() {
+                              projectDetailsList[index]['amount'] = newValue;
+                              updateTotalAmount();
+                            });
+                          }
+                      ),
+                    ))
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          const Divider(
+            color: Colors.white,
+            height: 10,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void updateTotalAmount() {
+    double totalAmount = 0;
+    for (var project in projectDetailsList) {
+      double amount = double.tryParse(project['amount'] ?? '') ?? 0;
+      totalAmount += amount;
+    }
+    totalAmountController.text = totalAmount.toString();
   }
 
   @override
@@ -296,7 +492,8 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                   CustomTextField(
+                  const SizedBox(height: 5),
+                  CustomTextField(
                     controller: titleController,
                     hintText: 'Title',
                   ),
@@ -310,8 +507,9 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                   CustomTextField(
-                     controller: shortNameController,
+                  const SizedBox(height: 5),
+                  CustomTextField(
+                    controller: shortNameController,
                     hintText: 'Short Name(3 character)',
                   ),
                   const SizedBox(height: 15),
@@ -324,6 +522,7 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
+                  const SizedBox(height: 5),
                   CustomDropdown(
                     value: selectClientValue,
                     items: clientNamesList,
@@ -348,6 +547,7 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
+                  const SizedBox(height: 5),
                   CustomDropdown(
                     value: selectSubClientValue,
                     items: subClientNamesList,
@@ -371,7 +571,8 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                   CustomTextField(
+                  const SizedBox(height: 5),
+                  CustomTextField(
                     controller: poNumberController,
                     hintText: 'P.O Number',
                   ),
@@ -385,78 +586,82 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                   CustomTextField(
-                     controller: clientContactController,
+                  const SizedBox(height: 5),
+                  CustomTextField(
+                    controller: clientContactController,
                     hintText: 'Client Contact',
                   ),
                   const SizedBox(height: 15),
-                  const Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        'Project Type',
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textColor,
-                            fontFamily: 'PoppinsMedium'),
-                      )),
-                  CustomDropdown(
-                    value: selectProjectTypeValue,
-                    items: projectTypesNamesList,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectProjectTypeValue = newValue;
-                      });
-                    },
-                    hint: 'Project type',
+                  for (int i = 0; i < projectDetailsList.length; i++)
+                    buildProjectDetailItem(i),
+
+                  const SizedBox(height: 15),
+                  Row(
+                    children: [
+                      const Expanded(
+                          flex: 5,
+                          child:Text(
+                            'Total Amount',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsMedium'),
+                          )),
+                      Expanded(flex: 1, child: Container()),
+                      Expanded(
+                          flex: 10,
+                          child: CustomTextField(
+                            controller: totalAmountController,
+                            hintText: '',
+                            readOnly: true,
+                          ))
+                    ],
                   ),
                   const SizedBox(height: 15),
                   Row(
                     children: [
                       Expanded(
-                          flex: 10,
-                          child: Container(
-                            child: const Text(
-                              'Hours',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsRegular',
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          )),
-                      Expanded(flex: 1, child: Container()),
-                      const Expanded(
-                          flex: 10,
-                          child: Text(
-                            'Amount',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsRegular',
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ))
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                          flex: 10,
-                          child: Container(
-                            child: CustomTextField(
-                              controller: hoursController,
-                              hintText: 'Hours',
-                            ),
+                          flex: 5,
+                          child: ButtonOrangeBorder(
+                            onPressed: () {
+                              addNewItem();
+                            },
+                            buttonText: 'ADD',
                           )),
                       Expanded(flex: 1, child: Container()),
                       Expanded(
                           flex: 10,
-                          child: Container(
-                            child: CustomTextField(
-                              controller: amountController,
-                              hintText: 'Amount',
-                            ),
+                          child: ButtonOrangeBorder(
+                            onPressed: () async {
+
+                              bool isValid = projectDetailsList.isNotEmpty &&
+                                  projectDetailsList.every((project) =>
+                                  project['projectType']?.isNotEmpty == true &&
+                                      project['projectTypeId']?.isNotEmpty == true &&
+                                      project['hours']?.isNotEmpty == true &&
+                                      project['amount']?.isNotEmpty == true);
+
+
+                              if (!isValid) {
+                                Utils.toastMessage("Please ensure all fields in the project list are filled out.");
+                                return;
+                              }
+
+                              Map data = {
+                                'user_id': _userData?.data?.userId.toString(),
+                                'usr_customer_track_id':
+                                _userData?.data?.customerTrackId.toString(),
+                                'usr_role_track_id':
+                                _userData?.data?.roleTrackId.toString(),
+                                'quotation_amount': totalAmountController.text.toString(),
+                                'token': _userData?.token.toString(),
+                              };
+                             final response= await projectViewModel.addProjectQuotationApi(data, context);
+
+                             quotationController.text= response!.pdfLink.toString();
+                            },
+                            buttonText: 'Generate Quotation',
+                            loading: projectViewModel.payslipLoading,
                           ))
                     ],
                   ),
@@ -470,9 +675,11 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                   CustomTextField(
+                  const SizedBox(height: 5),
+                  CustomTextField(
                     controller: quotationController,
                     hintText: '',
+                    readOnly: true,
                   ),
                   const SizedBox(height: 15),
                   Row(
@@ -483,11 +690,9 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                             child: const Text(
                               'Start Date',
                               style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsRegular',
-                                fontWeight: FontWeight.w400,
-                              ),
+                                  fontSize: 14,
+                                  color: AppColors.textColor,
+                                  fontFamily: 'PoppinsMedium'),
                             ),
                           )),
                       Expanded(flex: 1, child: Container()),
@@ -496,14 +701,13 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                           child: Text(
                             'End date',
                             style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsRegular',
-                              fontWeight: FontWeight.w500,
-                            ),
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsMedium'),
                           ))
                     ],
                   ),
+                  const SizedBox(height: 5),
                   Row(
                     children: [
                       Expanded(
@@ -513,18 +717,21 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                               hintText: 'Start date',
                               controller: startDateController,
                               readOnly: true,
-                              onTap: () async{
+                              onTap: () async {
                                 DateTime? pickedDate = await showDatePicker(
                                   context: context,
                                   initialDate: DateTime.now(),
                                   firstDate: DateTime(1900),
-                                  lastDate: DateTime.now().add(const Duration(days: 365 * 100)),
+                                  lastDate: DateTime.now()
+                                      .add(const Duration(days: 365 * 100)),
                                 );
 
                                 if (pickedDate != null) {
-                                  String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+                                  String formattedDate =
+                                      "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
                                   setState(() {
-                                    startDateController.text = formattedDate; // Set the selected date to the text field
+                                    startDateController.text =
+                                        formattedDate; // Set the selected date to the text field
                                   });
                                 }
                               },
@@ -537,18 +744,21 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                             hintText: 'End date',
                             controller: endDateController,
                             readOnly: true,
-                            onTap: () async{
+                            onTap: () async {
                               DateTime? pickedDate = await showDatePicker(
                                 context: context,
                                 initialDate: DateTime.now(),
                                 firstDate: DateTime(1900),
-                                lastDate: DateTime.now().add(const Duration(days: 365 * 100)),
+                                lastDate: DateTime.now()
+                                    .add(const Duration(days: 365 * 100)),
                               );
 
                               if (pickedDate != null) {
-                                String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+                                String formattedDate =
+                                    "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
                                 setState(() {
-                                  endDateController.text = formattedDate; // Set the selected date to the text field
+                                  endDateController.text =
+                                      formattedDate; // Set the selected date to the text field
                                 });
                               }
                             },
@@ -565,6 +775,7 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
+                  const SizedBox(height: 5),
                   CustomDropdown(
                     value: selectProjectManagerValue,
                     items: projectManagerNamesList,
@@ -572,7 +783,9 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                       setState(() {
                         selectProjectManagerValue = newValue;
                         selectProjectManagerId = projectManagerList
-                            .firstWhere((item) => item.userName == newValue)
+                            .firstWhere((item) =>
+                                "${item.projectManagerFirstName} ${item.projectManagerLastName}" ==
+                                newValue)
                             .userId;
                       });
                     },
@@ -588,7 +801,8 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                             color: AppColors.textColor,
                             fontFamily: 'PoppinsMedium'),
                       )),
-                   CustomTextField(
+                  const SizedBox(height: 5),
+                  CustomTextField(
                     controller: descriptionController,
                     hintText: 'Description',
                   ),
@@ -602,67 +816,63 @@ class _AddProjectScreen extends State<AddProjectScreen> {
             right: 20,
             child: CustomElevatedButton(
               onPressed: () {
-                if(titleController.text.isEmpty){
+                if (titleController.text.isEmpty) {
                   Utils.toastMessage("Please enter title");
-                }
-                else if(shortNameController.text.isEmpty){
+                } else if (shortNameController.text.isEmpty) {
                   Utils.toastMessage("Please enter short name");
-                }
-                else if(selectClientId==null){
+                } else if (selectClientId == null) {
                   Utils.toastMessage("Please select client");
-                }
-                else if(selectSubClientId==null){
+                } else if (selectSubClientId == null) {
                   Utils.toastMessage("Please select sub-client");
-                }
-                else if(poNumberController.text.isEmpty){
+                } else if (poNumberController.text.isEmpty) {
                   Utils.toastMessage("Please enter P.O number");
-                }
-                else if(clientContactController.text.isEmpty){
+                } else if (clientContactController.text.isEmpty) {
                   Utils.toastMessage("Please enter client contact");
-                }
-                else if(hoursController.text.isEmpty){
+                } /*else if (hoursController.text.isEmpty) {
                   Utils.toastMessage("Please enter project hours");
-                }
-                else if(amountController.text.isEmpty){
+                } else if (amountController.text.isEmpty) {
                   Utils.toastMessage("Please enter project amount");
-                }
-                else if(quotationController.text.isEmpty){
-                  Utils.toastMessage("Please enter project quotation");
-                }
-                else if(startDateController.text.isEmpty){
+                }*/ else if (quotationController.text.isEmpty) {
+                  Utils.toastMessage("Please generate project quotation");
+                } else if (startDateController.text.isEmpty) {
                   Utils.toastMessage("Please select project start date");
-                }
-                else if(endDateController.text.isEmpty){
+                } else if (endDateController.text.isEmpty) {
                   Utils.toastMessage("Please select project end date");
-                }
-                else if(selectProjectManagerId==null){
+                } else if (selectProjectManagerId == null) {
                   Utils.toastMessage("Please select project manager");
-                }
-                else if(descriptionController.text.isEmpty){
+                } else if (descriptionController.text.isEmpty) {
                   Utils.toastMessage("Please enter description");
-                }
-                else{
+                } else {
                   Map data = {
-                    'user_id' : _userData?.data?.userId.toString(),
-                    'usr_customer_track_id' : _userData?.data?.customerTrackId.toString(),
-                    'usr_role_track_id' : _userData?.data?.roleTrackId.toString(),
-                    'project_name' : titleController.text.toString(),
-                    'project_shortname' : shortNameController.text.toString(),
-                    'client_id' : selectClientId,
-                    'sub_client_id' : selectSubClientId,
-                    'po_number' : poNumberController.text.toString(),
-                    'project_contact' : clientContactController.text.toString(),
-                    'project_total_amount' : amountController.text.toString(),
-                    'project_quotation' : quotationController.text.toString(),
-                    'project_start_date' : startDateController.text.toString(),
-                    'project_end_date' : endDateController.text.toString(),
-                    'project_manager_id' : selectProjectManagerId,
-                    'project_description' : descriptionController.text.toString(),
-                    'budget_hours' : hoursController.text.toString(),
-                    //'project_activity[0][type]:' : '',
-                    'token' : _userData?.token.toString(),
+                    'user_id': _userData?.data?.userId.toString(),
+                    'usr_customer_track_id':
+                        _userData?.data?.customerTrackId.toString(),
+                    'usr_role_track_id':
+                        _userData?.data?.roleTrackId.toString(),
+                    'project_name': titleController.text.toString(),
+                    'project_shortname': shortNameController.text.toString(),
+                    'client_id': selectClientId,
+                    'sub_client_id': selectSubClientId,
+                    'po_number': poNumberController.text.toString(),
+                    'project_contact': clientContactController.text.toString(),
+                    'project_total_amount': totalAmountController.text.toString(),
+                    'project_quotation': quotationController.text.toString(),
+                    'project_start_date': startDateController.text.toString(),
+                    'project_end_date': endDateController.text.toString(),
+                    'project_manager_id': selectProjectManagerId,
+                    'project_description':
+                        descriptionController.text.toString(),
+                    'budget_hours': projectDetailsList[0]['hours'] ?? '',
+                    'token': _userData?.token.toString(),
                   };
-                  projectViewModel.addProjectApi(data,context);
+
+                  for (int i = 0; i < projectDetailsList.length; i++) {
+                    data['project_activity[$i][type]'] = projectDetailsList[i]['projectTypeId'] ?? '';
+                    data['project_activity[$i][hours]'] = projectDetailsList[i]['hours'] ?? '';
+                    data['project_activity[$i][amount]'] = projectDetailsList[i]['amount'] ?? '';
+                  }
+
+                  projectViewModel.addProjectApi(data, context);
                 }
               },
               buttonText: 'Save Project',

@@ -8,7 +8,6 @@ import 'package:intrasense/utils/Utils.dart';
 import 'package:intrasense/view/Home/DashboardScreen.dart';
 import 'package:intrasense/view/appraisal/AppraisalList.dart';
 import 'package:intrasense/view/clientList/ClientList.dart';
-import 'package:intrasense/view/clientList/ClientListDashboard.dart';
 import 'package:intrasense/view/leaves/MyLeavesList.dart';
 import 'package:intrasense/view/manageExpenses/MyExpensesList.dart';
 import 'package:intrasense/view/manageMeetings/MyMeetingsList.dart';
@@ -20,11 +19,9 @@ import 'package:intrasense/view/manageTeam/ManageTeamScreen.dart';
 import 'package:intrasense/view/myTask/MyTaskList.dart';
 import 'package:intrasense/view/myTimeSheet/MyTimeSheetList.dart';
 import 'package:intrasense/view/support/SupportList.dart';
-
 import '../../model/user_model.dart';
 import '../../view_models/user_view_model.dart';
 import '../Login/LoginScreen.dart';
-import '../clientList/ClientListDashboard1.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -46,10 +43,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   List<Widget> _pages = [
-    Dashboardscreen(),
+    Dashboardscreen()
+    /*,
     MyTaskList(),
     Mytimesheetlist(),
-    Clientlistdashboard1(),
     ManageTeamScreen(),
     ManageRoleScreen(),
     ManageGroupScreen(),
@@ -60,11 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     MyLeavesList("my_leave"),
     MyLeavesList("leave_request"),
     AppraisalList(),
-    //self Apprailsel
-    //Training
-    //Reports
-    SupportList(),
-    // knowlwdgeBased
+    SupportList(),*/
   ];
 
   static const List<String> _titles = <String>[
@@ -254,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             fontFamily: 'PoppinsRegular',
                                             fontSize: 15)),
                                     onTap: () {
-                                      _onItemTapped(1);
+                                      //_onItemTapped(1);
                                     },
                                   )),
 
@@ -299,8 +292,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontFamily: 'PoppinsRegular',
                               fontSize: 15)),
                       onTap: () {
-                      //  _onItemTapped(3);
-
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -344,7 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               fontFamily: 'PoppinsRegular',
                                               fontSize: 15)),
                                       onTap: () {
-                                        _onItemTapped(4);
+                                       // _onItemTapped(4);
                                       },
                                     )),
 
@@ -362,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               fontFamily: 'PoppinsRegular',
                                               fontSize: 15)),
                                       onTap: () {
-                                        _onItemTapped(5);
+                                        //_onItemTapped(5);
                                       },
                                     )),
 
@@ -380,7 +371,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               fontFamily: 'PoppinsRegular',
                                               fontSize: 15)),
                                       onTap: () {
-                                        _onItemTapped(6);
+                                       // _onItemTapped(6);
                                       },
                                     ))
 
@@ -400,7 +391,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontFamily: 'PoppinsRegular',
                               fontSize: 15)),
                       onTap: () {
-                        _onItemTapped(7);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MyProjectListScreen(),
+                          ),
+                        );
                       },
                     ),
                     const DividerColor(),
@@ -416,7 +412,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontFamily: 'PoppinsRegular',
                               fontSize: 15)),
                       onTap: () {
-                        _onItemTapped(8);
+                       // _onItemTapped(8);
                       },
                     ),
                     const DividerColor(),
@@ -432,7 +428,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontFamily: 'PoppinsRegular',
                               fontSize: 15)),
                       onTap: () {
-                        _onItemTapped(9);
+                       // _onItemTapped(9);
                       },
                     ),
                     const DividerColor(),
@@ -448,7 +444,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontFamily: 'PoppinsRegular',
                               fontSize: 15)),
                       onTap: () {
-                       // _onItemTapped(10);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -572,7 +567,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             fontFamily: 'PoppinsRegular',
                                             fontSize: 15)),
                                     onTap: () {
-                                      _onItemTapped(12);
+                                     // _onItemTapped(12);
                                     },
                                   )),
 
@@ -701,51 +696,6 @@ class _HomeScreenState extends State<HomeScreen> {
               children: _pages,
             ),
           ),
-
-          //  body: IndexedStack(),
-          /* bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: AppColors.primaryColor,
-        unselectedItemColor: Colors.grey,
-        selectedLabelStyle: const TextStyle(
-            color: AppColors.primaryColor,
-            fontFamily: 'PoppinsRegular',
-            fontSize: 13),
-        unselectedLabelStyle: TextStyle(color: Colors.grey),
-        items: [
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              Images.myTask,
-              width: 25,
-              height: 25,
-            ),
-            label: 'My Tasks',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              Images.myTimesheet,
-              width: 25,
-              height: 25,
-            ),
-            label: 'My Time Sheet',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              Images.myProjects,
-              width: 25,
-              height: 25,
-            ),
-            label: 'My Projects',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              Images.myLeaves,
-              width: 25,
-              height: 25,
-            ),
-            label: 'My Leaves',
-          )
-        ],
-      ),*/
         ));
   }
 

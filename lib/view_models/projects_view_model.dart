@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:intrasense/model/projects/ProjectListModel.dart';
 import 'package:intrasense/model/projects/ProjectManagersModel.dart';
 
+import '../model/projects/AddQuotationModel.dart';
 import '../model/projects/ProjectTypesModel.dart';
 import '../repository/ProjectsRepository.dart';
 import '../utils/Utils.dart';
@@ -12,8 +13,16 @@ class ProjectsViewModel with ChangeNotifier{
   bool _loading = false;
   bool get loading => _loading;
 
+  bool _payslipLoading = false;
+  bool get payslipLoading => _payslipLoading;
+
   setLoading(bool value) {
     _loading = value;
+    notifyListeners();
+  }
+
+  setPaySlipLoading(bool value) {
+    _payslipLoading = value;
     notifyListeners();
   }
 
@@ -84,7 +93,9 @@ class ProjectsViewModel with ChangeNotifier{
       }
       Map<String, dynamic> response = onValue as Map<String, dynamic>;
       Utils.toastMessage(response['message']);
-
+      if (response['status'] == true) {
+        Navigator.pop(context, true);
+      }
     }).onError((error, stackTrace) {
       setLoading(false);
       if (kDebugMode) {
@@ -94,9 +105,38 @@ class ProjectsViewModel with ChangeNotifier{
     });
   }
 
+  Future<AddQuotationModel?> addProjectQuotationApi(dynamic data, BuildContext context) async {
+    setPaySlipLoading(true);
+    try {
+      print("Api params---" + data.toString());
+
+      var response = await _myRepo.addProjectQuotationApi(data, context);
+
+      // Handle JSON object in the response and map it to AddQuotationModel
+      AddQuotationModel responseData = AddQuotationModel.fromJson(response['data']);
+
+      setPaySlipLoading(false);
+
+      if (kDebugMode) {
+        print("Api Response---" + response.toString());
+      }
+
+      return responseData;
+    } catch (error) {
+      setPaySlipLoading(false);
+
+      if (kDebugMode) {
+        print("Api Error--" + error.toString());
+      }
+
+      Utils.toastMessage(error.toString());
+      return null; // Return null if there is an error
+    }
+  }
   Future<List<ProjectListModel>?> getProjectListApi(dynamic data,BuildContext context) async {
     setLoading(true);
     try{
+      print("Api params---" + data.toString());
       var response = await _myRepo.getProjectListApi(data,context);
       List<ProjectListModel> projectList = (response['data'] as List)
           .map((group) => ProjectListModel.fromJson(group))
@@ -115,5 +155,26 @@ class ProjectsViewModel with ChangeNotifier{
       Utils.toastMessage(error.toString());
       return null;
     }
+  }
+
+  Future<void> deleteProjectApi(dynamic data, BuildContext context) async {
+    if (kDebugMode) {
+      print("Api params---$data");
+    }
+    await  _myRepo.deleteProjectApi(data,context).then((onValue) {
+      setLoading(false);
+      if (kDebugMode) {
+        print("Api Response---$onValue");
+      }
+      Map<String, dynamic> response = onValue as Map<String, dynamic>;
+      Utils.toastMessage(response['message']);
+
+    }).onError((error, stackTrace) {
+      setLoading(false);
+      if (kDebugMode) {
+        print(error.toString());
+      }
+      Utils.toastMessage(error.toString());
+    });
   }
 }

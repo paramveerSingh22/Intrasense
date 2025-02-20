@@ -23,6 +23,7 @@ import '../../utils/Utils.dart';
 import '../../view_models/UserProvider.dart';
 import '../../view_models/common_view_model.dart';
 import '../../view_models/user_view_model.dart';
+import 'EditClients.dart';
 
 class ClientList extends StatefulWidget{
   _ClientList createState() => _ClientList();
@@ -289,6 +290,9 @@ class _ClientList extends State<ClientList>{
                                 onDelete: () {
                                   deleteClientApi(
                                       context, item.companyId.toString());
+                                },
+                                onUpdate:(){
+                                  getClientList();
                                 }
                             );
                           },
@@ -552,10 +556,13 @@ class _ClientList extends State<ClientList>{
 class CustomClientListTile extends StatelessWidget {
   final ClientListModel item;
   final Function onDelete;
+  final Function onUpdate;
 
   const CustomClientListTile(
       {super.key, required this.item,
-        required this.onDelete});
+        required this.onDelete,
+        required this.onUpdate,
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -616,7 +623,7 @@ class CustomClientListTile extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
-                        'Are you sure, you want to delete this client.',
+                        "Are you sure, you wan't be able to revert this!",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14,
@@ -719,7 +726,7 @@ class CustomClientListTile extends StatelessWidget {
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   ClientDetailScreen(
-                                                      clientId: item.companyId)),
+                                                      clientDetail: item)),
                                         );
                                       }),
                                 ],
@@ -739,8 +746,18 @@ class CustomClientListTile extends StatelessWidget {
                                         child: Image.asset(Images.editIcon),
                                       ),
                                       onPressed: () async {
-
-
+                                        final result = await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    Editclients(
+                                                        client: item
+                                                    )
+                                            )
+                                        );
+                                        if (result == true) {
+                                          onUpdate();
+                                        }
                                       },
                                     ),
                                   ],

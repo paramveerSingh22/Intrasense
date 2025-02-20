@@ -11,6 +11,7 @@ class CustomTextField extends StatelessWidget {
   final int minLines;
   final int maxLines;
   final TextInputType? keyboardType; // Optional input type
+  final Function(String)? onChanged; // Added onChanged callback
 
   const CustomTextField({
     Key? key,
@@ -23,6 +24,7 @@ class CustomTextField extends StatelessWidget {
     this.minLines = 1,  // Default to 1 line
     this.maxLines = 1,  // Default to 1 line, keeps it single-line by default
     this.keyboardType, // Optional input type parameter
+    this.onChanged, // Accept onChanged as parameter
   }) : super(key: key);
 
   @override
@@ -76,6 +78,7 @@ class CustomTextField extends StatelessWidget {
         )
             : null,
       ),
+      onChanged: onChanged, // Handle the onChanged callback
     );
   }
 }

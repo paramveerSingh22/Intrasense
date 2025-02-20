@@ -14,16 +14,21 @@ import '../../view_models/user_view_model.dart';
 import 'package:provider/provider.dart';
 
 class Addcontact extends StatefulWidget {
+
+  final dynamic clientDetail;
+
+  Addcontact({
+    Key? key,
+    this.clientDetail,
+  }) : super(key: key);
+
   @override
   _Addcontact createState() => _Addcontact();
 }
 
 class _Addcontact extends State<Addcontact> {
   UserModel? _userData;
-  String? selectClientValue;
-  String? selectClientId;
-  List<ClientListModel> clientList = [];
-  List<String> clientNamesList = [];
+  TextEditingController _clientNameController = TextEditingController();
   TextEditingController _designationController = TextEditingController();
   TextEditingController _nameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
@@ -35,30 +40,15 @@ class _Addcontact extends State<Addcontact> {
   void initState() {
     super.initState();
     getUserDetails(context);
+    _clientNameController.text= widget.clientDetail.cmpName;
   }
 
   Future<UserModel> getUserData() => UserViewModel().getUser();
   void getUserDetails(BuildContext context) async {
     _userData = await getUserData();
-    getClientList(context);
     if (kDebugMode) {
       print(_userData);
     }
-  }
-
-  void getClientList(BuildContext context) async {
-    //setLoading(true);
-    final clientViewModel = Provider.of<ClientViewModel>(context, listen: false);
-    Map data = {
-      'user_id': _userData?.data?.userId,
-      'customer_id': _userData?.data?.customerTrackId,
-      'token': _userData?.token,
-    };
-  await clientViewModel.getClientListApi(data, context);
-    setState(() {
-      clientList = clientViewModel.clientList;
-      clientNamesList = clientList.map((item) => item.cmpName).toList();
-    });
   }
 
   @override
@@ -152,27 +142,18 @@ class _Addcontact extends State<Addcontact> {
                 const Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      'Select Client',
+                      'Client Name',
                       style: TextStyle(
                           fontSize: 14,
                           color: AppColors.textColor,
                           fontFamily: 'PoppinsMedium'),
                     )),
-                const SizedBox(height: 5),
-                CustomDropdown(
-                  value: selectClientValue,
-                  items: clientNamesList,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectClientValue = newValue;
-                      selectClientId = clientList
-                          .firstWhere((item) => item.cmpName == newValue)
-                          .companyId;
-                    });
-                  },
-                  hint: 'Select Client',
-                ),
+                CustomTextField(
+                    controller: _clientNameController,
+                    hintText: 'Client Name',
+                    readOnly: true),
                 const SizedBox(height: 15),
+
                 const Align(
                     alignment: Alignment.topLeft,
                     child: Text(
@@ -288,9 +269,7 @@ class _Addcontact extends State<Addcontact> {
                         flex: 10,
                         child: CustomElevatedButton(
                           onPressed: () {
-                            if (selectClientId==null) {
-                              Utils.toastMessage('Please select client name');
-                            } else if (_designationController.text.isEmpty) {
+                             if (_designationController.text.isEmpty) {
                               Utils.toastMessage('Please enter designation');
                             } else if (_nameController.text.isEmpty) {
                               Utils.toastMessage('Please enter name');
@@ -309,7 +288,7 @@ class _Addcontact extends State<Addcontact> {
                                 'user_id': _userData?.data?.userId.toString(),
                                 'usr_role_track_id':
                                     _userData?.data?.roleTrackId.toString(),
-                                'company_id': selectClientId,
+                                'company_id': widget.clientDetail.companyId,
                                 'contactName': _nameController.text.toString(),
                                 'contactEmail':
                                     _emailController.text.toString(),

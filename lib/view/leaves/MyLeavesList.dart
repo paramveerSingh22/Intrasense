@@ -146,8 +146,7 @@ class _MyLeavesList extends State<MyLeavesList> {
       setState(() {
         if (response != null) {
           leaveTypeList = response.toList();
-          leaveTypeNameList =
-              leaveTypeList.map((item) => item.leaveType).toList();
+          leaveTypeNameList = leaveTypeList.map((item) => item.leaveType).toList();
         }
       });
     } catch (error) {

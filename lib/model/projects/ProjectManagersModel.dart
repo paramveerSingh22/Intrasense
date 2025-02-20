@@ -1,14 +1,16 @@
 class ProjectManagersModel {
   String userId;
-  String userName;
+  String projectManagerFirstName;
+  String projectManagerLastName;
 
-  ProjectManagersModel({required this.userId, required this.userName});
+  ProjectManagersModel({required this.userId, required this.projectManagerFirstName, required this.projectManagerLastName});
 
   // Factory method to create a UserModel from JSON
   factory ProjectManagersModel.fromJson(Map<String, dynamic> json) {
     return ProjectManagersModel(
       userId: json['user_id'],
-      userName: json['usr_name'],
+      projectManagerFirstName: json['project_manager_firstname'],
+      projectManagerLastName: json['project_manager_lastname'],
     );
   }
 
@@ -16,7 +18,8 @@ class ProjectManagersModel {
   Map<String, dynamic> toJson() {
     return {
       'user_id': userId,
-      'usr_name': userName,
+      'project_manager_firstname': projectManagerFirstName,
+      'project_manager_lastname': projectManagerLastName,
     };
   }
 }

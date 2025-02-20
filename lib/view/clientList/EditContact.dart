@@ -17,11 +17,16 @@ import 'package:provider/provider.dart';
 import '../../view_models/user_view_model.dart';
 
 class EditContact extends StatefulWidget{
+
+  final dynamic clientDetail;
+
   final ContactListModel contactDetails;
 
   const EditContact({
     Key? key,
-    required this.contactDetails
+    required this.contactDetails,
+    this.clientDetail,
+
 }): super(key: key);
 
   @override
@@ -31,10 +36,7 @@ class EditContact extends StatefulWidget{
 
 class _EditContact extends State<EditContact>{
   UserModel? _userData;
-  String? selectClientValue;
-  String? selectClientId;
-  List<ClientListModel> clientList = [];
-  List<String> clientNamesList = [];
+  TextEditingController _clientNameController = TextEditingController();
   TextEditingController _designationController = TextEditingController();
   TextEditingController _nameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
@@ -45,8 +47,9 @@ class _EditContact extends State<EditContact>{
   @override
   void initState() {
     super.initState();
+    _clientNameController.text= widget.clientDetail.cmpName;
     _designationController.text = widget.contactDetails.contactDesignation.toString();
-    _nameController.text = widget.contactDetails.clientName.toString();
+    _nameController.text = widget.contactDetails.contactName.toString();
     _emailController.text = widget.contactDetails.contactEmail.toString();
     _mobileController.text = widget.contactDetails.contactMobile.toString();
     _landlineController.text = widget.contactDetails.contactLandline.toString();
@@ -57,31 +60,9 @@ class _EditContact extends State<EditContact>{
   Future<UserModel> getUserData() => UserViewModel().getUser();
   void getUserDetails(BuildContext context) async {
     _userData = await getUserData();
-    getClientList(context);
     if (kDebugMode) {
       print(_userData);
     }
-  }
-
-  void getClientList(BuildContext context) async {
-    //setLoading(true);
-    final clientViewModel = Provider.of<ClientViewModel>(context, listen: false);
-    Map data = {
-      'user_id': _userData?.data?.userId,
-      'customer_id': _userData?.data?.customerTrackId,
-      'token': _userData?.token,
-    };
-    await clientViewModel.getClientListApi(data, context);
-    setState(() {
-      clientList = clientViewModel.clientList;
-      clientNamesList = clientList.map((item) => item.cmpName).toList();
-      if(clientNamesList.contains(widget.contactDetails.clientName)){
-        selectClientValue= widget.contactDetails.clientName.toString();
-        selectClientId = clientList
-            .firstWhere((item) => item.cmpName == widget.contactDetails.clientName.toString())
-            .companyId;
-      }
-    });
   }
 
   @override
@@ -175,27 +156,18 @@ class _EditContact extends State<EditContact>{
                     const Align(
                         alignment: Alignment.topLeft,
                         child: Text(
-                          'Select Client',
+                          'Client Name',
                           style: TextStyle(
                               fontSize: 14,
                               color: AppColors.textColor,
                               fontFamily: 'PoppinsMedium'),
                         )),
-                    const SizedBox(height: 5),
-                    CustomDropdown(
-                      value: selectClientValue,
-                      items: clientNamesList,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectClientValue = newValue;
-                          selectClientId = clientList
-                              .firstWhere((item) => item.cmpName == newValue)
-                              .companyId;
-                        });
-                      },
-                      hint: 'Select Client',
-                    ),
+                    CustomTextField(
+                        controller: _clientNameController,
+                        hintText: 'Client Name',
+                        readOnly: true),
                     const SizedBox(height: 15),
+
                     const Align(
                         alignment: Alignment.topLeft,
                         child: Text(
@@ -311,9 +283,7 @@ class _EditContact extends State<EditContact>{
                             flex: 10,
                             child: CustomElevatedButton(
                               onPressed: () {
-                                if (selectClientId== null) {
-                                  Utils.toastMessage('Please select client name');
-                                } else if (_designationController.text.isEmpty) {
+                                 if (_designationController.text.isEmpty) {
                                   Utils.toastMessage('Please enter designation');
                                 } else if (_nameController.text.isEmpty) {
                                   Utils.toastMessage('Please enter name');
@@ -332,7 +302,7 @@ class _EditContact extends State<EditContact>{
                                     'user_id': _userData?.data?.userId.toString(),
                                     'usr_role_track_id':
                                     _userData?.data?.roleTrackId.toString(),
-                                    'company_id': selectClientId,
+                                    'company_id': widget.clientDetail.companyId,
                                     'contactName': _nameController.text.toString(),
                                     'contactEmail':
                                     _emailController.text.toString(),

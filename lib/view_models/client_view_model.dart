@@ -105,6 +105,9 @@ class ClientViewModel with ChangeNotifier{
       }
       Map<String, dynamic> response = onValue as Map<String, dynamic>;
       Utils.toastMessage(response['message']);
+      if (response['status'] == true) {
+        Navigator.pop(context, true);
+      }
 
     }).onError((error, stackTrace) {
       setLoading(false);
@@ -117,10 +120,35 @@ class ClientViewModel with ChangeNotifier{
 
   List<ClientSubsDiaryModel> _subsDiaryList = [];
   List<ClientSubsDiaryModel> get subsDiaryList => _subsDiaryList;
-  Future<void> getSubClientListApi(dynamic data,BuildContext context) async {
+  Future<List<ClientSubsDiaryModel>?> getSubClientListApi(dynamic data,BuildContext context) async {
     setLoading(true);
-    _myRepo.getSubClientListApi(data,context).then((onValue) {
+    try{
+      var response = await _myRepo.getSubClientListApi(data,context);
+      List<ClientSubsDiaryModel> subsidiaryList = (response['data'] as List)
+          .map((employee) => ClientSubsDiaryModel.fromJson(employee))
+          .toList();
+      _subsDiaryList = subsidiaryList;
+
+      notifyListeners();
+
+      setLoading(false);
       if (kDebugMode) {
+        print("Api Response---" + response.toString());
+      }
+      return subsidiaryList;
+    }
+    catch (error) {
+      setLoading(false);
+      if (kDebugMode) {
+        print("Api Error--" + error.toString());
+      }
+      Utils.toastMessage(error.toString());
+      return null;
+    }
+
+    /*_myRepo.getSubClientListApi(data,context).then((onValue) {
+      if (kDebugMode) {
+        print("Api Params---$data");
         print("Api Response---$onValue");
       }
       List<dynamic> dataList = onValue['data'] as List<dynamic>;
@@ -137,8 +165,10 @@ class ClientViewModel with ChangeNotifier{
         print("Api Error---$error");
       }
       Utils.toastMessage(error.toString());
-    });
+    });*/
   }
+
+
 
   Future<void> deleteSubClientApi(dynamic data, BuildContext context) async {
     if (kDebugMode) {
@@ -173,6 +203,9 @@ class ClientViewModel with ChangeNotifier{
       }
       Map<String, dynamic> response = onValue as Map<String, dynamic>;
       Utils.toastMessage(response['message']);
+      if (response['status'] == true) {
+        Navigator.pop(context, true);
+      }
 
     }).onError((error, stackTrace) {
       setLoading(false);

@@ -17,6 +17,14 @@ import '../../view_models/user_view_model.dart';
 import 'package:provider/provider.dart';
 
 class Addsubsidiary extends StatefulWidget{
+
+  final dynamic clientDetail;
+
+  Addsubsidiary({
+    Key? key,
+    this.clientDetail,
+  }) : super(key: key);
+
   @override
   _AddSubsidiary createState() => _AddSubsidiary();
 }
@@ -28,16 +36,12 @@ class _AddSubsidiary extends State<Addsubsidiary>{
   List<CountryListModel> countryList = [];
   List<String> countryNamesList = [];
 
-  String? selectClientValue;
-  String? selectClientId;
-  List<ClientListModel> clientList = [];
-  List<String> clientNamesList = [];
-
   String? selectedIndustryId;
   String? selectIndustryValue;
   List<IndustryListModel> industryList = [];
   List<String> industryNamesList = [];
 
+  TextEditingController _clientNameController = TextEditingController();
   TextEditingController _subClientNameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _contactController = TextEditingController();
@@ -51,32 +55,17 @@ class _AddSubsidiary extends State<Addsubsidiary>{
   void initState() {
     super.initState();
     getUserDetails(context);
+    _clientNameController.text= widget.clientDetail.cmpName;
   }
 
   Future<UserModel> getUserData() => UserViewModel().getUser();
   void getUserDetails(BuildContext context) async {
     _userData = await getUserData();
-    getClientList(context);
     fetchCountries();
     fetchIndustries();
     if (kDebugMode) {
       print(_userData);
     }
-  }
-
-  void getClientList(BuildContext context) async {
-    //setLoading(true);
-    final clientViewModel = Provider.of<ClientViewModel>(context, listen: false);
-    Map data = {
-      'user_id': _userData?.data?.userId,
-      'customer_id': _userData?.data?.customerTrackId,
-      'token': _userData?.token,
-    };
-    await clientViewModel.getClientListApi(data, context);
-    setState(() {
-      clientList = clientViewModel.clientList;
-      clientNamesList = clientList.map((item) => item.cmpName).toList();
-    });
   }
 
   void fetchCountries() async {
@@ -131,7 +120,7 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                       SizedBox(width: 8),
                       // Icon aur text ke beech thoda space dene ke liye
                       Text(
-                        'Add client',
+                        'Add Subsidiary',
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.white,
@@ -157,7 +146,7 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                   top: 20, // Adjust the position of the text as needed
                   left: 30, // Adjust the position of the text as needed
                   child: Text(
-                    'Add Client',
+                    'Add Subsidiary',
                     style: TextStyle(
                         fontSize: 14,
                         color: AppColors.secondaryOrange,
@@ -189,28 +178,17 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                     const Align(
                         alignment: Alignment.topLeft,
                         child: Text(
-                          'Select Client',
+                          'Client Name',
                           style: TextStyle(
                               fontSize: 14,
                               color: AppColors.textColor,
                               fontFamily: 'PoppinsMedium'),
                         )),
-                    const SizedBox(height: 5),
-                    CustomDropdown(
-                      value: selectClientValue,
-                      items: clientNamesList,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectClientValue = newValue;
-                          selectClientId = clientList
-                              .firstWhere((item) => item.cmpName == newValue)
-                              .companyId;
-                        });
-                      },
-                      hint: 'Select Client',
-                    ),
+                    CustomTextField(
+                        controller: _clientNameController,
+                        hintText: 'Client Name',
+                        readOnly: true),
                     const SizedBox(height: 15),
-
 
                     const Align(
                         alignment: Alignment.topLeft,
@@ -226,6 +204,9 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                       hintText: 'Client Name',
                     ),
                     const SizedBox(height: 15),
+
+
+
                     const Align(
                         alignment: Alignment.topLeft,
                         child: Text(
@@ -387,10 +368,7 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                             flex: 10,
                             child:  CustomElevatedButton(
                               onPressed: () {
-                                if(selectClientId==null){
-                                  Utils.toastMessage('Please select client name');
-                                }
-                                else if(_subClientNameController.text.isEmpty){
+                                if(_subClientNameController.text.isEmpty){
                                   Utils.toastMessage('Please enter sub client name');
                                 }
                                 else if(_emailController.text.isEmpty){
@@ -421,7 +399,7 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                                   Map data = {
                                     'user_id': _userData?.data?.userId.toString(),
                                     'usr_role_track_id': _userData?.data?.roleTrackId.toString(),
-                                    'company_id': selectClientId,
+                                    'company_id': widget.clientDetail.companyId,
                                     'subCompany_name': _subClientNameController.text.toString(),
                                     'billing_address1': _address1Controller.text.toString(),
                                     'billing_address2': _address2Controller.text.toString(),
@@ -429,7 +407,7 @@ class _AddSubsidiary extends State<Addsubsidiary>{
                                     'state': _stateController.text.toString(),
                                     'city': _cityController.text.toString(),
                                     'postal_code': _pincodeController.text.toString(),
-                                    'industry_type': "1",
+                                    'industry_type': selectedIndustryId,
                                     'email': _emailController.text.toString(),
                                     'contact_no': _contactController.text.toString(),
                                     'token': _userData?.token.toString(),

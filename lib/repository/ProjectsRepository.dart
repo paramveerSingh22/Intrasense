@@ -37,9 +37,29 @@ class ProjectsRepository{
     }
   }
 
+  Future <dynamic> updateProjectApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.updateProjectUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
   Future <dynamic> addProjectQuotationApi(dynamic data,BuildContext context) async {
     try {
       dynamic response = await apiService.getPostApiResponse(AppUrl.addProjectQuotationUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
+  Future <dynamic> getProjectDetailApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.getProjectDetailUrl, data,context);
       return response;
     }
     catch (e) {

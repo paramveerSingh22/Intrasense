@@ -19,6 +19,10 @@ import '../../view_models/user_view_model.dart';
 import 'package:provider/provider.dart';
 
 class AddProjectScreen extends StatefulWidget {
+  final dynamic projectId;
+
+  const AddProjectScreen({Key? key, this.projectId}) : super(key: key);
+
   _AddProjectScreen createState() => _AddProjectScreen();
 }
 
@@ -38,11 +42,13 @@ class _AddProjectScreen extends State<AddProjectScreen> {
   List<ProjectManagersModel> projectManagerList = [];
   List<String> projectManagerNamesList = [];
 
+  String? selectProjectStatusValue;
   String? selectProjectTypeValue;
   List<ProjectTypesModel> projectTypesList = [];
   List<String> projectTypesNamesList = [];
 
   bool _isLoading = false;
+  bool _isUpdate = false;
   UserModel? _userData;
 
   TextEditingController titleController = TextEditingController();
@@ -73,14 +79,20 @@ class _AddProjectScreen extends State<AddProjectScreen> {
 
   @override
   void initState() {
+    if (widget.projectId != null) {
+      _isUpdate = true;
+    }
+
     super.initState();
 
     while (hoursControllers.length < projectDetailsList.length) {
-      hoursControllers.add(TextEditingController(text: projectDetailsList[hoursControllers.length]['hours'] ?? ''));
+      hoursControllers.add(TextEditingController(
+          text: projectDetailsList[hoursControllers.length]['hours'] ?? ''));
     }
 
     while (amountControllers.length < projectDetailsList.length) {
-      amountControllers.add(TextEditingController(text: projectDetailsList[amountControllers.length]['amount'] ?? ''));
+      amountControllers.add(TextEditingController(
+          text: projectDetailsList[amountControllers.length]['amount'] ?? ''));
     }
     updateTotalAmount();
     getUserDetails(context);
@@ -101,6 +113,10 @@ class _AddProjectScreen extends State<AddProjectScreen> {
     getClientList();
     getProjectManagersList();
     getProjectTypesList();
+
+    if (widget.projectId != null) {
+      getProjectDetailApi();
+    }
   }
 
   void getClientList() async {
@@ -234,6 +250,78 @@ class _AddProjectScreen extends State<AddProjectScreen> {
     }
   }
 
+  void getProjectDetailApi() async {
+    setLoading(true);
+    try {
+      Map data = {
+        'user_id': _userData?.data?.userId,
+        'usr_customer_track_id': _userData?.data?.customerTrackId,
+        'usr_role_track_id': _userData?.data?.roleTrackId,
+        'project_id': widget.projectId,
+        'token': _userData?.token,
+      };
+      final projectViewModel =
+          Provider.of<ProjectsViewModel>(context, listen: false);
+      final response =
+          await projectViewModel.getProjectDetailApi(data, context);
+
+      if (response != null) {
+        setState(() {
+          final projectDetail = response[0];
+          titleController.text = projectDetail.prName;
+          shortNameController.text = projectDetail.prShortName;
+          poNumberController.text = projectDetail.prPoNumber;
+          clientContactController.text = projectDetail.prContactNumber;
+          quotationController.text = projectDetail.prQuotation;
+          startDateController.text = projectDetail.prStartDate;
+          endDateController.text = projectDetail.prEndDate;
+          descriptionController.text = projectDetail.prComments;
+
+          selectClientId = projectDetail.clientId;
+          selectClientValue = projectDetail.clientName;
+
+          getSubClientsList();
+
+          selectSubClientId = projectDetail.subClientId;
+          selectSubClientValue = projectDetail.subClientName;
+
+          selectProjectManagerId = projectDetail.managerId;
+          selectProjectManagerValue = projectDetail.projectManagerName;
+
+          projectDetailsList.clear();
+          hoursControllers.clear();
+          amountControllers.clear();
+          List<Map<String, String>> activityList = [];
+
+          for (var activity in projectDetail.activityType) {
+            activityList.add({
+              'projectType': activity.categoryName,
+              'projectTypeId': activity.activityId,
+              'hours': activity.activityHours,
+              'amount': activity.activityAmount,
+            });
+
+            hoursControllers.add(
+                TextEditingController(text: activity.activityHours.toString()));
+            amountControllers.add(TextEditingController(
+                text: activity.activityAmount.toString()));
+          }
+          projectDetailsList.addAll(activityList);
+          updateTotalAmount();
+        });
+      }
+    } catch (error, stackTrace) {
+      if (kDebugMode) {
+        print(error);
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load client list')),
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
   void addNewItem() {
     setState(() {
       projectDetailsList.add(
@@ -285,7 +373,6 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                           hoursControllers.removeAt(index);
                           amountControllers.removeAt(index);
                         });
-
                       },
                     )
                   ],
@@ -305,9 +392,12 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                 setState(() {
                   projectDetailsList[index]['projectType'] = newValue ?? '';
                   projectDetailsList[index]['projectTypeId'] = projectTypesList
+                      .firstWhere((item) => item.categoryType.any(
+                          (category) => category.moduleCatTitle == newValue))
+                      .categoryType
                       .firstWhere(
-                          (item) => item.categoryType.any((category) => category.moduleCatTitle == newValue)
-                  ).categoryType.firstWhere((category) => category.moduleCatTitle == newValue).moduleCategoryId;
+                          (category) => category.moduleCatTitle == newValue)
+                      .moduleCategoryId;
                 });
               },
               hint: 'Project type',
@@ -365,15 +455,14 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                     flex: 10,
                     child: Container(
                       child: CustomTextField(
-                        controller: amountControllers[index],
-                        hintText: 'Amount',
+                          controller: amountControllers[index],
+                          hintText: 'Amount',
                           onChanged: (String newValue) {
                             setState(() {
                               projectDetailsList[index]['amount'] = newValue;
                               updateTotalAmount();
                             });
-                          }
-                      ),
+                          }),
                     ))
               ],
             ),
@@ -416,21 +505,21 @@ class _AddProjectScreen extends State<AddProjectScreen> {
               onTap: () {
                 Navigator.of(context).pop();
               },
-              child: const Padding(
-                padding: EdgeInsets.only(top: 50, left: 30),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 50, left: 30),
                 child: Align(
                   alignment: Alignment.topLeft,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.arrow_back,
                         color: Colors.white,
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Text(
-                        'Add Project',
-                        style: TextStyle(
+                        _isUpdate ? 'Edit Project' : 'Add Project',
+                        style: const TextStyle(
                           fontSize: 16,
                           color: Colors.white,
                           fontFamily: 'PoppinsRegular',
@@ -451,12 +540,12 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                   Images.curveOverlay,
                   width: MediaQuery.of(context).size.width,
                 ),
-                const Positioned(
+                Positioned(
                   top: 20,
                   left: 30,
                   child: Text(
-                    'Add Project',
-                    style: TextStyle(
+                    _isUpdate ? 'Edit Project' : 'Add Project',
+                    style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.secondaryOrange,
                         fontFamily: 'PoppinsMedium'),
@@ -594,13 +683,12 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                   const SizedBox(height: 15),
                   for (int i = 0; i < projectDetailsList.length; i++)
                     buildProjectDetailItem(i),
-
                   const SizedBox(height: 15),
                   Row(
                     children: [
                       const Expanded(
                           flex: 5,
-                          child:Text(
+                          child: Text(
                             'Total Amount',
                             style: TextStyle(
                                 fontSize: 14,
@@ -633,32 +721,36 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                           flex: 10,
                           child: ButtonOrangeBorder(
                             onPressed: () async {
-
                               bool isValid = projectDetailsList.isNotEmpty &&
                                   projectDetailsList.every((project) =>
-                                  project['projectType']?.isNotEmpty == true &&
-                                      project['projectTypeId']?.isNotEmpty == true &&
+                                      project['projectType']?.isNotEmpty ==
+                                          true &&
+                                      project['projectTypeId']?.isNotEmpty ==
+                                          true &&
                                       project['hours']?.isNotEmpty == true &&
                                       project['amount']?.isNotEmpty == true);
 
-
                               if (!isValid) {
-                                Utils.toastMessage("Please ensure all fields in the project list are filled out.");
+                                Utils.toastMessage(
+                                    "Please ensure all fields in the project list are filled out.");
                                 return;
                               }
 
                               Map data = {
                                 'user_id': _userData?.data?.userId.toString(),
                                 'usr_customer_track_id':
-                                _userData?.data?.customerTrackId.toString(),
+                                    _userData?.data?.customerTrackId.toString(),
                                 'usr_role_track_id':
-                                _userData?.data?.roleTrackId.toString(),
-                                'quotation_amount': totalAmountController.text.toString(),
+                                    _userData?.data?.roleTrackId.toString(),
+                                'quotation_amount':
+                                    totalAmountController.text.toString(),
                                 'token': _userData?.token.toString(),
                               };
-                             final response= await projectViewModel.addProjectQuotationApi(data, context);
+                              final response = await projectViewModel
+                                  .addProjectQuotationApi(data, context);
 
-                             quotationController.text= response!.pdfLink.toString();
+                              quotationController.text =
+                                  response!.pdfLink.toString();
                             },
                             buttonText: 'Generate Quotation',
                             loading: projectViewModel.payslipLoading,
@@ -806,6 +898,33 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                     controller: descriptionController,
                     hintText: 'Description',
                   ),
+                  const SizedBox(height: 15),
+                  const Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        'Project status',
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textColor,
+                            fontFamily: 'PoppinsMedium'),
+                      )),
+                  const SizedBox(height: 5),
+                  CustomDropdown(
+                    value: selectProjectStatusValue,
+                    items: const [
+                      "PROGRESS",
+                      "ON HOLD",
+                      "COMPLETE",
+                      "CANCELED"
+                    ],
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectProjectStatusValue = newValue;
+                      });
+                    },
+                    hint: 'Project status',
+                  ),
+                  const SizedBox(height: 5),
                 ],
               ),
             ),
@@ -828,11 +947,13 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                   Utils.toastMessage("Please enter P.O number");
                 } else if (clientContactController.text.isEmpty) {
                   Utils.toastMessage("Please enter client contact");
-                } /*else if (hoursController.text.isEmpty) {
+                }
+                /*else if (hoursController.text.isEmpty) {
                   Utils.toastMessage("Please enter project hours");
                 } else if (amountController.text.isEmpty) {
                   Utils.toastMessage("Please enter project amount");
-                }*/ else if (quotationController.text.isEmpty) {
+                }*/
+                else if (quotationController.text.isEmpty) {
                   Utils.toastMessage("Please generate project quotation");
                 } else if (startDateController.text.isEmpty) {
                   Utils.toastMessage("Please select project start date");
@@ -842,6 +963,9 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                   Utils.toastMessage("Please select project manager");
                 } else if (descriptionController.text.isEmpty) {
                   Utils.toastMessage("Please enter description");
+                } else if (_isUpdate == true &&
+                    selectProjectStatusValue == null) {
+                  Utils.toastMessage("Please select project status");
                 } else {
                   Map data = {
                     'user_id': _userData?.data?.userId.toString(),
@@ -855,7 +979,8 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                     'sub_client_id': selectSubClientId,
                     'po_number': poNumberController.text.toString(),
                     'project_contact': clientContactController.text.toString(),
-                    'project_total_amount': totalAmountController.text.toString(),
+                    'project_total_amount':
+                        totalAmountController.text.toString(),
                     'project_quotation': quotationController.text.toString(),
                     'project_start_date': startDateController.text.toString(),
                     'project_end_date': endDateController.text.toString(),
@@ -867,20 +992,46 @@ class _AddProjectScreen extends State<AddProjectScreen> {
                   };
 
                   for (int i = 0; i < projectDetailsList.length; i++) {
-                    data['project_activity[$i][type]'] = projectDetailsList[i]['projectTypeId'] ?? '';
-                    data['project_activity[$i][hours]'] = projectDetailsList[i]['hours'] ?? '';
-                    data['project_activity[$i][amount]'] = projectDetailsList[i]['amount'] ?? '';
+                    data['project_activity[$i][type]'] =
+                        projectDetailsList[i]['projectTypeId'] ?? '';
+                    data['project_activity[$i][hours]'] =
+                        projectDetailsList[i]['hours'] ?? '';
+                    data['project_activity[$i][amount]'] =
+                        projectDetailsList[i]['amount'] ?? '';
                   }
 
-                  projectViewModel.addProjectApi(data, context);
+                  if (_isUpdate) {
+                    String status =
+                        getStatusText(selectProjectStatusValue.toString());
+                    data['project_id'] = widget.projectId.toString();
+                    data['project_status'] = status;
+                    projectViewModel.updateProjectApi(data, context);
+                  } else {
+                    projectViewModel.addProjectApi(data, context);
+                  }
                 }
               },
-              buttonText: 'Save Project',
+              buttonText: _isUpdate ? 'UPDATE Project' : 'SAVE PROJECT',
               loading: projectViewModel.loading,
             ),
           ),
         ],
       ),
     );
+  }
+
+  String getStatusText(String status) {
+    switch (status) {
+      case "PROGRESS":
+        return '1';
+      case "ON HOLD":
+        return '2';
+      case "COMPLETE":
+        return '3';
+      case "CANCELED":
+        return '4';
+      default:
+        return '4';
+    }
   }
 }

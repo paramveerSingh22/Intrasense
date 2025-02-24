@@ -4,6 +4,7 @@ import 'package:intrasense/model/projects/ProjectListModel.dart';
 import 'package:intrasense/model/projects/ProjectManagersModel.dart';
 
 import '../model/projects/AddQuotationModel.dart';
+import '../model/projects/ProjectDetailModel.dart';
 import '../model/projects/ProjectTypesModel.dart';
 import '../repository/ProjectsRepository.dart';
 import '../utils/Utils.dart';
@@ -105,6 +106,30 @@ class ProjectsViewModel with ChangeNotifier{
     });
   }
 
+  Future<void> updateProjectApi(dynamic data, BuildContext context) async {
+    setLoading(true);
+    if (kDebugMode) {
+      print("Api params---$data");
+    }
+    _myRepo.updateProjectApi(data,context).then((onValue) {
+      setLoading(false);
+      if (kDebugMode) {
+        print("Api Response---$onValue");
+      }
+      Map<String, dynamic> response = onValue as Map<String, dynamic>;
+      Utils.toastMessage(response['message']);
+      if (response['status'] == true) {
+        Navigator.pop(context, true);
+      }
+    }).onError((error, stackTrace) {
+      setLoading(false);
+      if (kDebugMode) {
+        print(error.toString());
+      }
+      Utils.toastMessage(error.toString());
+    });
+  }
+
   Future<AddQuotationModel?> addProjectQuotationApi(dynamic data, BuildContext context) async {
     setPaySlipLoading(true);
     try {
@@ -133,6 +158,7 @@ class ProjectsViewModel with ChangeNotifier{
       return null; // Return null if there is an error
     }
   }
+
   Future<List<ProjectListModel>?> getProjectListApi(dynamic data,BuildContext context) async {
     setLoading(true);
     try{
@@ -177,4 +203,33 @@ class ProjectsViewModel with ChangeNotifier{
       Utils.toastMessage(error.toString());
     });
   }
+
+  Future<List<ProjectDetailModel>?> getProjectDetailApi(dynamic data, BuildContext context) async {
+    setLoading(true);
+    try {
+      print("Api params---" + data.toString());
+      var response = await _myRepo.getProjectDetailApi(data, context);
+      List<ProjectDetailModel> projectDetailList = (response['data'] as List)
+          .map((group) => ProjectDetailModel.fromJson(group))
+          .toList();
+      setLoading(false);
+
+      if (kDebugMode) {
+        print("Api Response---" + response.toString());
+      }
+
+      return projectDetailList;
+    } catch (error) {
+      setLoading(false);
+
+      if (kDebugMode) {
+        print("Api Error--" + error.toString());
+      }
+
+      Utils.toastMessage(error.toString());
+      return null;
+    }
+  }
+
+
 }

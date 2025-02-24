@@ -1291,18 +1291,18 @@ class CustomProjectListTile extends StatelessWidget {
                                       child: Image.asset(Images.editIcon),
                                     ),
                                     onPressed: () async {
-                                      /* final result = await Navigator.push(
+                                       final result = await Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  Editclients(
-                                                      client: item
+                                                  AddProjectScreen(
+                                                      projectId: item.projectId
                                                   )
                                           )
                                       );
                                       if (result == true) {
-                                        onUpdate();
-                                      }*/
+                                        //onUpdate();
+                                      }
                                     },
                                   ),
                                 ],

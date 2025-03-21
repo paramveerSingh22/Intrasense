@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intrasense/model/projects/ProjectListModel.dart';
 import 'package:intrasense/model/projects/ProjectTypesModel.dart';
 import 'package:intrasense/view/manageProjects/AddProjectScreen.dart';
+import 'package:intrasense/view/manageProjects/ProjectDetailScreen.dart';
 import 'package:intrasense/view_models/projects_view_model.dart';
 
 import '../../model/client_list_model.dart';
@@ -20,6 +21,11 @@ import '../../view_models/UserProvider.dart';
 import '../../view_models/client_view_model.dart';
 import '../../view_models/user_view_model.dart';
 import 'package:provider/provider.dart';
+
+import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 
 class MyProjectListScreen extends StatefulWidget {
   @override
@@ -185,7 +191,7 @@ class _MyProjectListScreen extends State<MyProjectListScreen> {
       setState(() {
         if (response != null) {
           clientList = response.toList();
-          clientNameList = clientList.map((item) => item.cmpName).toList();
+          clientNameList = clientList.map((item) => item.cmpName.toString()).toList();
         }
       });
       Utils.hideLoadingDialog(context);
@@ -784,444 +790,6 @@ class CustomProjectListTile extends StatelessWidget {
       );
     }
 
-    void projectDetailDialog() {
-      showModalBottomSheet(
-        context: context,
-        isDismissible: false,
-        enableDrag: false,
-        isScrollControlled: true,
-        builder: (BuildContext context) {
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    color: AppColors.secondaryOrange.withOpacity(0.1),
-                    padding:
-                    const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'PROJECT DETAIL - ${item.prName}',
-                          style: const TextStyle(
-                              fontSize: 14,
-                              color: AppColors.secondaryOrange,
-                              fontFamily: 'PoppinsMedium'),
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            color: AppColors.textColor,
-                          ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Expanded(
-                          flex: 3,
-                          child: Text(
-                            'Title',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsRegular',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const Expanded(
-                            flex: 1,
-                            child: Text(
-                              ":",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            )),
-                        Expanded(
-                            flex: 2,
-                            child: Text(
-                              item.prName.toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ))
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Expanded(
-                          flex: 3,
-                          child: Text(
-                            'Short Name',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsRegular',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const Expanded(
-                            flex: 1,
-                            child: Text(
-                              ":",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            )),
-                        Expanded(
-                            flex: 2,
-                            child: Text(
-                              item.prShortName.toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ))
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Expanded(
-                          flex: 3,
-                          child: Text(
-                            'Client',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsRegular',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const Expanded(
-                            flex: 1,
-                            child: Text(
-                              ":",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            )),
-                        Expanded(
-                            flex: 2,
-                            child: Text(
-                              item.clientName.toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ))
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Expanded(
-                          flex: 3,
-                          child: Text(
-                            'Sub-Client',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsRegular',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const Expanded(
-                            flex: 1,
-                            child: Text(
-                              ":",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            )),
-                        Expanded(
-                            flex: 2,
-                            child: Text(
-                              item.clientName.toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ))
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Expanded(
-                          flex: 3,
-                          child: Text(
-                            'P.O Number',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsRegular',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const Expanded(
-                            flex: 1,
-                            child: Text(
-                              ":",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            )),
-                        Expanded(
-                            flex: 2,
-                            child: Text(
-                              item.prPoNumber.toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ))
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Expanded(
-                          flex: 3,
-                          child: Text(
-                            'Client Contact',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsRegular',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const Expanded(
-                            flex: 1,
-                            child: Text(
-                              ":",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            )),
-                        Expanded(
-                            flex: 2,
-                            child: Text(
-                              item.prContactNumber.toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ))
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Expanded(
-                          flex: 3,
-                          child: Text(
-                            'Start Date',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsRegular',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const Expanded(
-                            flex: 1,
-                            child: Text(
-                              ":",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            )),
-                        Expanded(
-                            flex: 2,
-                            child: Text(
-                              item.prStartDate.toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ))
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Expanded(
-                          flex: 3,
-                          child: Text(
-                            'Due Date',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsRegular',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const Expanded(
-                            flex: 1,
-                            child: Text(
-                              ":",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            )),
-                        Expanded(
-                            flex: 2,
-                            child: Text(
-                              item.prEndDate.toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ))
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Expanded(
-                          flex: 3,
-                          child: Text(
-                            'Description',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textColor,
-                              fontFamily: 'PoppinsRegular',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const Expanded(
-                            flex: 1,
-                            child: Text(
-                              ":",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            )),
-                        Expanded(
-                            flex: 2,
-                            child: Text(
-                              item.prComments.toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ))
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            ),
-          );
-        },
-      );
-    }
-
     return Stack(
       children: [
         Padding(
@@ -1273,7 +841,15 @@ class CustomProjectListTile extends StatelessWidget {
                                         child: Image.asset(Images.eyeIcon),
                                       ),
                                       onPressed: () async {
-                                        projectDetailDialog();
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ProjectDetailScreen(
+                                                      projectId: item.projectId
+                                                  )),
+                                        );
+                                       // projectDetailDialog();
                                       }),
                                 ],
                               )),

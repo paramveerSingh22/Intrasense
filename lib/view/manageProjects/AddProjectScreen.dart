@@ -133,7 +133,7 @@ class _AddProjectScreen extends State<AddProjectScreen> {
       setState(() {
         if (response != null) {
           clientList = response.toList();
-          clientNamesList = clientList.map((item) => item.cmpName).toList();
+          clientNamesList = clientList.map((item) => item.cmpName.toString()).toList();
         }
       });
     } catch (error, stackTrace) {

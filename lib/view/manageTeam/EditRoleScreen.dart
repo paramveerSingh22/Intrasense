@@ -38,24 +38,31 @@ class _EditRoleScreen extends State<EditRoleScreen> {
     _roleNameController.text = widget.roleDetails.roleName.toString();
     _notesController.text = widget.roleDetails.description.toString();
     final permissions = widget.roleDetails.permissions.toString();
+
+    // Check if permissions starts and ends with brackets indicating a JSON array
     if (permissions.startsWith('[') && permissions.endsWith(']')) {
       try {
+        // Try to decode the JSON array
         selectedPermissions = List<String>.from(jsonDecode(permissions));
       } catch (e) {
+        // If decoding fails, fallback to formatting the string
         selectedPermissions = _formatPermissionsString(permissions);
       }
     } else {
+      // If permissions are not a valid JSON array, format the string
       selectedPermissions = _formatPermissionsString(permissions);
     }
-    selectedPermissions = List<String>.from(
-        jsonDecode(widget.roleDetails.permissions.toString()));
   }
 
   List<String> _formatPermissionsString(String permissions) {
+    // Clean the string from brackets and extra spaces
     String cleanedPermissions =
-        permissions.replaceAll('[', '').replaceAll(']', '');
+    permissions.replaceAll('[', '').replaceAll(']', '').replaceAll('"', '');
+
+    // Split by commas and trim any extra spaces
     List<String> formattedPermissions =
-        cleanedPermissions.split(',').map((s) => s.trim()).toList();
+    cleanedPermissions.split(',').map((s) => s.trim()).toList();
+
     return formattedPermissions;
   }
 
@@ -196,13 +203,13 @@ class _EditRoleScreen extends State<EditRoleScreen> {
                       )),
                   const CheckboxWithLabel(
                     label: 'View',
-                    initialValue: true,
+                    value: true,
                     isDisabled: true,
                     onChanged: null,
                   ),
                   CheckboxWithLabel(
                     label: 'Create',
-                    initialValue: selectedPermissions.contains('Create'),
+                    value: selectedPermissions.contains('Create'),
                     onChanged: (bool? value) {
                       setState(() {
                         if (value == true) {
@@ -215,7 +222,7 @@ class _EditRoleScreen extends State<EditRoleScreen> {
                   ),
                   CheckboxWithLabel(
                     label: 'Approve',
-                    initialValue: selectedPermissions.contains('Approve'),
+                    value: selectedPermissions.contains('Approve'),
                     onChanged: (bool? value) {
                       setState(() {
                         if (value == true) {
@@ -228,7 +235,7 @@ class _EditRoleScreen extends State<EditRoleScreen> {
                   ),
                   CheckboxWithLabel(
                     label: 'Manage Support',
-                    initialValue: selectedPermissions.contains('Support'),
+                    value: selectedPermissions.contains('Support'),
                     onChanged: (bool? value) {
                       setState(() {
                         if (value == true) {

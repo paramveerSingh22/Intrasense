@@ -1,5 +1,6 @@
 class AppUrl{
   static var baseUrl='https://intrasense.co.uk/app/api/';
+  static var imageUrl='https://intrasense.co.uk/app/';
   static var loginUrl= baseUrl + 'common/login';
   static var forgotPasswordUrl= baseUrl + 'common/forgetPassword';
   static var forgotPasswordVerifyOtpUrl= baseUrl + 'common/forgetPassword/otpverify';
@@ -7,6 +8,7 @@ class AppUrl{
 
   static var countryListUrl= baseUrl + 'common/countryList';
   static var industryListUrl= baseUrl + 'common/industryList';
+  static var timeZoneListUrl= baseUrl + 'meeting/timezoneList';
 
   static var clientListUrl= baseUrl + 'client/addClient/getCompanies';
   static var subClientListUrl= baseUrl + 'client/addsubCompany/getsubCompanies';
@@ -74,5 +76,20 @@ class AppUrl{
   static var addTicketCommentUrl= baseUrl + 'support/generateTicket/ticketresponse';
   static var ticketDetailUrl= baseUrl + 'support/generateTicket/ticketdetailMobVer';
   static var updateTicketStatusUrl= baseUrl + 'support/generateTicket/updateticketstatus';
+
+///for meetings
+  static var meetingListUrl = baseUrl + 'meeting/meetingList';
+  static var meetingDetailUrl = baseUrl + 'meeting/meetingDetail';
+  static var meetingGroupListUrl = baseUrl + 'meeting/groupList';
+  static var addMeetingUrl = baseUrl + 'meeting/createMeeting';
+  static var meetingRevertUrl = baseUrl + 'meeting/meetingRevert';
+  static var meetingCancelUrl = baseUrl + 'meeting/cancelMeeting';
+
+  ////for team
+
+  static var addEmployeeUrl= baseUrl + 'employees/addEmployee';
+  static var getmployeeDetailUrl= baseUrl + 'employees/employeeDetail';
+  static var commonImageUploadUrl= baseUrl + 'common/images';
+  static var teamDeleteUrl= baseUrl + 'employees/deleteEmployee';
 
 }

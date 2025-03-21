@@ -277,7 +277,7 @@ class _EditTask extends State<EditTask> {
       await clientViewModel.getClientListApi(data, context);
       clientList = clientViewModel.clientList;
       setState(() {
-        clientNamesList = clientList.map((item) => item.cmpName).toList();
+        clientNamesList = clientList.map((item) => item.cmpName.toString()).toList();
 
         if(selectClientId!=null){
           selectClientValue = clientList

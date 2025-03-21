@@ -335,7 +335,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                               fontFamily: 'PoppinsRegular',
                                               fontSize: 15)),
                                       onTap: () {
-                                       // _onItemTapped(4);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ManageTeamScreen(),
+                                          ),
+                                        );
                                       },
                                     )),
 
@@ -353,7 +358,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                               fontFamily: 'PoppinsRegular',
                                               fontSize: 15)),
                                       onTap: () {
-                                        //_onItemTapped(5);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ManageRoleScreen(),
+                                          ),
+                                        );
                                       },
                                     )),
 
@@ -371,7 +381,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                               fontFamily: 'PoppinsRegular',
                                               fontSize: 15)),
                                       onTap: () {
-                                       // _onItemTapped(6);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ManageGroupScreen(),
+                                          ),
+                                        );
                                       },
                                     ))
 
@@ -428,7 +443,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontFamily: 'PoppinsRegular',
                               fontSize: 15)),
                       onTap: () {
-                       // _onItemTapped(9);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MyMeetingslist(),
+                          ),
+                        );
                       },
                     ),
                     const DividerColor(),

@@ -51,14 +51,14 @@ class _Editclients extends State<Editclients>{
   @override
   void initState() {
     super.initState();
-    _nameController.text = widget.client.cmpName;
-    _emailController.text = widget.client.cmpEmailid;
-    _contactController.text = widget.client.cmpContact;
-    _address1Controller.text = widget.client.cmpAddress1;
-    _address2Controller.text = widget.client.cmpAddress2;
-    _stateController.text = widget.client.cmpState;
-    _cityController.text = widget.client.cmpCity;
-    _pincodeController.text = widget.client.cmpPincode;
+    _nameController.text = widget.client.cmpName.toString();
+    _emailController.text = widget.client.cmpEmailid.toString();
+    _contactController.text = widget.client.cmpContact.toString();
+    _address1Controller.text = widget.client.cmpAddress1.toString();
+    _address2Controller.text = widget.client.cmpAddress2.toString();
+    _stateController.text = widget.client.cmpState.toString();
+    _cityController.text = widget.client.cmpCity.toString();
+    _pincodeController.text = widget.client.cmpPincode.toString();
     getUserDetails(context);
     fetchCountries();
     fetchIndustries();

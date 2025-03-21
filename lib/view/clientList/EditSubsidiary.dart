@@ -56,7 +56,7 @@ class _EditSubsidiary extends State<EditSubsidiary>{
   @override
   void initState() {
     super.initState();
-    _clientNameController.text= widget.clientDetail.cmpName;
+    _clientNameController.text= widget.clientDetail.cmpName.toString();
     _subClientNameController.text = widget.subClient.entityName.toString();
     _emailController.text = widget.subClient.entityEmail.toString();
     _contactController.text = widget.subClient.entityPhone.toString();

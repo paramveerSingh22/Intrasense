@@ -1,61 +1,60 @@
 class EmployeesListModel {
-  String empId;
-  String usrCustomerTrackId;
-  String usrTeamTrackId;
-  String usrRoleTrackId;
-  String usrManagerId;
-  String usrType;
-  String usrEmpID;
-  String userFirstName;
-  String userLastName;
-  String usrEmail;
-  String usrMobile;
-  String usrDob;
-  String usrAddress;
-  String usrAddress2;
-  String usrCountry;
-  String usrState;
-  String usrCity;
-  String usrZipcode;
-  String usrDoj;
+  String? empId;
+  String? usrCustomerTrackId;
+  String? usrTeamTrackId;
+  String? usrRoleTrackId;
+  String? usrManagerId;
+  String? usrType;
+  String? usrEmpID;
+  String? userFirstName;
+  String? userLastName;
+  String? usrEmail;
+  String? usrMobile;
+  String? usrDob;
+  String? usrAddress;
+  String? usrAddress2;
+  String? usrCountry;
+  String? usrState;
+  String? usrCity;
+  String? usrZipcode;
+  String? usrDoj;
   String? usrDoa;  // Nullable as it can be null
-  String usrDesignation;
-  String userDepartment;
-  String usrSkypeId;
-  String profilePicture;
-  String idProof;
-  String status;
+  String? usrDesignation;
+  String? userDepartment;
+  String? usrSkypeId;
+  String? profilePicture;
+  String? idProof;
+  String? status;
 
   EmployeesListModel({
-    required this.empId,
-    required this.usrCustomerTrackId,
-    required this.usrTeamTrackId,
-    required this.usrRoleTrackId,
-    required this.usrManagerId,
-    required this.usrType,
-    required this.usrEmpID,
-    required this.userFirstName,
-    required this.userLastName,
-    required this.usrEmail,
-    required this.usrMobile,
-    required this.usrDob,
-    required this.usrAddress,
-    required this.usrAddress2,
-    required this.usrCountry,
-    required this.usrState,
-    required this.usrCity,
-    required this.usrZipcode,
-    required this.usrDoj,
-    this.usrDoa,
-    required this.usrDesignation,
-    required this.userDepartment,
-    required this.usrSkypeId,
-    required this.profilePicture,
-    required this.idProof,
-    required this.status,
+     this.empId,
+     this.usrCustomerTrackId,
+     this.usrTeamTrackId,
+     this.usrRoleTrackId,
+     this.usrManagerId,
+     this.usrType,
+     this.usrEmpID,
+     this.userFirstName,
+     this.userLastName,
+     this.usrEmail,
+     this.usrMobile,
+     this.usrDob,
+     this.usrAddress,
+     this.usrAddress2,
+     this.usrCountry,
+     this.usrState,
+     this.usrCity,
+     this.usrZipcode,
+     this.usrDoj,
+     this.usrDoa,
+     this.usrDesignation,
+     this.userDepartment,
+     this.usrSkypeId,
+     this.profilePicture,
+     this.idProof,
+     this.status,
   });
 
-  // Empty constructor
   EmployeesListModel.empty()
       : empId = '',
         usrCustomerTrackId = '',
@@ -76,7 +75,7 @@ class EmployeesListModel {
         usrCity = '',
         usrZipcode = '',
         usrDoj = '',
-        usrDoa = null,
+        usrDoa = '',
         usrDesignation = '',
         userDepartment = '',
         usrSkypeId = '',
@@ -86,32 +85,32 @@ class EmployeesListModel {
 
   factory EmployeesListModel.fromJson(Map<String, dynamic> json) {
     return EmployeesListModel(
-      empId: json['emp_id'],
-      usrCustomerTrackId: json['usr_customer_track_id'],
-      usrTeamTrackId: json['usr_team_track_id'],
-      usrRoleTrackId: json['usr_role_track_id'],
-      usrManagerId: json['usr_manager_id'],
-      usrType: json['usr_type'],
-      usrEmpID: json['usr_empID'],
-      userFirstName: json['user_first_name'],
-      userLastName: json['user_last_name'],
-      usrEmail: json['usr_email'],
-      usrMobile: json['usr_mobile'],
-      usrDob: json['usr_dob'],
-      usrAddress: json['usr_address'],
-      usrAddress2: json['usr_address2'],
-      usrCountry: json['usr_country'],
-      usrState: json['usr_state'],
-      usrCity: json['usr_city'],
-      usrZipcode: json['usr_zipcode'],
-      usrDoj: json['usr_doj'],
-      usrDoa: json['usr_doa'], // Nullable
-      usrDesignation: json['usr_designation'],
-      userDepartment: json['user_department'],
-      usrSkypeId: json['usr_skype_id'],
-      profilePicture: json['profile_picture'],
-      idProof: json['id_proof'],
-      status: json['status'],
+      empId: json['emp_id']as String?,
+      usrCustomerTrackId: json['usr_customer_track_id']as String?,
+      usrTeamTrackId: json['usr_team_track_id']as String?,
+      usrRoleTrackId: json['usr_role_track_id']as String?,
+      usrManagerId: json['usr_manager_id']as String?,
+      usrType: json['usr_type']as String?,
+      usrEmpID: json['usr_empID']as String?,
+      userFirstName: json['user_first_name']as String?,
+      userLastName: json['user_last_name']as String?,
+      usrEmail: json['usr_email']as String?,
+      usrMobile: json['usr_mobile']as String?,
+      usrDob: json['usr_dob']as String?,
+      usrAddress: json['usr_address']as String?,
+      usrAddress2: json['usr_address2']as String?,
+      usrCountry: json['usr_country']as String?,
+      usrState: json['usr_state']as String?,
+      usrCity: json['usr_city']as String?,
+      usrZipcode: json['usr_zipcode']as String?,
+      usrDoj: json['usr_doj']as String?,
+      usrDoa: json['usr_doa']as String?, // Nullable
+      usrDesignation: json['usr_designation']as String?,
+      userDepartment: json['user_department']as String?,
+      usrSkypeId: json['usr_skype_id']as String?,
+      profilePicture: json['profile_picture']as String?,
+      idProof: json['id_proof']as String?,
+      status: json['status']as String?,
     );
   }
 

@@ -176,32 +176,47 @@ class _AddNewRole extends State<AddNewRole>{
 
                   const CheckboxWithLabel(
                     label: 'View',
-                    initialValue: true,
+                    value: true,
                     isDisabled: true,
                     onChanged: null,
                   ),
 
                   CheckboxWithLabel(
                     label: 'Create',
+                    value: selectedPermissions.contains('Create'),
                     onChanged: (bool? value) {
                       setState(() {
-                        handlePermissionChange('Create', value);
+                        if (value == true) {
+                          selectedPermissions.add('Create');
+                        } else {
+                          selectedPermissions.remove('Create');
+                        }
                       });
                     },
                   ),
                   CheckboxWithLabel(
                     label: 'Approve',
+                    value: selectedPermissions.contains('Approve'),
                     onChanged: (bool? value) {
                       setState(() {
-                        handlePermissionChange('Approve', value);
+                        if (value == true) {
+                          selectedPermissions.add('Approve');
+                        } else {
+                          selectedPermissions.remove('Approve');
+                        }
                       });
                     },
                   ),
                   CheckboxWithLabel(
                     label: 'Manage Support',
+                    value: selectedPermissions.contains('Support'),
                     onChanged: (bool? value) {
                       setState(() {
-                        handlePermissionChange('Support', value);
+                        if (value == true) {
+                          selectedPermissions.add('Support');
+                        } else {
+                          selectedPermissions.remove('Support');
+                        }
                       });
                     },
                   ),

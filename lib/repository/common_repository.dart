@@ -25,4 +25,26 @@ class CommonRepository {
       throw e;
     }
   }
+
+  Future<dynamic> timeZoneListApi(BuildContext context) async {
+    try {
+      dynamic response =
+      await apiService.getGetApiResponse(AppUrl.timeZoneListUrl,context);
+      return response;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future <dynamic> commonImageUploadApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.commonImageUploadUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+
+  }
+
 }

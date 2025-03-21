@@ -17,22 +17,6 @@ class NetworkApiService extends BaseApiService {
 
   var token;
 
-  /*Future<void> ensureValidToken(BuildContext context) async {
-    if (token == null || token.isEmpty) {
-      await checkAuthentication(context);
-      await Future.delayed(const Duration(milliseconds: 100));
-    }
-  }
-
-  Future<void> checkAuthentication(BuildContext context) async {
-    UserModel user = await getUserData();
-    token = user.token ?? '';
-    if(token==null || token==""){
-      handleUnauthorized(context);
-    }
-  }*/
-
-
   @override
   Future getGetApiResponse(String url, BuildContext context) async {
    // await ensureValidToken(context);
@@ -124,36 +108,6 @@ class NetworkApiService extends BaseApiService {
 
     return responseJson;
   }
-
- /* dynamic returnResponse(http.Response response, BuildContext context) {
-    switch (response.statusCode) {
-
-      case 201:
-        dynamic responseJson = jsonDecode(response.body);
-        return responseJson;
-
-      case 200:
-        dynamic responseJson = jsonDecode(response.body);
-        return responseJson;
-
-      case 400:
-        throw BadRequestException(response.body.toString());
-
-      case 401:
-        handleUnauthorized(context);
-        return null;
-
-      case 500:
-        throw FetchDataException(
-            'internal server error ${response.statusCode}');
-        
-      case 404:
-        throw UnAuthorisedException(response.body.toString());
-
-      default:
-       // throw FetchDataException('Error accured while communicating with server with status code ${response.statusCode}');
-    }
-  }*/
 
 
   dynamic returnResponse(http.Response response, BuildContext context) {

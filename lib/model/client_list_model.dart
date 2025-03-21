@@ -1,38 +1,38 @@
 class ClientListModel {
-  String companyId;
-  String cmpName;
-  String clientUniqeid;
-  String cmpEmailid;
-  String cmpContact;
-  String cmpIndustry;
-  String cmpAddress1;
-  String cmpAddress2;
-  String cmpCountry;
-  String cmpState;
-  String cmpCity;
-  String cmpPincode;
-  String cmpCreationDate;
+  String? companyId;
+  String? cmpName;
+  String? clientUniqeid;
+  String? cmpEmailid;
+  String? cmpContact;
+  String? cmpIndustry;
+  String? cmpAddress1;
+  String? cmpAddress2;
+  String? cmpCountry;
+  String? cmpState;
+  String? cmpCity;
+  String? cmpPincode;
+  String? cmpCreationDate;
   String? cmpLastModified;
-  String cmpArchiveStatus;
-  String industryName;
+  String? cmpArchiveStatus;
+  String? industryName;
 
   ClientListModel({
-    required this.companyId,
-    required this.cmpName,
-    required this.clientUniqeid,
-    required this.cmpEmailid,
-    required this.cmpContact,
-    required this.cmpIndustry,
-    required this.cmpAddress1,
-    required this.cmpAddress2,
-    required this.cmpCountry,
-    required this.cmpState,
-    required this.cmpCity,
-    required this.cmpPincode,
-    required this.cmpCreationDate,
+     this.companyId,
+     this.cmpName,
+     this.clientUniqeid,
+     this.cmpEmailid,
+     this.cmpContact,
+     this.cmpIndustry,
+     this.cmpAddress1,
+     this.cmpAddress2,
+     this.cmpCountry,
+     this.cmpState,
+     this.cmpCity,
+     this.cmpPincode,
+     this.cmpCreationDate,
     this.cmpLastModified,
-    required this.cmpArchiveStatus,
-    required this.industryName,
+     this.cmpArchiveStatus,
+     this.industryName,
   });
 
   ClientListModel.empty()
@@ -56,22 +56,22 @@ class ClientListModel {
 
   factory ClientListModel.fromJson(Map<String, dynamic> json) {
     return ClientListModel(
-      companyId: json['company_id'],
-      cmpName: json['cmp_name'],
-      clientUniqeid: json['client_uniqeid'],
-      cmpEmailid: json['cmp_emailid'],
-      cmpContact: json['cmp_contact'],
-      cmpIndustry: json['cmp_industry'],
-      cmpAddress1: json['cmp_address1'],
-      cmpAddress2: json['cmp_address2'] ?? '',
-      cmpCountry: json['cmp_country'],
-      cmpState: json['cmp_state'],
-      cmpCity: json['cmp_city'],
-      cmpPincode: json['cmp_pincode'],
-      cmpCreationDate: json['cmp_creation_date'],
-      cmpLastModified: json['cmp_last_modified'],
-      cmpArchiveStatus: json['cmp_archive_status'],
-      industryName: json['industryName'],
+      companyId: json['company_id']as String?,
+      cmpName: json['cmp_name']as String?,
+      clientUniqeid: json['client_uniqeid']as String?,
+      cmpEmailid: json['cmp_emailid']as String?,
+      cmpContact: json['cmp_contact']as String?,
+      cmpIndustry: json['cmp_industry']as String?,
+      cmpAddress1: json['cmp_address1']as String?,
+      cmpAddress2: json['cmp_address2'] as String?,
+      cmpCountry: json['cmp_country']as String?,
+      cmpState: json['cmp_state']as String?,
+      cmpCity: json['cmp_city']as String?,
+      cmpPincode: json['cmp_pincode']as String?,
+      cmpCreationDate: json['cmp_creation_date']as String?,
+      cmpLastModified: json['cmp_last_modified']as String?,
+      cmpArchiveStatus: json['cmp_archive_status']as String?,
+      industryName: json['industryName']as String?,
     );
   }
 

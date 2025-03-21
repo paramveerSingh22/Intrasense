@@ -97,4 +97,34 @@ class TeamsRepository{
     }
   }
 
+  Future <dynamic> addEmployeeApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.addEmployeeUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
+  Future <dynamic> getEmployeeDetailApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.getmployeeDetailUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
+  Future <dynamic> deleteTeamApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.teamDeleteUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
 }

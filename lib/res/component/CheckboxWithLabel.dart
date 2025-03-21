@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intrasense/utils/AppColors.dart';
 
+/*
 class CheckboxWithLabel extends StatefulWidget {
   final String label;
   final bool initialValue;
@@ -49,6 +50,57 @@ class _CheckboxWithLabelState extends State<CheckboxWithLabel> {
               if (widget.onChanged != null) {
                 widget.onChanged!(value);
               }
+            },
+          ),
+          Text(
+            widget.label,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.black, // Replace with your color
+              fontFamily: 'PoppinsMedium', // Replace with your font family
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}*/
+
+class CheckboxWithLabel extends StatefulWidget {
+  final String label;
+  final bool value; // Current state of the checkbox
+  final Function(bool?)? onChanged;
+  final bool isDisabled;
+
+  const CheckboxWithLabel({
+    Key? key,
+    required this.label,
+    this.value = false, // Default value is false if not provided
+    this.onChanged,
+    this.isDisabled = false,
+  }) : super(key: key);
+
+  @override
+  _CheckboxWithLabelState createState() => _CheckboxWithLabelState();
+}
+
+class _CheckboxWithLabelState extends State<CheckboxWithLabel> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Checkbox(
+            value: widget.value, // Use widget.value to reflect the current state
+            onChanged: widget.isDisabled
+                ? null:(bool? value) {
+              setState(() {
+                if (widget.onChanged != null) {
+                  widget.onChanged!(value);
+                }
+              });
             },
           ),
           Text(

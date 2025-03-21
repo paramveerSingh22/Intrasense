@@ -64,8 +64,7 @@ class _EditGroupScreen extends State<EditGroupScreen> {
       print(_userData);
     }
     getEmployeesList();
-    getClientList();
-    getGroupDetails();
+
   }
 
   @override
@@ -197,7 +196,7 @@ class _EditGroupScreen extends State<EditGroupScreen> {
                       )),
                   CheckboxWithLabel(
                     label: 'Select Individuals',
-                    initialValue: _isIndividualSelected,
+                    value: _isIndividualSelected,
                     onChanged: (bool? value) {
                       setState(() {
                         _isIndividualSelected = value ?? false;
@@ -206,7 +205,7 @@ class _EditGroupScreen extends State<EditGroupScreen> {
                   ),
                   CheckboxWithLabel(
                     label: 'Select Client',
-                    initialValue: _isClientSelected,
+                    value: _isClientSelected,
                     onChanged: (bool? value) {
                       setState(() {
                         _isClientSelected = value ?? false;
@@ -307,6 +306,7 @@ class _EditGroupScreen extends State<EditGroupScreen> {
   }
 
   Future<void> getEmployeesList() async {
+    Utils.showLoadingDialog(context);
     try {
       Map data = {
         'user_id': _userData?.data?.userId,
@@ -314,8 +314,7 @@ class _EditGroupScreen extends State<EditGroupScreen> {
         'token': _userData?.token,
       };
       final teamViewModel = Provider.of<TeamsViewModel>(context, listen: false);
-      List<EmployeesListModel>? employees =
-          await teamViewModel.getEmployeesListApi(data, context);
+      List<EmployeesListModel>? employees = await teamViewModel.getEmployeesListApi(data, context);
       setState(() {
         if (employees != null) {
           employeesList = employees;
@@ -325,6 +324,8 @@ class _EditGroupScreen extends State<EditGroupScreen> {
               .toList();
         }
       });
+      getClientList();
+
     } catch (error) {
       print('Error fetching employee list: $error');
     }
@@ -340,10 +341,14 @@ class _EditGroupScreen extends State<EditGroupScreen> {
       final clientViewModel =
           Provider.of<ClientViewModel>(context, listen: false);
       await clientViewModel.getClientListApi(data, context);
+      final response = await clientViewModel.getClientListApi(data, context);
       setState(() {
-        clientList = clientViewModel.clientList;
-        clientNamesList = clientList.map((item) => item.cmpName).toList();
+        if (response != null) {
+          clientList = response.toList();
+          clientNamesList = clientList.map((item) => item.cmpName.toString()).toList();
+        }
       });
+      getGroupDetails();
     } catch (error, stackTrace) {
       if (kDebugMode) {
         print(error);
@@ -387,7 +392,7 @@ class _EditGroupScreen extends State<EditGroupScreen> {
                         "${employee.firstName} ${employee.lastName}")
                     .toList();
 
-                selectedClientNames = selectedCL.map((item) => item.companyName).toList();
+                selectedClientNames = selectedCL.map((item) => item.companyName.toString()).toList();
 
                 if (selectedEmployeeNames.isNotEmpty) {
                   _isIndividualSelected = true;
@@ -404,6 +409,9 @@ class _EditGroupScreen extends State<EditGroupScreen> {
       if (kDebugMode) {
         print(error);
       }
+    }
+    finally{
+      Utils.hideLoadingDialog(context);
     }
   }
 

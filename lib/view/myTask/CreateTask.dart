@@ -147,7 +147,7 @@ class _CreateTask extends State<CreateTask> {
       await clientViewModel.getClientListApi(data, context);
       clientList = clientViewModel.clientList;
       setState(() {
-        clientNamesList = clientList.map((item) => item.cmpName).toList();
+        clientNamesList = clientList.map((item) => item.cmpName.toString()).toList();
       });
     } catch (error, stackTrace) {
       if (kDebugMode) {

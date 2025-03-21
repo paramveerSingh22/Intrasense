@@ -182,7 +182,7 @@ class _AddNewGroup extends State<AddNewGroup> {
                       )),
                   CheckboxWithLabel(
                     label: 'Select Individuals',
-                    initialValue: _isIndividualSelected,
+                    value: _isIndividualSelected,
                     onChanged: (bool? value) {
                       setState(() {
                         _isIndividualSelected = value ?? false;
@@ -191,7 +191,7 @@ class _AddNewGroup extends State<AddNewGroup> {
                   ),
                   CheckboxWithLabel(
                     label: 'Select Client',
-                    initialValue: _isClientSelected,
+                    value: _isClientSelected,
                     onChanged: (bool? value) {
                       setState(() {
                         _isClientSelected = value ?? false;
@@ -361,12 +361,13 @@ class _AddNewGroup extends State<AddNewGroup> {
         'customer_id': _userData?.data?.customerTrackId,
         'token': _userData?.token,
       };
-      final clientViewModel =
-          Provider.of<ClientViewModel>(context, listen: false);
-      await clientViewModel.getClientListApi(data, context);
+      final clientViewModel = Provider.of<ClientViewModel>(context, listen: false);
+      final response = await clientViewModel.getClientListApi(data, context);
       setState(() {
-        clientList = clientViewModel.clientList;
-        clientNamesList = clientList.map((item) => item.cmpName).toList();
+        if (response != null) {
+          clientList = response.toList();
+          clientNamesList = clientList.map((item) => item.cmpName.toString()).toList();
+        }
       });
 
     } catch (error, stackTrace) {

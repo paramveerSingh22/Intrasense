@@ -46,5 +46,7 @@ class Images{
  static String  uploadIcon = "assets/images/upload_icon.png";
  static String  orangeRoundCrossIcon = "assets/images/round_cross.png";
  static String  clockIcon = "assets/images/clock_icon.png";
+ static String  profileIcon = "assets/images/profile_icon.png";
+ static String  dropdownRightArrow = "assets/images/drop_down_right_arrow.png";
 
 }

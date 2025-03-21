@@ -709,7 +709,7 @@ class CustomSubsidiaryListTile extends StatelessWidget {
                         Expanded(
                             flex: 2,
                             child: Text(
-                              clientDetail.cmpName,
+                              clientDetail.cmpName.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,

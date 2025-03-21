@@ -65,13 +65,13 @@ class _ClientList extends State<ClientList>{
     setState(() {
       filteredList = clientList
           .where((item) =>
-      item.industryName.toLowerCase().contains(query) ||
-          item.cmpName.toLowerCase().contains(query) ||
-          item.cmpContact.toLowerCase().contains(query)||
-          item.cmpEmailid.toLowerCase().contains(query)||
-          item.cmpCity.toLowerCase().contains(query)||
-          item.cmpState.toLowerCase().contains(query)||
-          item.cmpCountry.toLowerCase().contains(query))
+      item.industryName.toString().toLowerCase().contains(query) ||
+          item.cmpName.toString().toLowerCase().contains(query) ||
+          item.cmpContact.toString().toLowerCase().contains(query)||
+          item.cmpEmailid.toString().toLowerCase().contains(query)||
+          item.cmpCity.toString().toLowerCase().contains(query)||
+          item.cmpState.toString().toLowerCase().contains(query)||
+          item.cmpCountry.toString().toLowerCase().contains(query))
           .toList();
     });
   }
@@ -701,7 +701,7 @@ class CustomClientListTile extends StatelessWidget {
                         Expanded(
                             flex: 10,
                             child: Text(
-                             item.industryName,
+                             item.industryName.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.skyBlueTextColor,
@@ -810,7 +810,7 @@ class CustomClientListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              item.cmpName,
+                              item.cmpName.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -847,7 +847,7 @@ class CustomClientListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              item.industryName,
+                              item.industryName.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -881,7 +881,7 @@ class CustomClientListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              item.cmpContact,
+                              item.cmpContact.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -915,7 +915,7 @@ class CustomClientListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              item.cmpEmailid,
+                              item.cmpEmailid.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,

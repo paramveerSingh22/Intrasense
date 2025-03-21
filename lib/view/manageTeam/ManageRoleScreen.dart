@@ -7,8 +7,10 @@ import 'package:intrasense/view/manageTeam/EditRoleScreen.dart';
 import 'package:intrasense/view_models/teams_view_model.dart';
 import '../../main.dart';
 import '../../model/user_model.dart';
+import '../../res/component/ButtonOrangeBorder.dart';
 import '../../res/component/CustomElevatedButton.dart';
 import '../../utils/AppColors.dart';
+import '../../utils/Constants.dart';
 import '../../utils/Images.dart';
 import '../../utils/Utils.dart';
 import '../../view_models/UserProvider.dart';
@@ -16,11 +18,13 @@ import '../../view_models/user_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
-class ManageRoleScreen extends StatefulWidget{
-  _ManageRoleScreen createState() => _ManageRoleScreen();
+import '../Home/HomeScreen.dart';
 
+class ManageRoleScreen extends StatefulWidget {
+  _ManageRoleScreen createState() => _ManageRoleScreen();
 }
-class _ManageRoleScreen extends State<ManageRoleScreen> with RouteAware{
+
+class _ManageRoleScreen extends State<ManageRoleScreen> with RouteAware {
   UserModel? _userData;
   bool _isLoading = false;
   List<RoleListModel> roleList = [];
@@ -48,7 +52,7 @@ class _ManageRoleScreen extends State<ManageRoleScreen> with RouteAware{
   }
 
   void getRoleList() async {
-    setLoading(true);
+    Utils.showLoadingDialog(context);
     try {
       Map data = {
         'user_id': _userData?.data?.userId,
@@ -58,7 +62,7 @@ class _ManageRoleScreen extends State<ManageRoleScreen> with RouteAware{
       final teamViewModel = Provider.of<TeamsViewModel>(context, listen: false);
       await teamViewModel.getRoleListApi(data, context);
       setState(() {
-        roleList= teamViewModel.roleList;
+        roleList = teamViewModel.roleList;
       });
     } catch (error, stackTrace) {
       if (kDebugMode) {
@@ -68,7 +72,7 @@ class _ManageRoleScreen extends State<ManageRoleScreen> with RouteAware{
         const SnackBar(content: Text('Failed to load Role list')),
       );
     } finally {
-      setLoading(false);
+      Utils.hideLoadingDialog(context);
     }
   }
 
@@ -97,60 +101,138 @@ class _ManageRoleScreen extends State<ManageRoleScreen> with RouteAware{
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 20.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search',
-                        hintStyle: TextStyle(color: Colors.grey),
-                        suffixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding:
-                        EdgeInsets.fromLTRB(12.0, 5.0, 20.0, 5.0),
-                      ),
-                    ),
+          Container(
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(Images.headerBg),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Positioned(
+            top: 90,
+            left: 0,
+            child: Stack(
+              children: [
+                Image.asset(
+                  Images.curveOverlay,
+                  width: MediaQuery.of(context).size.width,
+                  fit: BoxFit.cover,
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 140,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Image.asset(
+              Images.curveBg,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Positioned(
+            top: 36,
+            left: 30,
+            right: 10,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Manage Role",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontFamily: 'PoppinsMedium',
                   ),
-                  Expanded(
-                    child: Container(
-                        child: ListView.separated(
-                          itemCount: roleList.length,
-                          separatorBuilder:
-                              (BuildContext context, int index) {
-                            return const SizedBox(height: 10);
-                          },
-                          itemBuilder: (context, index) {
-                            final item = roleList[index];
-                            return CustomRoleListTile(item:item);
-                          },
-                        )),
-                  ),
-
-                  const SizedBox(height: 20),
-                  Padding(padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child:   CustomElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AddNewRole(),
-                          ),
-                        );
-                      },
-                      buttonText: 'Add New Role',
-                    ),
-                  )
-                ],
-              )
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 110.0,
+            left: 0.0,
+            right: 0.0,
+            bottom: 70.0,
+            child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                        padding: const EdgeInsets.only(left: 10.0),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Manage Role",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.secondaryOrange,
+                                  fontFamily: 'PoppinsMedium'),
+                            ))),
+                    Expanded(
+                        child: roleList.isEmpty
+                            ? const Center(
+                                child: Text(
+                                  'No data found',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: AppColors.textColor,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: 'PoppinsMedium',
+                                  ),
+                                ),
+                              )
+                            : Align(
+                                alignment: Alignment.topCenter,
+                                child: ListView.separated(
+                                  padding: const EdgeInsets.only(top: 10.0),
+                                  itemCount: roleList.length,
+                                  separatorBuilder:
+                                      (BuildContext context, int index) {
+                                    return const SizedBox(height: 10);
+                                  },
+                                  itemBuilder: (context, index) {
+                                    final item = roleList[index];
+                                    return CustomRoleListTile(
+                                        item: item,
+                                        onListUpdated: () {
+                                          getRoleList();
+                                        },userDetail: _userData);
+                                  },
+                                ),
+                              )),
+                  ],
+                )),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 20.0,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              child: CustomElevatedButton(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddNewRole()),
+                  );
+                  if (result == true) {
+                    getRoleList();
+                  }
+                },
+                buttonText: 'CREATE NEW ROLE',
+              ),
+            ),
           ),
         ],
       ),
@@ -160,212 +242,331 @@ class _ManageRoleScreen extends State<ManageRoleScreen> with RouteAware{
 
 class CustomRoleListTile extends StatelessWidget {
   final RoleListModel item;
+  final VoidCallback onListUpdated;
+  final userDetail;
 
-  const CustomRoleListTile({
-  super.key,
-  required this.item
-  });
+  const CustomRoleListTile({super.key, required this.item, required this.onListUpdated, required this.userDetail});
+
+  void  deleteRoleApi(BuildContext context, String? roleId) async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    await userProvider.fetchUserData();
+    Utils.showLoadingDialog(context);
+    try {
+      Map data = {
+        'user_id': userProvider.user?.data?.userId,
+        'usr_role_track_id': userProvider.user?.data?.roleTrackId,
+        'role_id': roleId,
+        'token': userProvider.user?.token,
+      };
+
+      final teamViewModel = Provider.of<TeamsViewModel>(context, listen: false);
+      await teamViewModel.deleteRoleApi(data, context);
+      onListUpdated();
+
+      /*final manageRoleScreenState = context.findAncestorStateOfType<_ManageRoleScreen>();
+      manageRoleScreenState?.getRoleList();*/
+
+      Utils.hideLoadingDialog(context);
+    } catch (error, stackTrace) {
+      if (kDebugMode) {
+        print(error);
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to delete this role')),
+      );
+      Utils.hideLoadingDialog(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Container(
-        decoration:  BoxDecoration(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-          ),
-          color: Colors.white,
-          border: Border.all(
-            color: Colors.grey.shade300, // Border color
-            width: 1.0, // Border width
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: ListTile(
-          contentPadding:
-          const EdgeInsets.only(bottom: 20, top: 10, left: 20, right: 20),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final teamViewModel = Provider.of<TeamsViewModel>(context, listen: false);
+    void deleteRolePopUp(BuildContext context) {
+      showModalBottomSheet(
+        context: context,
+        isDismissible: false,
+        enableDrag: false,
+        builder: (BuildContext context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                      flex: 4,
-                      child: Container(
-                          child: Text(
-                            item.roleName.toString(),
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: AppColors.primaryColor,
-                              fontFamily: 'PoppinsRegular',
-                            ),
-                          ))),
-                  Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTapDown: (TapDownDetails details) {
-                          showMenu(
-                            context: context,
-                            position: RelativeRect.fromLTRB(
-                              details.globalPosition.dx,
-                              details.globalPosition.dy,
-                              details.globalPosition.dx,
-                              details.globalPosition.dy + 20,
-                            ),
-                            items: [
-                              const PopupMenuItem(
-                                value: 1,
-                                child: Text('View'),
-                              ),
-                              const PopupMenuItem(
-                                value: 2,
-                                child: Text('Edit'),
-                              ),
-                              const PopupMenuItem(
-                                value: 3,
-                                child: Text('Delete'),
-                              ),
-                            ],
-                          ).then((value) {
-                            if (value != null) {
-                              if (value == 2) {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            EditRoleScreen(
-                                                roleDetails:item
-                                            )));
-                              }
-
-                              if (value == 3) {
-                                Utils.showConfirmationDialog(
-                                  context,
-                                  message:
-                                  "Are you sure you want to delete this role?",
-                                  onConfirm: () {
-                                    deleteRoleApi(context, item.roleId);
-                                  },
-                                );
-                              }
-                            }
-                          });
-                        },
-                        child: Image.asset(
-                          Images.threeDotsRed,
-                          width: 15.0,
-                          height: 15.0,
-                        ),
-                      ))
-                ],
-              ),
-              const SizedBox(height: 10),
-              const Divider(),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      child: const Text(
-                        'additional Notes',
+              Container(
+                color: AppColors.secondaryOrange.withOpacity(0.1),
+                padding:
+                const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 15.0, bottom: 12.0, left: 10.0, right: 15.0),
+                      // Adjust the padding value as needed
+                      child: Text(
+                        'Delete Role',
                         style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontWeight: FontWeight.w400,
+                          color: AppColors.secondaryOrange,
+                          fontFamily: 'PoppinsMedium',
                         ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                      flex: 1,
-                      child: Text(
-                        item.description.toString(),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ))
-                ],
+                  ],
+                ),
               ),
-              const SizedBox(height: 10),
-              const Divider(),
-              const SizedBox(height: 10),
-              Row(
+              const SizedBox(height: 20),
+              Image.asset(
+                Images.deleteIconAlert,
+                width: 50,
+                height: 50,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 20),
+              const Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Are you sure!',
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: AppColors.skyBlueTextColor,
+                          fontFamily: 'PoppinsRegular'),
+                    ),
+                    SizedBox(height: 5),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        "you wan't be able to revert this!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.black,
+                          fontFamily: 'PoppinsRegular',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Row(
+                  children: [
+                    Expanded(
+                        flex: 10,
+                        child: ButtonOrangeBorder(
+                          onPressed: () {
+                            deleteRoleApi(context, item.roleId);
+                          },
+                          buttonText: 'YES',
+                          loading: teamViewModel.loading,
+                        )),
+                    Expanded(flex: 1, child: Container()),
+                    Expanded(
+                        flex: 10,
+                        child: CustomElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          buttonText: 'NO',
+                        ))
+                  ],
+                ),
+              ),
+              const SizedBox(height: 50),
+            ],
+          );
+        },
+      );
+    }
+
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
+              color: Colors.white,
+              border: Border.all(
+                color: AppColors.dividerColor,
+                width: 1.0,
+              ),
+            ),
+            child: ListTile(
+              contentPadding: const EdgeInsets.only(
+                bottom: 10,
+                top: 0,
+              ),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                      flex: 1,
-                      child: Container(
-                        child: const Text(
-                          'Added On',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textColor,
-                            fontFamily: 'PoppinsRegular',
-                            fontWeight: FontWeight.w400,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 10,
+                            child: Text(
+                              item.roleName.toString(),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.darkBlueTextColor,
+                                fontFamily: 'PoppinsMedium',
+                              ),
+                            )),
+                        if (userDetail?.data?.roleTrackId==Constants.roleProjectManager||userDetail?.data?.roleTrackId==Constants.roleHR)...{
+                          Padding(
+                            padding: const EdgeInsets.only(right: 0.0),
+                            child: Expanded(
+                                flex: 1,
+                                child: Row(
+                                  children: [
+                                    IconButton(
+                                      icon: SizedBox(
+                                        height: 20.0,
+                                        width: 20.0,
+                                        child: Image.asset(Images.editIcon),
+                                      ),
+                                      onPressed: () async {
+                                        final result = await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    EditRoleScreen(
+                                                        roleDetails: item)));
+                                        if (result == true) {
+                                          onListUpdated();
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                )),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 0.0),
+                            child: Expanded(
+                                flex: 1,
+                                child: Row(
+                                  children: [
+                                    IconButton(
+                                      icon: SizedBox(
+                                        height: 20.0,
+                                        width: 20.0,
+                                        child: Image.asset(Images.deleteIcon),
+                                      ),
+                                      onPressed: () {
+                                        deleteRolePopUp(context);
+                                      },
+                                    ),
+                                  ],
+                                )),
+                          )
+                        }
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            child: const Text(
+                              'Additional Notes',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsRegular',
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
                           ),
                         ),
-                      )),
-                  Expanded(
-                      flex: 1,
-                      child: Text(
-                        item.addedOn.toString(),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textColor,
-                          fontFamily: 'PoppinsRegular',
-                          fontWeight: FontWeight.w500,
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                              item.description.toString(),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsMedium',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ))
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const DividerColor(),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            child: const Text(
+                              'Added On',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsRegular',
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
                         ),
-                      ))
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                              item.addedOn.toString(),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsMedium',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ))
+                      ],
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 10),
-            ],
+            ),
           ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+          child: IgnorePointer(
+            ignoring: true,
+            child: Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: 60,
+                decoration: BoxDecoration(
+                  color: AppColors.secondaryOrange.withOpacity(0.1),
+                  // Making it semi-transparent
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        )
+      ],
     );
-  }
-}
-
-void deleteRoleApi(BuildContext context, String? roleId) async {
-  final userProvider = Provider.of<UserProvider>(context, listen: false);
-  await userProvider.fetchUserData();
-  Utils.showLoadingDialog(context);
-  try {
-    Map data = {
-      'user_id': userProvider.user?.data?.userId,
-      'usr_role_track_id': userProvider.user?.data?.roleTrackId,
-      'role_id': roleId,
-      'token': userProvider.user?.token,
-    };
-
-    final teamViewModel = Provider.of<TeamsViewModel>(context,listen: false);
-    await teamViewModel.deleteRoleApi(data, context);
-
-    final manageRoleScreenState = context.findAncestorStateOfType<_ManageRoleScreen>();
-    manageRoleScreenState?.getRoleList();
-
-    Utils.hideLoadingDialog(context);
-  } catch (error, stackTrace) {
-    if (kDebugMode) {
-      print(error);
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Failed to delete this role')),
-    );
-    Utils.hideLoadingDialog(context);
   }
 }

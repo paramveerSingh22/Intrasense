@@ -97,4 +97,15 @@ class ClientRepository{
       throw e;
     }
   }
+
+  Future <dynamic> editClientApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.editClientUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
 }

@@ -288,4 +288,28 @@ class ClientViewModel with ChangeNotifier{
       Utils.toastMessage(error.toString());
     });
   }
+
+
+  Future<ClientListModel?> editClientApi(dynamic data,BuildContext context) async {
+    setLoading(true);
+    try{
+      var response = await _myRepo.editClientApi(data,context);
+       final clientData = response['data'];
+      ClientListModel client = ClientListModel.fromJson(clientData);
+
+      setLoading(false);
+      if (kDebugMode) {
+        print("Api Response---" + response.toString());
+      }
+      return client;
+    }
+    catch (error) {
+      setLoading(false);
+      if (kDebugMode) {
+        print("Api Error--" + error.toString());
+      }
+      Utils.toastMessage(error.toString());
+      return null;
+    }
+  }
 }

@@ -19,6 +19,7 @@ class AppUrl{
   static var deleteClientUrl= baseUrl + 'client/deleteClient';
   static var deleteSubClientUrl= baseUrl + 'client/deleteSubClient';
   static var deleteClientContactUrl= baseUrl + 'client/deleteClientContact';
+  static var editClientUrl= baseUrl + 'client/editcompany';
 
   ///for roles
   static var roleListUrl= baseUrl + 'roles/roleList';

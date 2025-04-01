@@ -26,7 +26,8 @@ class _CustomRadioGroupState extends State<CustomRadioGroup> {
       alignment: WrapAlignment.start,
       children: widget.options.map((String value) {
         return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0), // Adjust vertical spacing here
+          margin: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+          // Adjust vertical spacing here
           child: GestureDetector(
             onTap: () {
               widget.onChanged(value);
@@ -49,31 +50,32 @@ class _CustomRadioGroupState extends State<CustomRadioGroup> {
                   ),
                   child: widget.groupValue == value
                       ? Center(
-                    child: Container(
-                      width: 12, // Inner circle size when selected
-                      height: 12, // Inner circle size when selected
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.secondaryOrange,
-                          border: Border.all(
-                            color: AppColors.white, // Border color
-                            width: 2,
-                          )
-
-                      ),
-                    ),
-                  )
+                          child: Container(
+                            width: 12, // Inner circle size when selected
+                            height: 12, // Inner circle size when selected
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.secondaryOrange,
+                                border: Border.all(
+                                  color: AppColors.white, // Border color
+                                  width: 2,
+                                )),
+                          ),
+                        )
                       : null,
                 ),
-                const SizedBox(width: 8), // Space between the radio button and text
-                Text(
+                const SizedBox(width: 8),
+                Flexible(
+                    child: Text(
                   value,
                   style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textColor,
                     fontFamily: 'PoppinsMedium',
                   ),
-                ),
+                  softWrap:
+                      true,
+                ))
               ],
             ),
           ),

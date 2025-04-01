@@ -23,8 +23,7 @@ class NewPasswordScreen extends StatefulWidget {
 
 class _NewPasswordScreen extends State<NewPasswordScreen> {
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   bool _newPasswordVisible = false;
   bool _confirmPasswordVisible = false;
 

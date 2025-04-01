@@ -6,7 +6,6 @@ import 'package:intrasense/utils/Constants.dart';
 import 'package:intrasense/view/clientList/AddClients.dart';
 import 'package:intrasense/view/clientList/ClientDetailScreen.dart';
 import 'package:intrasense/view_models/client_view_model.dart';
-
 import '../../model/country_list_model.dart';
 import '../../model/industry_list_model.dart';
 import '../../model/user_model.dart';
@@ -18,7 +17,6 @@ import '../../res/component/CustomTextField.dart';
 import '../../utils/AppColors.dart';
 import '../../utils/Images.dart';
 import 'package:provider/provider.dart';
-
 import '../../utils/Utils.dart';
 import '../../view_models/UserProvider.dart';
 import '../../view_models/common_view_model.dart';

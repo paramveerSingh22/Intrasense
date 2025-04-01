@@ -128,7 +128,6 @@ class _TeamDetailScreen extends State<TeamDetailScreen>{
 
   @override
   Widget build(BuildContext context) {
-    final teamViewModel = Provider.of<TeamsViewModel>(context);
     return Scaffold(
       body: Stack(
         children: <Widget>[

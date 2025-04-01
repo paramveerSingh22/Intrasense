@@ -47,4 +47,74 @@ class CommonRepository {
 
   }
 
+  Future <dynamic> getUserProfileApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.getUserProfileUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
+  Future <dynamic> updateProfileApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.updateProfileUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
+  Future <dynamic> updatePasswordApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.updatePasswordUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
+  Future <dynamic> updatePreferencesApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.updatePreferencesUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
+  Future <dynamic> getPreferencesApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.getPreferencesUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
+  Future <dynamic> getNotificationListApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.getNotificationsListUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
+  Future <dynamic> deleteNotificationApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.notificationDeleteUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
 }

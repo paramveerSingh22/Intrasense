@@ -21,6 +21,14 @@ class AppUrl{
   static var deleteClientContactUrl= baseUrl + 'client/deleteClientContact';
   static var editClientUrl= baseUrl + 'client/editcompany';
 
+  static var getUserProfileUrl= baseUrl + 'setting/profile';
+  static var updateProfileUrl= baseUrl + 'setting/profile/profileUpdate';
+  static var updatePasswordUrl= baseUrl + 'setting/changePassword/';
+  static var updatePreferencesUrl= baseUrl + 'setting/preferences/';
+  static var getPreferencesUrl= baseUrl + 'setting/preferences/getpreference';
+  static var getNotificationsListUrl= baseUrl + 'notification/myNotification';
+  static var notificationDeleteUrl= baseUrl + 'notification/deleteNotification';
+
   ///for roles
   static var roleListUrl= baseUrl + 'roles/roleList';
   static var addRoleUrl= baseUrl + 'roles/createRole';
@@ -87,10 +95,13 @@ class AppUrl{
   static var meetingCancelUrl = baseUrl + 'meeting/cancelMeeting';
 
   ////for team
-
   static var addEmployeeUrl= baseUrl + 'employees/addEmployee';
   static var getmployeeDetailUrl= baseUrl + 'employees/employeeDetail';
   static var commonImageUploadUrl= baseUrl + 'common/images';
   static var teamDeleteUrl= baseUrl + 'employees/deleteEmployee';
+
+  ///for events
+  static var eventListUrl = baseUrl + 'events/addEvent/getevents';
+  static var addEventUrl = baseUrl + 'events/addEvent';
 
 }

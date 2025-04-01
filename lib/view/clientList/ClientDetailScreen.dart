@@ -37,8 +37,7 @@ class ClientDetailScreen extends StatefulWidget {
   _ClientDetailScreen createState() => _ClientDetailScreen();
 }
 
-class _ClientDetailScreen extends State<ClientDetailScreen>
-    with SingleTickerProviderStateMixin {
+class _ClientDetailScreen extends State<ClientDetailScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _isLoading = false;
   String headerTitle = "Subsidiary List";

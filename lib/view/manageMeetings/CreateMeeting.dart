@@ -20,7 +20,6 @@ import '../../utils/Utils.dart';
 import '../../view_models/client_view_model.dart';
 import '../../view_models/common_view_model.dart';
 import 'package:provider/provider.dart';
-
 import '../../view_models/meeting_view_model.dart';
 import '../../view_models/teams_view_model.dart';
 import '../../view_models/user_view_model.dart';

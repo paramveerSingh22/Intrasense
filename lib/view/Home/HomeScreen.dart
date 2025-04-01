@@ -18,10 +18,13 @@ import 'package:intrasense/view/manageTeam/ManageRoleScreen.dart';
 import 'package:intrasense/view/manageTeam/ManageTeamScreen.dart';
 import 'package:intrasense/view/myTask/MyTaskList.dart';
 import 'package:intrasense/view/myTimeSheet/MyTimeSheetList.dart';
+import 'package:intrasense/view/notification/NotificationListScreen.dart';
+import 'package:intrasense/view/settings_view/SettingScreen.dart';
 import 'package:intrasense/view/support/SupportList.dart';
 import '../../model/user_model.dart';
 import '../../view_models/user_view_model.dart';
 import '../Login/LoginScreen.dart';
+import '../manageEvents/EventListScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -138,7 +141,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     onPressed: () {
-
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NotificationListScreen(),
+                        ),
+                      );
                     },
                   ),
                 ),
@@ -151,41 +159,50 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.zero,
                   children: <Widget>[
                     DrawerHeader(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: AppColors.lightGrey,
                       ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          CircleAvatar(
-                            backgroundImage: AssetImage(Images.dummyImage),
-                            radius: 30,
-                          ),
-                          SizedBox(width: 10),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              const Text(
-                                'Welcome', // Replace with actual user's name
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontFamily: 'PoppinsRegular',
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SettingScreen(),
+                            ),
+                          );
+                        },
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            CircleAvatar(
+                              backgroundImage: AssetImage(Images.dummyImage),
+                              radius: 30,
+                            ),
+                            SizedBox(width: 10),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                const Text(
+                                  'Welcome', // Replace with actual user's name
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontFamily: 'PoppinsRegular',
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                userName ?? "Loading...",
-                                // Replace with additional text
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontFamily: 'PoppinsRegular',
+                                Text(
+                                  userName ?? "Loading...",
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                    fontFamily: 'PoppinsRegular',
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     ListTile(
@@ -552,6 +569,29 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           )),
                     ),
+
+                    ListTile(
+                      leading: Image.asset(
+                        Images.myLeaves,
+                        width: 20,
+                        height: 20,
+                      ),
+                      title: const Text('Manage Events',
+                          style: TextStyle(
+                              color: AppColors.skyBlueTextColor,
+                              fontFamily: 'PoppinsRegular',
+                              fontSize: 15)),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EventListScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    const DividerColor(),
+
                     const DividerColor(),
                     Container(
                       child: Theme(

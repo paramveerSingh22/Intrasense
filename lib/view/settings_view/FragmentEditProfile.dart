@@ -72,6 +72,8 @@ class _FragmentEditProfile extends State<FragmentEditProfile> {
   String? idProofData;
   File? _idProofImageFile;
 
+  String base64ProfileImage="";
+  String base64DocumentImage="";
 
 
   @override
@@ -250,8 +252,8 @@ class _FragmentEditProfile extends State<FragmentEditProfile> {
       if (type == "0") {
         _profileImageFile = File(pickedFile.path);
         String selectedProfileImagePath = pickedFile.path;
-        String? base64String = await encodeImageToBase64(selectedProfileImagePath);
-        Map data = {'picture': base64String};
+        base64ProfileImage = (await encodeImageToBase64(selectedProfileImagePath))!;
+        Map data = {'picture': base64ProfileImage};
         final response = await  commonViewModel.commonImageUploadApi(data, context);
         profileImageData=response.toString();
         _profileImageUrl=AppUrl.imageUrl+profileImageData.toString();
@@ -259,8 +261,8 @@ class _FragmentEditProfile extends State<FragmentEditProfile> {
         _idProofImageFile = File(pickedFile.path);
         idProofFileName = pickedFile.name;
         String selectedIdProofPath = pickedFile.path;
-        String? base64String = await encodeImageToBase64(selectedIdProofPath);
-        Map data = {'picture': base64String};
+        base64DocumentImage = (await encodeImageToBase64(selectedIdProofPath))!;
+        Map data = {'picture': base64DocumentImage};
         final response = await  commonViewModel.commonImageUploadApi(data, context);
         idProofData= response.toString();
       }
@@ -813,10 +815,11 @@ class _FragmentEditProfile extends State<FragmentEditProfile> {
                         'city': cityController.text.toString(),
                         'zipcode': pinCodeController.text.toString(),
                         'user_department': departmentController.text.toString(),
-                        'profile_picture': profileImageData,
-                        'id_proof': idProofData,
+                        'profile_picture': base64ProfileImage,
+                        'id_proof': base64DocumentImage,
                         'token': _userData?.token.toString(),
                       };
+
                       commonViewModel.updateProfileApi(data, context);
                     }
                   },

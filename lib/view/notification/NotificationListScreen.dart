@@ -13,6 +13,7 @@ import '../../res/component/CheckboxWithLabel.dart';
 import '../../res/component/CustomElevatedButton.dart';
 import '../../res/component/CustomSearchTextField.dart';
 import '../../utils/AppColors.dart';
+import '../../utils/Constants.dart';
 import '../../utils/Images.dart';
 import '../../utils/Utils.dart';
 import '../../view_models/user_view_model.dart';
@@ -59,8 +60,8 @@ class _NotificationListScreen extends State<NotificationListScreen> {
       Map data = {
         'user_id': _userData?.data?.userId,
         'usr_customer_track_id': _userData?.data?.customerTrackId,
-        'deviceType': "WEB",
-        'deviceToken': "WEB",
+        'deviceType': Constants.deviceType,
+        'deviceToken': Constants.deviceToken,
         'notification_status': "1",
         'token': _userData?.token,
       };
@@ -269,8 +270,8 @@ class CustomNotificationListTile extends StatelessWidget {
       Map data = {
         'user_id': userDetail?.data?.userId,
         'usr_customer_track_id': userDetail?.data?.customerTrackId,
-        'deviceType': "WEB",
-        'deviceToken': "WEB",
+        'deviceType': Constants.deviceType,
+        'deviceToken': Constants.deviceToken,
         'notification_id': item.notificationId,
         'token': userDetail?.token,
       };

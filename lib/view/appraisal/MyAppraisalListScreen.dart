@@ -1,36 +1,62 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intrasense/utils/Constants.dart';
-import 'package:intrasense/view/manageEvents/AddEventScreen.dart';
-import 'package:intrasense/view_models/event_view_model.dart';
-
-import '../../model/client_list_model.dart';
+import 'package:intrasense/view/appraisal/AppraisalDetailScreen.dart';
+import 'package:intrasense/view/appraisal/AppraisalRequestScreen.dart';
+import '../../model/appraisal/AppraisalListModel.dart';
 import '../../model/events/EventListModel.dart';
 import '../../model/user_model.dart';
 import '../../res/component/CustomElevatedButton.dart';
+import '../../res/component/CustomSearchTextField.dart';
 import '../../utils/AppColors.dart';
+import '../../utils/Constants.dart';
 import '../../utils/Images.dart';
 import '../../utils/Utils.dart';
+import '../../view_models/appraisal_view_model.dart';
+import '../../view_models/event_view_model.dart';
 import '../../view_models/user_view_model.dart';
 import 'package:provider/provider.dart';
 
-import 'EventDetailScreen.dart';
+import '../manageEvents/AddEventScreen.dart';
+import '../manageEvents/EventDetailScreen.dart';
 
-class EventListScreen extends StatefulWidget{
+class MyAppraisalListScreen  extends StatefulWidget{
   @override
-  _EventListScreen createState() => _EventListScreen();
-
+  _MyAppraisalListScreen createState()=> _MyAppraisalListScreen();
 }
 
-class _EventListScreen extends State<EventListScreen>{
+class _MyAppraisalListScreen extends State<MyAppraisalListScreen>{
   UserModel? _userData;
   bool _isLoading = false;
-  List<EventListModel> eventList = [];
+  List<AppraisalListModel> appraisalList = [];
+  List<AppraisalListModel> filteredList = [];
+  TextEditingController searchController = TextEditingController();
+
+
+  @override
+  void dispose() {
+    searchController.removeListener(_filterList);
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterList() {
+    String query = searchController.text.toLowerCase();
+    setState(() {
+      filteredList = appraisalList
+          .where((item) =>
+      (item.appraisedByFirstName?.toLowerCase() ?? '').contains(query) ||
+          (item.appraisedByLastName?.toLowerCase() ?? '').contains(query) ||
+          (item.usrDesignation?.toLowerCase() ?? '').contains(query) ||
+          (item.department?.toLowerCase() ?? '').contains(query))
+          .toList();
+    });
+  }
 
   @override
   void initState() {
     getUserDetails(context);
+    searchController.addListener(_filterList);
     super.initState();
   }
 
@@ -41,7 +67,7 @@ class _EventListScreen extends State<EventListScreen>{
     if (kDebugMode) {
       print(_userData);
     }
-    getEventList();
+    getAppraisalList();
   }
 
   void setLoading(bool loading) {
@@ -50,7 +76,7 @@ class _EventListScreen extends State<EventListScreen>{
     });
   }
 
-  void getEventList() async {
+  void getAppraisalList() async {
     Utils.showLoadingDialog(context);
     try {
       Map data = {
@@ -60,11 +86,12 @@ class _EventListScreen extends State<EventListScreen>{
         'deviceType': Constants.deviceType,
         'token': _userData?.token,
       };
-      final eventViewModel = Provider.of<EventViewModel>(context, listen: false);
-      final response = await eventViewModel.getEventListApi(data, context);
+      final appraisalViewModel = Provider.of<AppraisalViewModel>(context, listen: false);
+      final response = await appraisalViewModel.getAppraisalListApi(data, context);
       setState(() {
         if (response != null) {
-          eventList = response.toList();
+          appraisalList = response.toList();
+          filteredList = appraisalList;
         }
       });
       Utils.hideLoadingDialog(context);
@@ -128,7 +155,7 @@ class _EventListScreen extends State<EventListScreen>{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  "Events",
+                  "Appraisal List",
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
@@ -156,23 +183,35 @@ class _EventListScreen extends State<EventListScreen>{
                   children: [
                     Container(
                         padding: const EdgeInsets.only(left: 10.0),
-                        child: const Column(
+                        child: Column(
                           children: [
-                            Align(
+                            const Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  "Events",
+                                  "Appraisal List",
                                   style: TextStyle(
                                       fontSize: 14,
                                       color: AppColors.secondaryOrange,
                                       fontFamily: 'PoppinsMedium'),
                                 )),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding:  const EdgeInsets.only(right: 10.0),
+                              child: CustomSearchTextField(
+                                controller: searchController,
+                                hintText: 'Search',
+                                suffixIcon: SizedBox(
+                                  height: 16,
+                                  width: 16,
+                                  child: Image.asset(Images.searchIconOrange),
+                                ),
+                              ),
+                            ),
                           ],
                         )),
 
                     Expanded(
-                      child: eventList.isEmpty ? const Center(
+                      child: filteredList.isEmpty ? const Center(
                         child: Text(
                           'No data found',
                           style: TextStyle(
@@ -187,15 +226,15 @@ class _EventListScreen extends State<EventListScreen>{
                         alignment: Alignment.topCenter,
                         child: ListView.separated(
                           padding: const EdgeInsets.only(top: 10.0),
-                          itemCount: eventList.length,
+                          itemCount: filteredList.length,
                           separatorBuilder:
                               (BuildContext context, int index) {
                             return const SizedBox(height: 10);
                           },
                           itemBuilder: (context, index) {
-                            final item = eventList[index];
-                            return CustomEventListTile(
-                                item: item,
+                            final item = filteredList[index];
+                            return CustomAppraisalListTile(
+                              item: item,
                             );
                           },
                         ),
@@ -216,13 +255,13 @@ class _EventListScreen extends State<EventListScreen>{
                   onPressed: () async {
                     final result = await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AddEventScreen()),
+                      MaterialPageRoute(builder: (context) => AppraisalRequestScreen()),
                     );
                     if (result == true) {
-                      getEventList();
+                      getAppraisalList();
                     }
                   },
-                  buttonText: 'ADD EVENT',
+                  buttonText: 'REQUEST APPRAISAL',
                 ),
               ),
             )
@@ -234,10 +273,10 @@ class _EventListScreen extends State<EventListScreen>{
 
 }
 
-class CustomEventListTile extends StatelessWidget {
-  final EventListModel item;
+class CustomAppraisalListTile extends StatelessWidget {
+  final AppraisalListModel item;
 
-  const CustomEventListTile(
+  const CustomAppraisalListTile(
       {super.key, required this.item});
 
   @override
@@ -273,7 +312,7 @@ class CustomEventListTile extends StatelessWidget {
                         Expanded(
                             flex: 10,
                             child: Text(
-                              item.title.toString(),
+                              "Date ${item.createdOn}",
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.skyBlueTextColor,
@@ -297,18 +336,19 @@ class CustomEventListTile extends StatelessWidget {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  EventDetailScreen(
-                                                      eventDetail: item)),
+                                                  AppraisalDetailScreen(
+                                                      AppraisalId:item.requestId.toString()
+                                                  )),
                                         );
                                         if (result == true) {
-                                         // onTaskUpdated();
+                                          // onTaskUpdated();
                                         }
                                       }),
                                 ],
                               )),
                         ),
 
-                        Padding(
+                      /*  Padding(
                           padding: const EdgeInsets.only(right: 0.0),
                           child: Expanded(
                               flex: 1,
@@ -321,18 +361,18 @@ class CustomEventListTile extends StatelessWidget {
                                       child: Image.asset(Images.editIcon),
                                     ),
                                     onPressed: () async {
-                                      final result = await Navigator.push(
+                                      *//* final result = await Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  AddEventScreen(
-                                                      eventDetail: item
+                                                  Editclients(
+                                                      client: item
                                                   )
                                           )
                                       );
                                       if (result == true) {
-                                        //onUpdate();
-                                      }
+                                        onUpdate();
+                                      }*//*
                                     },
                                   ),
                                 ],
@@ -358,7 +398,7 @@ class CustomEventListTile extends StatelessWidget {
                                   ),
                                 ],
                               )),
-                        )
+                        )*/
 
                       ],
                     ),
@@ -372,7 +412,7 @@ class CustomEventListTile extends StatelessWidget {
                           flex: 1,
                           child: Container(
                             child: const Text(
-                              'Organiser(s)',
+                              'Appraisal by',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -385,7 +425,7 @@ class CustomEventListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              "${item.organiserFirstName} ${item.organiserLastName}",
+                              "${item.appraisedByFirstName ?? "-"} ${item.appraisedByLastName ?? "-"}",
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -409,7 +449,7 @@ class CustomEventListTile extends StatelessWidget {
                               alignment: Alignment.topLeft,
                               child: Container(
                                 child: const Text(
-                                  'Date',
+                                  'Designation',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: AppColors.textColor,
@@ -422,7 +462,7 @@ class CustomEventListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              item.eventDate.toString(),
+                              item.usrDesignation.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -444,7 +484,7 @@ class CustomEventListTile extends StatelessWidget {
                             flex: 1,
                             child: Container(
                               child: const Text(
-                                'Time',
+                                'Department',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: AppColors.textColor,
@@ -456,7 +496,77 @@ class CustomEventListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              "${item.timeFrom}-${item.timeTo}",
+                              item.department.toString(),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsMedium',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ))
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const DividerColor(),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 1,
+                            child: Container(
+                              child: const Text(
+                                'Self-Rating',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textColor,
+                                  fontFamily: 'PoppinsRegular',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            )),
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                              ((item.selfRating != null ? double.tryParse(item.selfRating.toString()) : 0.0) ?? 0.0)
+                                  .toStringAsFixed(1),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsMedium',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ))
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const DividerColor(),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 1,
+                            child: Container(
+                              child: const Text(
+                                'Manager-Rating',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textColor,
+                                  fontFamily: 'PoppinsRegular',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            )),
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                              ((item.selfRating != null ? double.tryParse(item.manRating.toString()) : 0.0) ?? 0.0)
+                                  .toStringAsFixed(1),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,

@@ -27,4 +27,14 @@ class EventRepository{
     }
   }
 
+  Future <dynamic> eventRevertApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.eventRevertUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intrasense/utils/AppColors.dart';
 import 'package:intrasense/view/Login/SplashScreen.dart';
 import 'package:intrasense/view_models/UserProvider.dart';
+import 'package:intrasense/view_models/appraisal_view_model.dart';
 import 'package:intrasense/view_models/auth_view_model.dart';
 import 'package:intrasense/view_models/client_view_model.dart';
 import 'package:intrasense/view_models/common_view_model.dart';
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_)=> TicketViewModel()),
           ChangeNotifierProvider(create: (_)=> MeetingViewModel()),
           ChangeNotifierProvider(create: (_)=> EventViewModel()),
+          ChangeNotifierProvider(create: (_)=> AppraisalViewModel()),
         ],
       child: (MaterialApp(
         theme: ThemeData(

@@ -6,7 +6,7 @@ import 'package:intrasense/utils/AppColors.dart';
 import 'package:intrasense/utils/Images.dart';
 import 'package:intrasense/utils/Utils.dart';
 import 'package:intrasense/view/Home/DashboardScreen.dart';
-import 'package:intrasense/view/appraisal/AppraisalList.dart';
+import 'package:intrasense/view/appraisal/AppraisalRequestListScreen.dart';
 import 'package:intrasense/view/clientList/ClientList.dart';
 import 'package:intrasense/view/leaves/MyLeavesList.dart';
 import 'package:intrasense/view/manageExpenses/MyExpensesList.dart';
@@ -21,9 +21,11 @@ import 'package:intrasense/view/myTimeSheet/MyTimeSheetList.dart';
 import 'package:intrasense/view/notification/NotificationListScreen.dart';
 import 'package:intrasense/view/settings_view/SettingScreen.dart';
 import 'package:intrasense/view/support/SupportList.dart';
+import 'package:intrasense/view/training/TrainingListScreen.dart';
 import '../../model/user_model.dart';
 import '../../view_models/user_view_model.dart';
 import '../Login/LoginScreen.dart';
+import '../appraisal/MyAppraisalListScreen.dart';
 import '../manageEvents/EventListScreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -621,13 +623,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                             color: AppColors.secondaryOrange,
                                             fontFamily: 'PoppinsRegular',
                                             fontSize: 15)),
-                                    title: const Text('Appraisal List',
+                                    title: const Text('My Appraisal List',
                                         style: TextStyle(
                                             color: AppColors.skyBlueTextColor,
                                             fontFamily: 'PoppinsRegular',
                                             fontSize: 15)),
                                     onTap: () {
-                                     // _onItemTapped(12);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => MyAppraisalListScreen(),
+                                        ),
+                                      );
                                     },
                                   )),
 
@@ -639,13 +646,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                             color: AppColors.secondaryOrange,
                                             fontFamily: 'PoppinsRegular',
                                             fontSize: 15)),
-                                    title: const Text('Self Appraisal',
+                                    title: const Text('Appraisals Request',
                                         style: TextStyle(
                                             color: AppColors.skyBlueTextColor,
                                             fontFamily: 'PoppinsRegular',
                                             fontSize: 15)),
                                     onTap: () {
-                                      Navigator.pop(context);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => AppraisalRequestListScreen(),
+                                        ),
+                                      );
                                     },
                                   ))
 
@@ -666,7 +678,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontFamily: 'PoppinsRegular',
                               fontSize: 15)),
                       onTap: () {
-                        Navigator.pop(context);
+                       // Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TrainingListScreen(),
+                          ),
+                        );
+
                       },
                     ),
                     const DividerColor(),

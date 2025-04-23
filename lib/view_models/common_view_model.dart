@@ -166,7 +166,7 @@ class CommonViewModel with ChangeNotifier{
     if (kDebugMode) {
       print("Api params---$data");
     }
-    _myRepo.updatePasswordApi(data,context).then((onValue) {
+    _myRepo.updateProfileApi(data,context).then((onValue) {
       setLoading(false);
       if (kDebugMode) {
         print("Api Response---$onValue");

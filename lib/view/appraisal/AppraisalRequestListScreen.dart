@@ -1,36 +1,62 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intrasense/utils/Constants.dart';
-import 'package:intrasense/view/manageEvents/AddEventScreen.dart';
-import 'package:intrasense/view_models/event_view_model.dart';
 
-import '../../model/client_list_model.dart';
-import '../../model/events/EventListModel.dart';
+import '../../model/appraisal/AppraisalListModel.dart';
+import '../../model/appraisal/AppraisalRequestListModel.dart';
 import '../../model/user_model.dart';
 import '../../res/component/CustomElevatedButton.dart';
+import '../../res/component/CustomSearchTextField.dart';
 import '../../utils/AppColors.dart';
+import '../../utils/Constants.dart';
 import '../../utils/Images.dart';
 import '../../utils/Utils.dart';
-import '../../view_models/user_view_model.dart';
+import '../../view_models/appraisal_view_model.dart';
 import 'package:provider/provider.dart';
 
-import 'EventDetailScreen.dart';
+import '../../view_models/user_view_model.dart';
+import 'AppraisalDetailScreen.dart';
+import 'AppraisalRequestScreen.dart';
 
-class EventListScreen extends StatefulWidget{
+class AppraisalRequestListScreen extends StatefulWidget{
   @override
-  _EventListScreen createState() => _EventListScreen();
+  _AppraisalRequestListScreen createState()=> _AppraisalRequestListScreen();
 
 }
 
-class _EventListScreen extends State<EventListScreen>{
+class _AppraisalRequestListScreen extends State<AppraisalRequestListScreen>{
   UserModel? _userData;
   bool _isLoading = false;
-  List<EventListModel> eventList = [];
+  List<AppraisalRequestListModel> appraisalList = [];
+  List<AppraisalRequestListModel> filteredList = [];
+  TextEditingController searchController = TextEditingController();
+
+
+  @override
+  void dispose() {
+    searchController.removeListener(_filterList);
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterList() {
+    String query = searchController.text.toLowerCase();
+    setState(() {
+      filteredList = appraisalList
+          .where((item) =>
+          (item.firstName?.toLowerCase() ?? '').contains(query) ||
+          (item.lastName?.toLowerCase() ?? '').contains(query) ||
+          (item.department?.toLowerCase() ?? '').contains(query)||
+          (item.pmFirstName?.toLowerCase() ?? '').contains(query) ||
+          (item.pmLastName?.toLowerCase() ?? '').contains(query))
+          .toList();
+    });
+  }
 
   @override
   void initState() {
     getUserDetails(context);
+    searchController.addListener(_filterList);
     super.initState();
   }
 
@@ -41,7 +67,7 @@ class _EventListScreen extends State<EventListScreen>{
     if (kDebugMode) {
       print(_userData);
     }
-    getEventList();
+    getAppraisalList();
   }
 
   void setLoading(bool loading) {
@@ -50,21 +76,23 @@ class _EventListScreen extends State<EventListScreen>{
     });
   }
 
-  void getEventList() async {
+  void getAppraisalList() async {
     Utils.showLoadingDialog(context);
     try {
       Map data = {
         'user_id': _userData?.data?.userId,
         'usr_role_track_id': _userData?.data?.roleTrackId,
+        'customer_id': _userData?.data?.customerTrackId,
         'deviceToken': Constants.deviceToken,
         'deviceType': Constants.deviceType,
         'token': _userData?.token,
       };
-      final eventViewModel = Provider.of<EventViewModel>(context, listen: false);
-      final response = await eventViewModel.getEventListApi(data, context);
+      final appraisalViewModel = Provider.of<AppraisalViewModel>(context, listen: false);
+      final response = await appraisalViewModel.getAppraisalRequestListApi(data, context);
       setState(() {
         if (response != null) {
-          eventList = response.toList();
+          appraisalList = response.toList();
+          filteredList = appraisalList;
         }
       });
       Utils.hideLoadingDialog(context);
@@ -80,6 +108,7 @@ class _EventListScreen extends State<EventListScreen>{
       setLoading(false);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +157,7 @@ class _EventListScreen extends State<EventListScreen>{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  "Events",
+                  "Appraisals Request",
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
@@ -156,23 +185,35 @@ class _EventListScreen extends State<EventListScreen>{
                   children: [
                     Container(
                         padding: const EdgeInsets.only(left: 10.0),
-                        child: const Column(
+                        child: Column(
                           children: [
-                            Align(
+                            const Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  "Events",
+                                  "Appraisals Request",
                                   style: TextStyle(
                                       fontSize: 14,
                                       color: AppColors.secondaryOrange,
                                       fontFamily: 'PoppinsMedium'),
                                 )),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding:  const EdgeInsets.only(right: 10.0),
+                              child: CustomSearchTextField(
+                                controller: searchController,
+                                hintText: 'Search',
+                                suffixIcon: SizedBox(
+                                  height: 16,
+                                  width: 16,
+                                  child: Image.asset(Images.searchIconOrange),
+                                ),
+                              ),
+                            ),
                           ],
                         )),
 
                     Expanded(
-                      child: eventList.isEmpty ? const Center(
+                      child: filteredList.isEmpty ? const Center(
                         child: Text(
                           'No data found',
                           style: TextStyle(
@@ -187,15 +228,15 @@ class _EventListScreen extends State<EventListScreen>{
                         alignment: Alignment.topCenter,
                         child: ListView.separated(
                           padding: const EdgeInsets.only(top: 10.0),
-                          itemCount: eventList.length,
+                          itemCount: filteredList.length,
                           separatorBuilder:
                               (BuildContext context, int index) {
                             return const SizedBox(height: 10);
                           },
                           itemBuilder: (context, index) {
-                            final item = eventList[index];
-                            return CustomEventListTile(
-                                item: item,
+                            final item = filteredList[index];
+                            return CustomAppraisalListTile(
+                              item: item,
                             );
                           },
                         ),
@@ -204,29 +245,6 @@ class _EventListScreen extends State<EventListScreen>{
                   ],
                 )),
           ),
-
-          if (_userData?.data?.roleTrackId==Constants.roleProjectManager||_userData?.data?.roleTrackId==Constants.roleHR)...{
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 20.0,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: CustomElevatedButton(
-                  onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AddEventScreen()),
-                    );
-                    if (result == true) {
-                      getEventList();
-                    }
-                  },
-                  buttonText: 'ADD EVENT',
-                ),
-              ),
-            )
-          }
         ],
       ),
     );
@@ -234,10 +252,10 @@ class _EventListScreen extends State<EventListScreen>{
 
 }
 
-class CustomEventListTile extends StatelessWidget {
-  final EventListModel item;
+class CustomAppraisalListTile extends StatelessWidget {
+  final AppraisalRequestListModel item;
 
-  const CustomEventListTile(
+  const CustomAppraisalListTile(
       {super.key, required this.item});
 
   @override
@@ -273,7 +291,7 @@ class CustomEventListTile extends StatelessWidget {
                         Expanded(
                             flex: 10,
                             child: Text(
-                              item.title.toString(),
+                              "Date ${item.createdOn}",
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.skyBlueTextColor,
@@ -297,18 +315,19 @@ class CustomEventListTile extends StatelessWidget {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  EventDetailScreen(
-                                                      eventDetail: item)),
+                                                  AppraisalDetailScreen(
+                                                      AppraisalId:item.requestId.toString()
+                                                  )),
                                         );
                                         if (result == true) {
-                                         // onTaskUpdated();
+                                          // onTaskUpdated();
                                         }
                                       }),
                                 ],
                               )),
                         ),
 
-                        Padding(
+                        /*  Padding(
                           padding: const EdgeInsets.only(right: 0.0),
                           child: Expanded(
                               flex: 1,
@@ -321,18 +340,18 @@ class CustomEventListTile extends StatelessWidget {
                                       child: Image.asset(Images.editIcon),
                                     ),
                                     onPressed: () async {
-                                      final result = await Navigator.push(
+                                      *//* final result = await Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  AddEventScreen(
-                                                      eventDetail: item
+                                                  Editclients(
+                                                      client: item
                                                   )
                                           )
                                       );
                                       if (result == true) {
-                                        //onUpdate();
-                                      }
+                                        onUpdate();
+                                      }*//*
                                     },
                                   ),
                                 ],
@@ -358,7 +377,7 @@ class CustomEventListTile extends StatelessWidget {
                                   ),
                                 ],
                               )),
-                        )
+                        )*/
 
                       ],
                     ),
@@ -372,7 +391,7 @@ class CustomEventListTile extends StatelessWidget {
                           flex: 1,
                           child: Container(
                             child: const Text(
-                              'Organiser(s)',
+                              'Employee ID',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -385,7 +404,7 @@ class CustomEventListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              "${item.organiserFirstName} ${item.organiserLastName}",
+                              item.employeeId.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -409,7 +428,7 @@ class CustomEventListTile extends StatelessWidget {
                               alignment: Alignment.topLeft,
                               child: Container(
                                 child: const Text(
-                                  'Date',
+                                  'Name',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: AppColors.textColor,
@@ -422,7 +441,7 @@ class CustomEventListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              item.eventDate.toString(),
+                              "${item.firstName} ${item.lastName}",
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -444,7 +463,7 @@ class CustomEventListTile extends StatelessWidget {
                             flex: 1,
                             child: Container(
                               child: const Text(
-                                'Time',
+                                'Department',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: AppColors.textColor,
@@ -456,7 +475,75 @@ class CustomEventListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              "${item.timeFrom}-${item.timeTo}",
+                              item.department.toString(),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsMedium',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ))
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const DividerColor(),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 1,
+                            child: Container(
+                              child: const Text(
+                                'Project Manager',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textColor,
+                                  fontFamily: 'PoppinsRegular',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            )),
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                             "${item.pmFirstName} ${item.pmLastName}",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsMedium',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ))
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const DividerColor(),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 1,
+                            child: Container(
+                              child: const Text(
+                                'Status',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textColor,
+                                  fontFamily: 'PoppinsRegular',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            )),
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                             item.status=="1"?"PENDING":"COMPLETED",
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,

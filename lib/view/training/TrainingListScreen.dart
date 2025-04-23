@@ -1,83 +1,40 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intrasense/utils/Constants.dart';
-import 'package:intrasense/view/manageEvents/AddEventScreen.dart';
-import 'package:intrasense/view_models/event_view_model.dart';
+import 'package:intrasense/view/training/CreateTrainingScreen.dart';
+import 'package:intrasense/view/training/TrainingDetailScreen.dart';
 
-import '../../model/client_list_model.dart';
-import '../../model/events/EventListModel.dart';
 import '../../model/user_model.dart';
 import '../../res/component/CustomElevatedButton.dart';
+import '../../res/component/CustomSearchTextField.dart';
 import '../../utils/AppColors.dart';
+import '../../utils/Constants.dart';
 import '../../utils/Images.dart';
-import '../../utils/Utils.dart';
 import '../../view_models/user_view_model.dart';
-import 'package:provider/provider.dart';
 
-import 'EventDetailScreen.dart';
-
-class EventListScreen extends StatefulWidget{
+class TrainingListScreen extends StatefulWidget {
   @override
-  _EventListScreen createState() => _EventListScreen();
-
+  _TrainingListScreen createState() => _TrainingListScreen();
 }
 
-class _EventListScreen extends State<EventListScreen>{
+class _TrainingListScreen extends State<TrainingListScreen> {
+  TextEditingController searchController = TextEditingController();
   UserModel? _userData;
   bool _isLoading = false;
-  List<EventListModel> eventList = [];
 
   @override
   void initState() {
-    getUserDetails(context);
     super.initState();
+    getUserDetails(context);
   }
 
   Future<UserModel> getUserData() => UserViewModel().getUser();
 
   void getUserDetails(BuildContext context) async {
     _userData = await getUserData();
+    setState(() {});
     if (kDebugMode) {
       print(_userData);
-    }
-    getEventList();
-  }
-
-  void setLoading(bool loading) {
-    setState(() {
-      _isLoading = loading;
-    });
-  }
-
-  void getEventList() async {
-    Utils.showLoadingDialog(context);
-    try {
-      Map data = {
-        'user_id': _userData?.data?.userId,
-        'usr_role_track_id': _userData?.data?.roleTrackId,
-        'deviceToken': Constants.deviceToken,
-        'deviceType': Constants.deviceType,
-        'token': _userData?.token,
-      };
-      final eventViewModel = Provider.of<EventViewModel>(context, listen: false);
-      final response = await eventViewModel.getEventListApi(data, context);
-      setState(() {
-        if (response != null) {
-          eventList = response.toList();
-        }
-      });
-      Utils.hideLoadingDialog(context);
-    } catch (error, stackTrace) {
-      Utils.hideLoadingDialog(context);
-      if (kDebugMode) {
-        print(error);
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to load client list')),
-      );
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -128,7 +85,7 @@ class _EventListScreen extends State<EventListScreen>{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  "Events",
+                  "Training List",
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
@@ -148,7 +105,7 @@ class _EventListScreen extends State<EventListScreen>{
             top: 110.0,
             left: 0.0,
             right: 0.0,
-            bottom: 70.0,
+            bottom: 20.0,
             child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Column(
@@ -156,56 +113,77 @@ class _EventListScreen extends State<EventListScreen>{
                   children: [
                     Container(
                         padding: const EdgeInsets.only(left: 10.0),
-                        child: const Column(
+                        child: Column(
                           children: [
-                            Align(
+                            const Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  "Events",
+                                  "Training List",
                                   style: TextStyle(
                                       fontSize: 14,
                                       color: AppColors.secondaryOrange,
                                       fontFamily: 'PoppinsMedium'),
                                 )),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 10.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: CustomSearchTextField(
+                                      controller: searchController,
+                                      hintText: 'Search',
+                                      suffixIcon: SizedBox(
+                                        height: 16,
+                                        width: 16,
+                                        child: Image.asset(
+                                            Images.searchIconOrange),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         )),
-
                     Expanded(
-                      child: eventList.isEmpty ? const Center(
-                        child: Text(
-                          'No data found',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.textColor,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'PoppinsMedium',
+                        child: /* filteredList.isEmpty ? const Center(
+                          child: Text(
+                            'No data found',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: AppColors.textColor,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'PoppinsMedium',
+                            ),
                           ),
-                        ),
-                      )
-                          : Align(
-                        alignment: Alignment.topCenter,
-                        child: ListView.separated(
-                          padding: const EdgeInsets.only(top: 10.0),
-                          itemCount: eventList.length,
-                          separatorBuilder:
-                              (BuildContext context, int index) {
-                            return const SizedBox(height: 10);
-                          },
-                          itemBuilder: (context, index) {
-                            final item = eventList[index];
-                            return CustomEventListTile(
-                                item: item,
-                            );
-                          },
-                        ),
+                        ):*/
+                            Align(
+                      alignment: Alignment.topCenter,
+                      child: ListView.separated(
+                        padding:
+                            const EdgeInsets.only(top: 10.0, bottom: 100.0),
+                        //itemCount: filteredList.length,
+                        itemCount: 4,
+                        separatorBuilder: (BuildContext context, int index) {
+                          return const SizedBox(height: 10);
+                        },
+                        itemBuilder: (context, index) {
+                          // final item = filteredList[index];
+                          return CustomTrainingListTile(
+                              /*item:item,
+                                  userData: _userData,
+                                  onGetMeeting: () {
+                                    getMeetingList();
+                                  }*/
+                              );
+                        },
                       ),
-                    ),
+                    )),
                   ],
                 )),
           ),
-
-          if (_userData?.data?.roleTrackId==Constants.roleProjectManager||_userData?.data?.roleTrackId==Constants.roleHR)...{
+          if (_userData?.data?.roleTrackId.toString() == Constants.roleHR) ...{
             Positioned(
               left: 0,
               right: 0,
@@ -216,13 +194,14 @@ class _EventListScreen extends State<EventListScreen>{
                   onPressed: () async {
                     final result = await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AddEventScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => CreateTrainingScreen()),
                     );
                     if (result == true) {
-                      getEventList();
+                      // getMeetingList();
                     }
                   },
-                  buttonText: 'ADD EVENT',
+                  buttonText: 'CREATE MEETING',
                 ),
               ),
             )
@@ -231,17 +210,31 @@ class _EventListScreen extends State<EventListScreen>{
       ),
     );
   }
-
 }
 
-class CustomEventListTile extends StatelessWidget {
-  final EventListModel item;
+class CustomTrainingListTile extends StatelessWidget {
+/*
+  final MeetingListModel item;
+  final UserModel? userData;
+  final Function onGetMeeting;
+  const CustomMeetingListTile({super.key,required this.item, required this.userData, required this.onGetMeeting});
+*/
 
-  const CustomEventListTile(
-      {super.key, required this.item});
+  String getStatusText(String status) {
+    switch (status) {
+      case "0":
+        return 'PENDING';
+      case "1":
+        return 'COMPLETE';
+      default:
+        return 'CANCEL';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    //final meetingViewModel = Provider.of<MeetingViewModel>(context);
+
     return Stack(
       children: [
         Padding(
@@ -273,10 +266,12 @@ class CustomEventListTile extends StatelessWidget {
                         Expanded(
                             flex: 10,
                             child: Text(
-                              item.title.toString(),
+                              "Training Date: 01/05/2025",
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontSize: 14,
-                                color: AppColors.skyBlueTextColor,
+                                color: AppColors.darkBlueTextColor,
                                 fontFamily: 'PoppinsMedium',
                               ),
                             )),
@@ -296,70 +291,15 @@ class CustomEventListTile extends StatelessWidget {
                                         final result = await Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EventDetailScreen(
-                                                      eventDetail: item)),
+                                              builder: (context) => TrainingDetailScreen()),
                                         );
                                         if (result == true) {
-                                         // onTaskUpdated();
+                                         // onGetMeeting();
                                         }
                                       }),
                                 ],
                               )),
                         ),
-
-                        Padding(
-                          padding: const EdgeInsets.only(right: 0.0),
-                          child: Expanded(
-                              flex: 1,
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    icon: SizedBox(
-                                      height: 20.0,
-                                      width: 20.0,
-                                      child: Image.asset(Images.editIcon),
-                                    ),
-                                    onPressed: () async {
-                                      final result = await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  AddEventScreen(
-                                                      eventDetail: item
-                                                  )
-                                          )
-                                      );
-                                      if (result == true) {
-                                        //onUpdate();
-                                      }
-                                    },
-                                  ),
-                                ],
-                              )),
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.only(right: 0.0),
-                          child: Expanded(
-                              flex: 1,
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    icon: SizedBox(
-                                      height: 20.0,
-                                      width: 20.0,
-                                      child: Image.asset(Images.deleteIcon),
-                                    ),
-                                    onPressed: () {
-                                      //deleteClientPopUp(context);
-
-                                    },
-                                  ),
-                                ],
-                              )),
-                        )
-
                       ],
                     ),
                   ),
@@ -372,7 +312,7 @@ class CustomEventListTile extends StatelessWidget {
                           flex: 1,
                           child: Container(
                             child: const Text(
-                              'Organiser(s)',
+                              'Topic',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -385,7 +325,112 @@ class CustomEventListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              "${item.organiserFirstName} ${item.organiserLastName}",
+                              "Decision Making",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsMedium',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ))
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const DividerColor(),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            child: const Text(
+                              'Instructor',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsRegular',
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                              "Lawrence Hommand",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsMedium',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ))
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const DividerColor(),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            child: const Text(
+                              'Department',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsRegular',
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                              "Technical Support",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsMedium',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ))
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const DividerColor(),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            child: const Text(
+                              'Description',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textColor,
+                                fontFamily: 'PoppinsRegular',
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                              "Mostrud excertitaion by Ullamco labours lorem ipsum",
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -409,7 +454,7 @@ class CustomEventListTile extends StatelessWidget {
                               alignment: Alignment.topLeft,
                               child: Container(
                                 child: const Text(
-                                  'Date',
+                                  'Status',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: AppColors.textColor,
@@ -422,45 +467,12 @@ class CustomEventListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              item.eventDate.toString(),
+                              //getStatusText(item.meetingStatus),
+                              "Completed",
                               style: const TextStyle(
                                 fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ))
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const DividerColor(),
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            flex: 1,
-                            child: Container(
-                              child: const Text(
-                                'Time',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.textColor,
-                                  fontFamily: 'PoppinsRegular',
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            )),
-                        Expanded(
-                            flex: 1,
-                            child: Text(
-                              "${item.timeFrom}-${item.timeTo}",
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textColor,
-                                fontFamily: 'PoppinsMedium',
+                                color: AppColors.skyBlueTextColor,
+                                fontFamily: 'PoppinsRegular',
                                 fontWeight: FontWeight.w500,
                               ),
                             ))

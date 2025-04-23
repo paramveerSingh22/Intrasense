@@ -103,5 +103,11 @@ class AppUrl{
   ///for events
   static var eventListUrl = baseUrl + 'events/addEvent/getevents';
   static var addEventUrl = baseUrl + 'events/addEvent';
+  static var eventRevertUrl = baseUrl + 'events/eventRevert';
+
+  ///for appraisal
+  static var appraisalListUrl = baseUrl + 'appraisal/myAppraisalsList';
+  static var appraisalDetailUrl = baseUrl + 'appraisal/Appraisal_detail';
+  static var appraisalRequestListUrl = baseUrl + 'appraisal/appraisalRequestedList';
 
 }

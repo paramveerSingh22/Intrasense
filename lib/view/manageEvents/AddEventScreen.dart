@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intrasense/model/events/EventListModel.dart';
 import 'package:intrasense/view_models/event_view_model.dart';
 
 import '../../model/client_list_model.dart';
@@ -13,6 +14,7 @@ import '../../res/component/CustomElevatedButton.dart';
 import '../../res/component/CustomTextField.dart';
 import '../../res/component/MultiSelectDropdown.dart';
 import '../../utils/AppColors.dart';
+import '../../utils/Constants.dart';
 import '../../utils/Images.dart';
 import '../../utils/Utils.dart';
 import '../../view_models/client_view_model.dart';
@@ -23,6 +25,14 @@ import '../../view_models/user_view_model.dart';
 import 'package:provider/provider.dart';
 
 class AddEventScreen extends StatefulWidget{
+  final dynamic eventDetail;
+
+  const AddEventScreen({
+    Key? key,
+     this.eventDetail,
+  }): super(key: key);
+
+
   @override
   _AddEventScreen createState() => _AddEventScreen();
 
@@ -40,6 +50,7 @@ class _AddEventScreen extends State<AddEventScreen>{
 
   UserModel? _userData;
   bool _isLoading = false;
+  bool isUpdate = false;
 
 
   String? selectGroupNameValue;
@@ -78,6 +89,10 @@ class _AddEventScreen extends State<AddEventScreen>{
     setState(() {
       timeZoneList = commonViewModel.timeZoneList;
     });
+    if(widget.eventDetail!=null){
+      isUpdate= true;
+      setData();
+    }
   }
 
   Future<UserModel> getUserData() => UserViewModel().getUser();
@@ -240,9 +255,9 @@ class _AddEventScreen extends State<AddEventScreen>{
            child: Row(
              mainAxisAlignment: MainAxisAlignment.spaceBetween,
              children: [
-               const Text(
-                 'Add Event',
-                 style: TextStyle(
+                Text(
+                 isUpdate ? 'Update Event' : 'Add Event',
+                 style: const TextStyle(
                    fontSize: 16,
                    color: Colors.white,
                    fontFamily: 'PoppinsMedium',
@@ -265,11 +280,11 @@ class _AddEventScreen extends State<AddEventScreen>{
            child: SingleChildScrollView(
                child: Column(
                  children: [
-                   const Align(
+                    Align(
                        alignment: Alignment.centerLeft,
                        child: Text(
-                         "Add Event",
-                         style: TextStyle(
+                         isUpdate ? 'Update Event' : 'Add Event',
+                         style: const TextStyle(
                              fontSize: 14,
                              color: AppColors.secondaryOrange,
                              fontFamily: 'PoppinsMedium'),
@@ -678,8 +693,8 @@ class _AddEventScreen extends State<AddEventScreen>{
                            'user_id': _userData?.data?.userId.toString(),
                            'usr_role_track_id':
                            _userData?.data?.roleTrackId.toString(),
-                           'deviceToken': "WEB",
-                           'deviceType':"WEB",
+                           'deviceToken':Constants.deviceToken,
+                           'deviceType':Constants.deviceType,
                            'title': _titleController.text.toString(),
                            'eventdate': _dateController.text.toString(),
                            'venue':_address1Controller.text.toString(),
@@ -723,14 +738,14 @@ class _AddEventScreen extends State<AddEventScreen>{
                            data['client_id[$i]'] = client.companyId;
                          }
 
-                        /* if(isUpdate==true){
-                           data['meeting_id'] = meetingDetail.meetingId;
-                         }*/
+                         if(widget.eventDetail!=null){
+                           data['event_id'] = widget.eventDetail.eventId;
+                         }
 
                          eventViewModel.addEventApi(data, context);
                        }
                      },
-                     buttonText: 'SUBMIT',
+                     buttonText:  isUpdate ? 'UPDATE' : 'SUBMIT',
                      loading: eventViewModel.loading,
                    ),
                  ],
@@ -739,6 +754,19 @@ class _AddEventScreen extends State<AddEventScreen>{
        ],
      ),
    );
+  }
+
+  void setData() {
+    setState(() {
+      _titleController.text= widget.eventDetail.title.toString();
+      _dateController.text= widget.eventDetail.eventDate.toString();
+      _address1Controller.text= widget.eventDetail.venue.toString();
+      _startTimeController.text= widget.eventDetail.timeFrom.toString();
+      _endTimeController.text= widget.eventDetail.timeTo.toString();
+      selectTimeZoneValue=widget.eventDetail.timezone;
+      _googleMapUrlController.text= widget.eventDetail.googleMapUrl.toString();
+      _desController.text= widget.eventDetail.description.toString();
+    });
   }
 
 }

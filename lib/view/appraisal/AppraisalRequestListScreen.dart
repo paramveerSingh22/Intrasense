@@ -260,6 +260,24 @@ class CustomAppraisalListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    String getStatusText(String status) {
+      switch (status) {
+        case "1":
+          return 'PENDING';
+        case "2":
+          return 'APPROVED';
+        case "3":
+          return 'DECLINED';
+        case "4":
+          return 'DECLINED';
+        default:
+          return 'DECLINED';
+      }
+    }
+
+
+
     return Stack(
       children: [
         Padding(
@@ -543,7 +561,7 @@ class CustomAppraisalListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                             item.status=="1"?"PENDING":"COMPLETED",
+                              getStatusText(item.status.toString()),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,

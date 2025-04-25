@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../model/appraisal/AppraisalDetailModel.dart';
 import '../../model/user_model.dart';
+import '../../res/component/ButtonOrangeBorder.dart';
 import '../../res/component/CustomElevatedButton.dart';
 import '../../res/component/CustomRatingBar.dart';
 import '../../res/component/CustomTextField.dart';
@@ -45,6 +46,15 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
   final TextEditingController _leadershipQualityController = TextEditingController();
   final TextEditingController _communicationSkillsController = TextEditingController();
   final TextEditingController _problemSolvingController = TextEditingController();
+
+  String attendanceAndPunctuallyRating="0";
+  String workEthicIntegrityRating="0";
+  String qualityOfWorkRating="0";
+  String leadershipQualityRating="0";
+  String communicationSkillRating="0";
+  String problemSolvingRating="0";
+
+  final TextEditingController _declineCommentsController = TextEditingController();
 
   @override
   void initState() {
@@ -116,6 +126,7 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         body: Stack(
           children: <Widget>[
@@ -469,7 +480,7 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
                               initialRating: 0.0,
                               onRatingUpdate: (rating) {
                                 setState(() {
-                                  //_rating = rating;
+                                  attendanceAndPunctuallyRating = rating.toString();
                                 });
                               },
                             ),
@@ -505,7 +516,7 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
                               initialRating: 0.0,
                               onRatingUpdate: (rating) {
                                 setState(() {
-                                  //_rating = rating;
+                                  workEthicIntegrityRating = rating.toString();
                                 });
                               },
                             ),
@@ -540,7 +551,7 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
                               initialRating: 0.0,
                               onRatingUpdate: (rating) {
                                 setState(() {
-                                  //_rating = rating;
+                                  qualityOfWorkRating = rating.toString();
                                 });
                               },
                             ),
@@ -575,7 +586,7 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
                               initialRating: 0.0,
                               onRatingUpdate: (rating) {
                                 setState(() {
-                                  //_rating = rating;
+                                  leadershipQualityRating = rating.toString();
                                 });
                               },
                             ),
@@ -610,7 +621,7 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
                               initialRating: 0.0,
                               onRatingUpdate: (rating) {
                                 setState(() {
-                                  //_rating = rating;
+                                  communicationSkillRating = rating.toString();
                                 });
                               },
                             ),
@@ -647,7 +658,7 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
                               initialRating: 0.0,
                               onRatingUpdate: (rating) {
                                 setState(() {
-                                  //_rating = rating;
+                                  problemSolvingRating = rating.toString();
                                 });
                               },
                             ),
@@ -665,54 +676,33 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
                       const SizedBox(height: 15),
 
                       Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: CustomElevatedButton(
-                          onPressed: () {
-                            /* if (_firstNameController.text.toString().isEmpty) {
-                          Utils.toastMessage("Please enter first name");
-                        }
-                        else if (_lastNameController.text.toString().isEmpty) {
-                          Utils.toastMessage("Please enter last name");
-                        }
-                        else if (_employeeIdController.text.toString().isEmpty) {
-                          Utils.toastMessage("Please enter employee ID");
-                        }
-                        else if (_departmentController.text.toString().isEmpty) {
-                          Utils.toastMessage("Please enter department");
-                        }
-                        else if (selectProjectManagerValue == null) {
-                          Utils.toastMessage("Please select project manager");
-                        }
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                                flex: 1,
+                                child: ButtonOrangeBorder(
+                                  onPressed: () async {
+                                    appraisalRevertAPI("3");
+                                  },
+                                  buttonText: 'DECLINE',
+                                )),
+                            const SizedBox(
+                              width: 10.0,
+                            ),
+                            Expanded(
+                                flex: 1,
+                                child: CustomElevatedButton(
+                                  onPressed: () async {
+                                    appraisalRevertAPI("2");
+                                  },
+                                  buttonText: 'SUBMIT',
+                                ))
+                          ],
+                        ),
+                      )
 
-                        else if (_reasonController.text.toString().isEmpty) {
-                          Utils.toastMessage("Please enter reason");
-                        }
 
-                        else {
-                          *//* Map data = {
-                            'user_id': _userData?.data?.userId.toString(),
-                            'usr_role_track_id':
-                            _userData?.data?.roleTrackId.toString(),
-                            'deviceToken':Constants.deviceToken,
-                            'deviceType':Constants.deviceType,
-                            'title': _titleController.text.toString(),
-                            'eventdate': _dateController.text.toString(),
-                            'venue':_address1Controller.text.toString(),
-                            'timefrom':_startTimeController.text.toString(),
-                            'timeto':_endTimeController.text.toString(),
-                            'timezone':selectTimeZoneValue,
-                            'googlemapurl':_googleMapUrlController.text.toString(),
-                            'description':_desController.text.toString(),
-                            'token': _userData?.token.toString(),
-                          };
-                          *//*
-                          //eventViewModel.addEventApi(data, context);*/
-                            // }
-                          },
-                          buttonText: 'SUBMIT',
-                          // loading: eventViewModel.loading,
-                        ) ,
-                      ),
                     }
                   }
 
@@ -723,4 +713,177 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
         ));
   }
 
+  void declineAppraisalPopUp(BuildContext context) {
+      final appraisalViewModel = Provider.of<AppraisalViewModel>(context, listen: false);
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        isDismissible: false,
+        enableDrag: false,
+        builder: (BuildContext context) {
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    color: AppColors.secondaryOrange.withOpacity(0.1),
+                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Comment',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.secondaryOrange,
+                            fontFamily: 'PoppinsMedium',
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.close,
+                            color: AppColors.textColor,
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 30.0),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        'Comments',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textColor,
+                          fontFamily: 'PoppinsMedium',
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                    child: CustomTextField(
+                      controller: _declineCommentsController,
+                      hintText: 'Comments',
+                      minLines: 4,
+                      maxLines: 4,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+                    child: CustomElevatedButton(
+                      onPressed: () async {
+                        if (_declineCommentsController.text.toString().isEmpty) {
+                          Utils.toastMessage("Please add comments");
+                        } else {
+                          Navigator.pop(context, true);
+                          Utils.showLoadingDialog(context);
+                          Map data = {
+                            'user_id': _userData?.data?.userId.toString(),
+                            'usr_role_track_id': _userData?.data?.roleTrackId.toString(),
+                            'deviceToken':Constants.deviceToken,
+                            'deviceType':Constants.deviceType,
+                            'request_id':  widget.AppraisalId,
+                            'attendence_rating':attendanceAndPunctuallyRating,
+                            'workethics_rating':workEthicIntegrityRating,
+                            'qualityofwork_rating':qualityOfWorkRating,
+                            'leadershipqualities_rating':leadershipQualityRating,
+                            'communication_rating':communicationSkillRating,
+                            'problemsolving_rating':problemSolvingRating,
+                            'attendence_comment':_attendanceAndPunctuallyController.text.toString(),
+                            'workethics_comment':_workAndIntegrityController.text.toString(),
+                            'qualityofwork_comment':_qualityOfWorkController.text.toString(),
+                            'leadership_comment':_leadershipQualityController.text.toString(),
+                            'communication_comment':_communicationSkillsController.text.toString(),
+                            'problemsolving_comment':_problemSolvingController.text.toString(),
+                            'reason':_declineCommentsController.text.toString(),
+                            'appraisal_status':"3",
+                            'token': _userData?.token.toString(),
+                          };
+                          await appraisalViewModel.appraisalPMRevertApi(data, context);
+                          Utils.hideLoadingDialog(context);
+                          Navigator.pop(context, true);
+                        }
+                      },
+                      buttonText: 'SUBMIT',
+                      loading: appraisalViewModel.loading,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+  }
+
+  void appraisalRevertAPI(String revertStatus) async {
+    if (_attendanceAndPunctuallyController.text.toString().isEmpty) {
+      Utils.toastMessage("Please enter Attendance & Punctually");
+    }
+
+    else if (_workAndIntegrityController.text.toString().isEmpty) {
+      Utils.toastMessage("Please enter work ethic & integrity");
+    }
+
+    else if (_qualityOfWorkController.text.toString().isEmpty) {
+      Utils.toastMessage("Please enter quality of work");
+    }
+
+    else if (_leadershipQualityController.text.toString().isEmpty) {
+      Utils.toastMessage("Please enter leadership qualities");
+    }
+
+    else if (_communicationSkillsController.text.toString().isEmpty) {
+      Utils.toastMessage("Please enter communication skills");
+    }
+
+    else if (_problemSolvingController.text.toString().isEmpty) {
+      Utils.toastMessage("Please enter problem solving");
+    }
+
+    else if(revertStatus=="3"){
+      declineAppraisalPopUp(context);
+    }
+    else if(revertStatus=="2"){
+      Utils.showLoadingDialog(context);
+      Map data = {
+        'user_id': _userData?.data?.userId.toString(),
+        'usr_role_track_id': _userData?.data?.roleTrackId.toString(),
+        'deviceToken':Constants.deviceToken,
+        'deviceType':Constants.deviceType,
+        'request_id':  widget.AppraisalId,
+        'attendence_rating':attendanceAndPunctuallyRating,
+        'workethics_rating':workEthicIntegrityRating,
+        'qualityofwork_rating':qualityOfWorkRating,
+        'leadershipqualities_rating':leadershipQualityRating,
+        'communication_rating':communicationSkillRating,
+        'problemsolving_rating':problemSolvingRating,
+        'attendence_comment':_attendanceAndPunctuallyController.text.toString(),
+        'workethics_comment':_workAndIntegrityController.text.toString(),
+        'qualityofwork_comment':_qualityOfWorkController.text.toString(),
+        'leadership_comment':_leadershipQualityController.text.toString(),
+        'communication_comment':_communicationSkillsController.text.toString(),
+        'problemsolving_comment':_problemSolvingController.text.toString(),
+        'reason':"",
+        'appraisal_status':revertStatus,
+        'token': _userData?.token.toString(),
+      };
+      final appraisalViewModel = Provider.of<AppraisalViewModel>(context, listen: false);
+      await appraisalViewModel.appraisalPMRevertApi(data, context);
+      Utils.hideLoadingDialog(context);
+      Navigator.pop(context, true);
+    }
+  }
 }

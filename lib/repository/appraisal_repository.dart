@@ -37,4 +37,26 @@ class AppraisalRepository{
     }
   }
 
+  Future <dynamic> createAppraisalApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.createAppraisalUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
+  Future <dynamic> appraisalPMRevertApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.appraisalPMRevertUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
+
+
 }

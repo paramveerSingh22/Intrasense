@@ -89,4 +89,53 @@ class AppraisalViewModel with ChangeNotifier{
       return null;
     }
   }
+
+  Future<void> createAppraisalApi(dynamic data, BuildContext context) async {
+    setLoading(true);
+    if (kDebugMode) {
+      print("Api params---$data");
+    }
+    _myRepo.createAppraisalApi(data,context).then((onValue) {
+      setLoading(false);
+      if (kDebugMode) {
+        print("Api Response---$onValue");
+      }
+      Map<String, dynamic> response = onValue as Map<String, dynamic>;
+      Utils.toastMessage(response['message']);
+      if (response['status'] == true) {
+        Navigator.pop(context, true);
+      }
+    }).onError((error, stackTrace) {
+      setLoading(false);
+      if (kDebugMode) {
+        print(error.toString());
+      }
+      Utils.toastMessage(error.toString());
+    });
+  }
+
+  Future<void> appraisalPMRevertApi(dynamic data, BuildContext context) async {
+    setLoading(true);
+    if (kDebugMode) {
+      print("Api params---$data");
+    }
+    _myRepo.appraisalPMRevertApi(data,context).then((onValue) {
+      setLoading(false);
+      if (kDebugMode) {
+        print("Api Response---$onValue");
+      }
+      Map<String, dynamic> response = onValue as Map<String, dynamic>;
+      Utils.toastMessage(response['message']);
+      if (response['status'] == true) {
+        Navigator.pop(context, true);
+      }
+    }).onError((error, stackTrace) {
+      setLoading(false);
+      if (kDebugMode) {
+        print(error.toString());
+      }
+      Utils.toastMessage(error.toString());
+    });
+  }
+
 }

@@ -109,5 +109,7 @@ class AppUrl{
   static var appraisalListUrl = baseUrl + 'appraisal/myAppraisalsList';
   static var appraisalDetailUrl = baseUrl + 'appraisal/Appraisal_detail';
   static var appraisalRequestListUrl = baseUrl + 'appraisal/appraisalRequestedList';
+  static var createAppraisalUrl = baseUrl + 'appraisal/create_appraisal_request';
+  static var appraisalPMRevertUrl = baseUrl + 'appraisal/appraisalRevertByPM';
 
 }

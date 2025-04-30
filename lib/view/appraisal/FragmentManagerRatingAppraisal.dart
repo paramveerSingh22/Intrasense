@@ -126,7 +126,7 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
 
   @override
   Widget build(BuildContext context) {
-
+    final appraisalViewModel = Provider.of<AppraisalViewModel>(context, listen: false);
     return Scaffold(
         body: Stack(
           children: <Widget>[
@@ -480,7 +480,7 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
                               initialRating: 0.0,
                               onRatingUpdate: (rating) {
                                 setState(() {
-                                  attendanceAndPunctuallyRating = rating.toString();
+                                  attendanceAndPunctuallyRating = rating.toString().split('.')[0];
                                 });
                               },
                             ),
@@ -516,7 +516,7 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
                               initialRating: 0.0,
                               onRatingUpdate: (rating) {
                                 setState(() {
-                                  workEthicIntegrityRating = rating.toString();
+                                  workEthicIntegrityRating = rating.toString().split('.')[0];
                                 });
                               },
                             ),
@@ -551,7 +551,7 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
                               initialRating: 0.0,
                               onRatingUpdate: (rating) {
                                 setState(() {
-                                  qualityOfWorkRating = rating.toString();
+                                  qualityOfWorkRating = rating.toString().split('.')[0];
                                 });
                               },
                             ),
@@ -586,7 +586,7 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
                               initialRating: 0.0,
                               onRatingUpdate: (rating) {
                                 setState(() {
-                                  leadershipQualityRating = rating.toString();
+                                  leadershipQualityRating = rating.toString().split('.')[0];
                                 });
                               },
                             ),
@@ -621,7 +621,7 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
                               initialRating: 0.0,
                               onRatingUpdate: (rating) {
                                 setState(() {
-                                  communicationSkillRating = rating.toString();
+                                  communicationSkillRating = rating.toString().split('.')[0];
                                 });
                               },
                             ),
@@ -658,7 +658,7 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
                               initialRating: 0.0,
                               onRatingUpdate: (rating) {
                                 setState(() {
-                                  problemSolvingRating = rating.toString();
+                                  problemSolvingRating = rating.toString().split('.')[0];
                                 });
                               },
                             ),
@@ -697,15 +697,13 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
                                     appraisalRevertAPI("2");
                                   },
                                   buttonText: 'SUBMIT',
+                                  loading: appraisalViewModel.loading,
                                 ))
                           ],
                         ),
                       )
-
-
                     }
                   }
-
                 ],
               ),
             )
@@ -877,13 +875,13 @@ class _FragmentManagerRatingAppraisal extends State<FragmentManagerRatingApprais
         'communication_comment':_communicationSkillsController.text.toString(),
         'problemsolving_comment':_problemSolvingController.text.toString(),
         'reason':"",
-        'appraisal_status':revertStatus,
+        'status':revertStatus,
         'token': _userData?.token.toString(),
       };
       final appraisalViewModel = Provider.of<AppraisalViewModel>(context, listen: false);
       await appraisalViewModel.appraisalPMRevertApi(data, context);
       Utils.hideLoadingDialog(context);
-      Navigator.pop(context, true);
+
     }
   }
 }

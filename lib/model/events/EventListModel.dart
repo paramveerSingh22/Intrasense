@@ -34,20 +34,20 @@ class EventListModel {
   // Factory method to create an Event object from a JSON map
   factory EventListModel.fromJson(Map<String, dynamic> json) {
     return EventListModel(
-      eventId: json['event_id'] as String,
-      userId: json['user_id'] as String,
-      eventStatus: json['event_status'] as String?,
-      title: json['title'] as String,
-      eventDate: json['eventdate'] as String,
-      venue: json['venue'] as String,
-      timeFrom: json['timefrom'] as String,
-      timeTo: json['timeto'] as String,
-      timezone: json['timezone'] as String,
-      googleMapUrl: json['googlemapurl'] as String,
-      description: json['description'] as String,
-      organiser: json['organiser'] as String,
-      organiserFirstName: json['organiser_firstname'] as String,
-      organiserLastName: json['organiser_lastname'] as String,
+      eventId: json['event_id'] ??"",
+      userId: json['user_id'] ??"",
+      eventStatus: json['event_status'] ??"",
+      title: json['title'] ??"",
+      eventDate: json['eventdate'] ??"",
+      venue: json['venue'] ??"",
+      timeFrom: json['timefrom'] ??"",
+      timeTo: json['timeto'] ??"",
+      timezone: json['timezone'] ??"",
+      googleMapUrl: json['googlemapurl'] ??"",
+      description: json['description'] ??"",
+      organiser: json['organiser'] ??"",
+      organiserFirstName: json['organiser_firstname'] ??"",
+      organiserLastName: json['organiser_lastname']??"",
     );
   }
 

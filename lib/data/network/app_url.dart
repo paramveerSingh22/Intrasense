@@ -1,5 +1,10 @@
 class AppUrl{
-  static var baseUrl='https://intrasense.co.uk/app/api/';
+  /// Live Url////
+  //static var baseUrl='https://intrasense.co.uk/app/api/';
+
+  /// Dev Url///
+  static var baseUrl='https://dev.intrasense.co.uk/';
+
   static var imageUrl='https://intrasense.co.uk/app/';
   static var loginUrl= baseUrl + 'common/login';
   static var forgotPasswordUrl= baseUrl + 'common/forgetPassword';
@@ -104,6 +109,7 @@ class AppUrl{
   static var eventListUrl = baseUrl + 'events/addEvent/getevents';
   static var addEventUrl = baseUrl + 'events/addEvent';
   static var eventRevertUrl = baseUrl + 'events/eventRevert';
+  static var eventDetailUrl = baseUrl + 'events/eventDetailSortByUSer';
 
   ///for appraisal
   static var appraisalListUrl = baseUrl + 'appraisal/myAppraisalsList';

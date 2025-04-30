@@ -107,6 +107,10 @@ class _AddEventScreen extends State<AddEventScreen>{
     getGroupListAPi();
     getEmployeesList();
     getClientList();
+    if(widget.eventDetail!=null){
+      isUpdate= true;
+      getEventDetailApi();
+    }
     /*if (widget.meetingDetail != null) {
       isUpdate = true;
       getMeetingDetailApi();
@@ -201,6 +205,85 @@ class _AddEventScreen extends State<AddEventScreen>{
     } finally {
       Utils.hideLoadingDialog(context);
     }
+  }
+
+  void getEventDetailApi() async{
+
+    Utils.showLoadingDialog(context);
+    try {
+      Map data = {
+        'user_id': _userData?.data?.userId,
+        'usr_role_track_id': _userData?.data?.roleTrackId,
+        'deviceToken': Constants.deviceToken,
+        'deviceType': Constants.deviceType,
+        'event_id': widget.eventDetail.eventId,
+        'token': _userData?.token,
+      };
+      final eventViewModel = Provider.of<EventViewModel>(context, listen: false);
+      final response = await eventViewModel.getEventDetailApi(data, context);
+      setState(() {
+        if (response != null) {
+          final  eventDetail = response.eventDetails;
+          final  attendees = response.attendees;
+          final  groups = response.groupDetails;
+          final  clients = response.clientDetails;
+
+
+          if(attendees.isNotEmpty){
+            selectIndividuals= true;
+            selectedEmployeesNames = attendees.map((user) {
+              String firstName = user.attendeeFname ?? "";
+              String lastName = user.attendeeLname ?? "";
+              return "$firstName $lastName";
+            }).toList();
+          }
+          else{
+            selectIndividuals= false;
+          }
+
+          if(groups.isNotEmpty){
+            selectGroup= true;
+            selectedGroupsNames = groups
+                .map((group) => group.groupName)
+                .where((name) => name != null)
+                .map((name) => name!)
+                .toList();
+          }
+          else{
+            selectGroup= false;
+          }
+
+          if(clients.isNotEmpty){
+            selectClient= true;
+            selectedClientNames =clients.map((client) {
+              return client.companyName ?? "";
+            }).toList();
+          }
+          else{
+            selectClient= false;
+          }
+
+
+        }
+      });
+      Utils.hideLoadingDialog(context);
+    } catch (error, stackTrace) {
+      Utils.hideLoadingDialog(context);
+      if (kDebugMode) {
+        print(error);
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load client list')),
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  void setLoading(bool loading) {
+    setState(() {
+      _isLoading = loading;
+    });
   }
 
   @override
@@ -768,5 +851,7 @@ class _AddEventScreen extends State<AddEventScreen>{
       _desController.text= widget.eventDetail.description.toString();
     });
   }
+
+
 
 }

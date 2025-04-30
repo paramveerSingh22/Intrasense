@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:intrasense/model/events/EventDetailsModel.dart';
 import 'package:intrasense/model/events/EventListModel.dart';
 import 'package:intrasense/repository/event_repository.dart';
 
@@ -39,6 +40,8 @@ class EventViewModel with ChangeNotifier{
       return null;
     }
   }
+
+
 
   Future<void> addEventApi(dynamic data, BuildContext context) async {
     setLoading(true);
@@ -88,6 +91,29 @@ class EventViewModel with ChangeNotifier{
       }
       Utils.toastMessage(error.toString());
     });
+  }
+
+  Future<EventDetailsModel?> getEventDetailApi(dynamic data,BuildContext context) async {
+    setLoading(true);
+    try{
+      print("Api params---" + data.toString());
+      var response = await _myRepo.getEventDetailApi(data,context);
+      EventDetailsModel eventDetail = EventDetailsModel.fromJson(response['data']);
+
+      setLoading(false);
+      if (kDebugMode) {
+        print("Api Response---" + response.toString());
+      }
+      return eventDetail;
+    }
+    catch (error) {
+      setLoading(false);
+      if (kDebugMode) {
+        print("Api Error--" + error.toString());
+      }
+      Utils.toastMessage(error.toString());
+      return null;
+    }
   }
 
 }

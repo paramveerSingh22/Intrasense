@@ -26,10 +26,11 @@ class AuthViewModel with ChangeNotifier {
 
   Future<void> loginApi(dynamic data, BuildContext context) async {
     setLoading(true);
+    print("Api params---$data");
     _myRepo.loginApi(data,context).then((onValue) {
       setLoading(false);
       if (kDebugMode) {
-        print(onValue.toString());
+        print("Api Response---$onValue");
       }
       UserModel userModel=UserModel.fromJson(onValue);
       userViewModel.saveUser(userModel);

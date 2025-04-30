@@ -37,4 +37,15 @@ class EventRepository{
     }
   }
 
+
+  Future <dynamic> getEventDetailApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.eventDetailUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
 }

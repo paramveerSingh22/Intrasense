@@ -3,7 +3,7 @@ class AppUrl{
   //static var baseUrl='https://intrasense.co.uk/app/api/';
 
   /// Dev Url///
-  static var baseUrl='https://dev.intrasense.co.uk/';
+  static var baseUrl='https://dev.intrasense.co.uk/app/api/';
 
   static var imageUrl='https://intrasense.co.uk/app/';
   static var loginUrl= baseUrl + 'common/login';
@@ -117,5 +117,8 @@ class AppUrl{
   static var appraisalRequestListUrl = baseUrl + 'appraisal/appraisalRequestedList';
   static var createAppraisalUrl = baseUrl + 'appraisal/create_appraisal_request';
   static var appraisalPMRevertUrl = baseUrl + 'appraisal/appraisalRevertByPM';
+
+
+  static var myFilesListUrl = baseUrl + 'dms/myFolders';
 
 }

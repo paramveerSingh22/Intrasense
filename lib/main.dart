@@ -6,6 +6,7 @@ import 'package:intrasense/view_models/appraisal_view_model.dart';
 import 'package:intrasense/view_models/auth_view_model.dart';
 import 'package:intrasense/view_models/client_view_model.dart';
 import 'package:intrasense/view_models/common_view_model.dart';
+import 'package:intrasense/view_models/documents_view_model.dart';
 import 'package:intrasense/view_models/event_view_model.dart';
 import 'package:intrasense/view_models/expense_view_model.dart';
 import 'package:intrasense/view_models/leave_view_model.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_)=> MeetingViewModel()),
           ChangeNotifierProvider(create: (_)=> EventViewModel()),
           ChangeNotifierProvider(create: (_)=> AppraisalViewModel()),
+          ChangeNotifierProvider(create: (_)=> DocumentsViewModel()),
         ],
       child: (MaterialApp(
         theme: ThemeData(

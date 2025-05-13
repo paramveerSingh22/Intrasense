@@ -80,13 +80,13 @@ class _MyProjectListScreen extends State<MyProjectListScreen> {
     setState(() {
       filteredList = projectList
           .where((item) =>
-      item.prName.toLowerCase().contains(query) ||
-          item.clientName.toLowerCase().contains(query) ||
-          item.projectManagerName.toLowerCase().contains(query)||
-          item.prStartDate.toLowerCase().contains(query)||
-          item.prEndDate.toLowerCase().contains(query)||
-          item.prBudgetedHours.toLowerCase().contains(query)||
-          item.prShortName.toLowerCase().contains(query))
+      item.prName.toString().toLowerCase().contains(query) ||
+          item.clientName.toString().toLowerCase().contains(query) ||
+          item.projectManagerName.toString().toLowerCase().contains(query)||
+          item.prStartDate.toString().toLowerCase().contains(query)||
+          item.prEndDate.toString().toLowerCase().contains(query)||
+          item.prBudgetedHours.toString().toLowerCase().contains(query)||
+          item.prShortName.toString().toLowerCase().contains(query))
           .toList();
     });
   }
@@ -156,7 +156,7 @@ class _MyProjectListScreen extends State<MyProjectListScreen> {
           filteredList = projectList;
           if(filter==false){
             allProjectList = response.toList();
-            projectTypeNameList = allProjectList.map((item) => item.prName).toList();
+            projectTypeNameList = allProjectList.map((item) => item.prName.toString()).toList();
           }
         }
       });
@@ -821,7 +821,7 @@ class CustomProjectListTile extends StatelessWidget {
                         Expanded(
                             flex: 10,
                             child: Text(
-                              item.prShortName,
+                              item.prShortName.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.secondaryOrange,
@@ -928,7 +928,7 @@ class CustomProjectListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              item.prName,
+                              item.prName.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -963,7 +963,7 @@ class CustomProjectListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              item.clientName,
+                              item.clientName.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -1000,7 +1000,7 @@ class CustomProjectListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              item.projectManagerName,
+                              item.projectManagerName.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -1034,7 +1034,7 @@ class CustomProjectListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              item.prStartDate,
+                              item.prStartDate.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -1068,7 +1068,7 @@ class CustomProjectListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              item.prEndDate,
+                              item.prEndDate.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -1102,7 +1102,7 @@ class CustomProjectListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              item.prBudgetedHours,
+                              item.prBudgetedHours.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -1134,7 +1134,7 @@ class CustomProjectListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                              getStatusText(item.status),
+                              getStatusText(item.status.toString()),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,

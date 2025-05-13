@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intrasense/model/documents/MyFoldersModel.dart';
-import 'package:intrasense/view_models/documents_view_model.dart';
 
+import '../../model/documents/MyFoldersModel.dart';
 import '../../model/projects/ProjectListModel.dart';
 import '../../model/teams/EmployeesListModel.dart';
 import '../../model/user_model.dart';
@@ -14,19 +13,19 @@ import '../../utils/AppColors.dart';
 import '../../utils/Constants.dart';
 import '../../utils/Images.dart';
 import '../../utils/Utils.dart';
+import '../../view_models/documents_view_model.dart';
 import '../../view_models/projects_view_model.dart';
 import '../../view_models/teams_view_model.dart';
 import '../../view_models/user_view_model.dart';
 import 'package:provider/provider.dart';
 
-import 'FileDetailsScreen.dart';
-
-class FragmentMyFiles extends StatefulWidget{
+class FragmentSharedWithMe extends StatefulWidget{
   @override
-  _FragmentMyFiles createState() => _FragmentMyFiles();
+  _FragmentSharedWithMe createState() => _FragmentSharedWithMe();
+
 }
 
-class _FragmentMyFiles extends State<FragmentMyFiles>{
+class _FragmentSharedWithMe extends State<FragmentSharedWithMe>{
   UserModel? _userData;
   bool _isLoading = false;
   List<MyFoldersModel> myFilesList = [];
@@ -36,7 +35,9 @@ class _FragmentMyFiles extends State<FragmentMyFiles>{
   List<ProjectListModel> projectList = [];
   List<String> projectTypeNameList = [];
   String? selectProjectValue;
-  String? selectProjectId="";
+  String? selectProjectId;
+
+  String? bookmarkedType="";
 
   List<String> documentTypeList = [
     "All",
@@ -48,8 +49,7 @@ class _FragmentMyFiles extends State<FragmentMyFiles>{
   List<EmployeesListModel> employeesList = [];
   List<String> employeeNamesList = [];
   String? selectEmployeeValue;
-  String? selectEmployeeId="";
-  String? bookmarkedType="";
+  String? selectEmployeeId;
 
   @override
   void initState() {
@@ -113,7 +113,7 @@ class _FragmentMyFiles extends State<FragmentMyFiles>{
         'token': _userData?.token,
       };
       final documentViewModel = Provider.of<DocumentsViewModel>(context, listen: false);
-      final response = await documentViewModel.getMyFilesListApi(data, context);
+      final response = await documentViewModel.getSharedWithMeListApi(data, context);
       setState(() {
         if (response != null) {
           myFilesList = response.toList();
@@ -127,7 +127,7 @@ class _FragmentMyFiles extends State<FragmentMyFiles>{
         print(error);
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to load my files list')),
+        const SnackBar(content: Text('Failed to load shared me list')),
       );
     } finally {
       setLoading(false);
@@ -332,8 +332,8 @@ class _FragmentMyFiles extends State<FragmentMyFiles>{
                 const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
                 child: CustomElevatedButton(
                   onPressed: () async {
-                    Navigator.pop(context);
                     getMyFilesList();
+                    Navigator.pop(context);
                   },
                   buttonText: 'SEARCH',
                   loading: projectViewModel.loading,
@@ -345,6 +345,7 @@ class _FragmentMyFiles extends State<FragmentMyFiles>{
       },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -378,7 +379,7 @@ class _FragmentMyFiles extends State<FragmentMyFiles>{
                         child: Image.asset(Images.filterIcon),
                       ),
                       onPressed: () {
-                        openFilterDialog();
+                        //openFilterDialog();
                       },
                     ),
                   ],
@@ -475,58 +476,32 @@ class CustomFileListTile extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(right: 0.0),
                           child: Expanded(
-                            flex: 1,
-                            child: Row(
-                              children: [
-                                PopupMenuButton<int>(
-                                  icon: SizedBox(
-                                    height: 20.0,
-                                    width: 20.0,
-                                    child: Image.asset(Images.threeDotsRed),
-                                  ),
-                                  onSelected: (int value) {
-                                    // Handle selected value
-                                    switch (value) {
-                                      case 1:
-                                        FileDetailsScreen.show(context);
-                                        print("View Details/Activities");
-                                        break;
-                                      case 2:
-                                        print("Option 2 selected");
-                                        break;
-                                      case 3:
-                                        print("Option 3 selected");
-                                        break;
-                                      case 4:
-                                        print("Option 4 selected");
-                                        break;
-                                    }
-                                  },
-                                  itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
-                                    const PopupMenuItem<int>(
-                                      value: 1,
-                                      child: Text('View Details/Activities'),
-                                    ),
-                                    const PopupMenuItem<int>(
-                                      value: 2,
-                                      child: Text('Option 2'),
-                                    ),
-                                    const PopupMenuItem<int>(
-                                      value: 3,
-                                      child: Text('Option 3'),
-                                    ),
-                                    const PopupMenuItem<int>(
-                                      value: 4,
-                                      child: Text('Option 4'),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+                              flex: 1,
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                      icon: SizedBox(
+                                        height: 20.0,
+                                        width: 20.0,
+                                        child: Image.asset(Images.threeDotsRed),
+                                      ),
+                                      onPressed: () async {
+                                        /* final result = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EventDetailScreen(
+                                                      eventDetail: item)),
+                                        );
+                                        if (result == true) {
+                                          // onTaskUpdated();
+                                        }*/
+                                      }),
+                                ],
+                              )),
                         ),
 
-                       /* Padding(
+                        /* Padding(
                           padding: const EdgeInsets.only(right: 0.0),
                           child: Expanded(
                               flex: 1,
@@ -674,7 +649,7 @@ class CustomFileListTile extends StatelessWidget {
                         Expanded(
                             flex: 1,
                             child: Text(
-                             item.createdOn.toString(),
+                              item.createdOn.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textColor,
@@ -727,4 +702,3 @@ class DividerColor extends StatelessWidget {
     );
   }
 }
-

@@ -651,7 +651,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             color: AppColors.secondaryOrange,
                                             fontFamily: 'PoppinsRegular',
                                             fontSize: 15)),
-                                    title: const Text('Appraisals Request',
+                                    title: const Text('Appraisal Requests',
                                         style: TextStyle(
                                             color: AppColors.skyBlueTextColor,
                                             fontFamily: 'PoppinsRegular',

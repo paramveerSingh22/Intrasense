@@ -157,7 +157,7 @@ class _AppraisalRequestListScreen extends State<AppraisalRequestListScreen>{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  "Appraisals Request",
+                  "Appraisal Requests",
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
@@ -190,7 +190,7 @@ class _AppraisalRequestListScreen extends State<AppraisalRequestListScreen>{
                             const Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  "Appraisals Request",
+                                  "Appraisal Requests",
                                   style: TextStyle(
                                       fontSize: 14,
                                       color: AppColors.secondaryOrange,

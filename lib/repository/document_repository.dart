@@ -16,4 +16,27 @@ class DocumentRepository{
       throw e;
     }
   }
+
+  Future <dynamic> getSharedWithMeFileApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.sharedWithMeFileListUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
+
+  Future <dynamic> createFolderApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.createFolderUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+
+  }
+
 }

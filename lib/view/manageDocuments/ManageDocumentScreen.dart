@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intrasense/view/manageDocuments/UploadFileScreen.dart';
 
 import '../../model/projects/ProjectListModel.dart';
 import '../../model/user_model.dart';
@@ -380,6 +381,7 @@ class _ManageDocumentScreen extends State<ManageDocumentScreen>
                           flex: 10,
                           child: CustomElevatedButton(
                             onPressed: () {
+                              UploadFileScreen.show(context);
                               //Navigator.pop(context);
                             },
                             buttonText: 'UPLOAD FILE',

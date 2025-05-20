@@ -35,7 +35,7 @@ class _FragmentSharedWithMe extends State<FragmentSharedWithMe>{
   List<ProjectListModel> projectList = [];
   List<String> projectTypeNameList = [];
   String? selectProjectValue;
-  String? selectProjectId;
+  String? selectProjectId="";
 
   String? bookmarkedType="";
 
@@ -49,7 +49,7 @@ class _FragmentSharedWithMe extends State<FragmentSharedWithMe>{
   List<EmployeesListModel> employeesList = [];
   List<String> employeeNamesList = [];
   String? selectEmployeeValue;
-  String? selectEmployeeId;
+  String? selectEmployeeId="";
 
   @override
   void initState() {
@@ -114,12 +114,14 @@ class _FragmentSharedWithMe extends State<FragmentSharedWithMe>{
       };
       final documentViewModel = Provider.of<DocumentsViewModel>(context, listen: false);
       final response = await documentViewModel.getSharedWithMeListApi(data, context);
-      setState(() {
+    /*  setState(() {
         if (response != null) {
           myFilesList = response.toList();
-          filteredList = myFilesList;
+          if(myFilesList.isNotEmpty){
+            filteredList = myFilesList;
+          }
         }
-      });
+      });*/
       Utils.hideLoadingDialog(context);
     } catch (error, stackTrace) {
       Utils.hideLoadingDialog(context);

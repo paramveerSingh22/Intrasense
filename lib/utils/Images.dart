@@ -48,5 +48,6 @@ class Images{
  static String  clockIcon = "assets/images/clock_icon.png";
  static String  profileIcon = "assets/images/profile_icon.png";
  static String  dropdownRightArrow = "assets/images/drop_down_right_arrow.png";
+ static String  shareIcon = "assets/images/share_icon.png";
 
 }

@@ -32,7 +32,6 @@ class _FragmentMyFiles extends State<FragmentMyFiles>{
   List<MyFoldersModel> myFilesList = [];
   List<MyFoldersModel> filteredList = [];
   TextEditingController searchController = TextEditingController();
-
   List<ProjectListModel> projectList = [];
   List<String> projectTypeNameList = [];
   String? selectProjectValue;
@@ -488,7 +487,7 @@ class CustomFileListTile extends StatelessWidget {
                                     // Handle selected value
                                     switch (value) {
                                       case 1:
-                                        FileDetailsScreen.show(context);
+                                        FileDetailsScreen.show(context,item.id);
                                         print("View Details/Activities");
                                         break;
                                       case 2:

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intrasense/model/documents/MyFoldersModel.dart';
 
+import '../model/documents/FileDetailResponse.dart';
 import '../repository/document_repository.dart';
 import '../utils/Utils.dart';
 
@@ -87,5 +88,31 @@ class DocumentsViewModel with ChangeNotifier{
       Utils.toastMessage(error.toString());
     });
   }
+
+  Future<FileDetailResponse?> getFileDetailApi(dynamic data, BuildContext context) async {
+    setLoading(true);
+    try {
+      print("Api params---" + data.toString());
+
+      var response = await _myRepo.getFileDetailApi(data, context);
+
+      if (kDebugMode) {
+        print("Api Response---" + response.toString());
+      }
+
+      setLoading(false);
+
+      FileDetailResponse fileDetail = FileDetailResponse.fromJson(response['data']);
+      return fileDetail;
+    } catch (error) {
+      setLoading(false);
+      if (kDebugMode) {
+        print("Api Error--" + error.toString());
+      }
+      Utils.toastMessage(error.toString());
+      return null;
+    }
+  }
+
 
 }

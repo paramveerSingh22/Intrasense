@@ -39,4 +39,14 @@ class DocumentRepository{
 
   }
 
+  Future <dynamic> getFileDetailApi(dynamic data,BuildContext context) async {
+    try {
+      dynamic response = await apiService.getPostApiResponse(AppUrl.fileDetailUrl, data,context);
+      return response;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
+
 }

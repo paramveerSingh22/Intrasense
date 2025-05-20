@@ -122,5 +122,6 @@ class AppUrl{
   static var myFilesListUrl = baseUrl + 'dms/myFolders';
   static var sharedWithMeFileListUrl = baseUrl + 'dms/fileSharedWithMe';
   static var createFolderUrl = baseUrl + 'dms/createFolder';
+  static var fileDetailUrl = baseUrl + 'dms/GetFileDetailsMobile';
 
 }

@@ -380,26 +380,17 @@ class _ManageDocumentScreen extends State<ManageDocumentScreen>
                       Expanded(
                           flex: 10,
                           child: CustomElevatedButton(
-                            onPressed: () {
-                              UploadFileScreen.show(context);
-                              //Navigator.pop(context);
+                            onPressed: () async {
+                             await UploadFileScreen.show(context);
+                             if (_tabController.index == 0) {
+                               setState(() {});
+                             }
                             },
                             buttonText: 'UPLOAD FILE',
                           ))
                     ],
                   ),
                 ),
-              /*  Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      eee
-                      ElevatedButton(onPressed: () {}, child: Text("Button 1")),
-                      ElevatedButton(onPressed: () {}, child: Text("Button 2")),
-                    ],
-                  ),
-                ),*/
               ],
             ),
           ),
@@ -411,10 +402,16 @@ class _ManageDocumentScreen extends State<ManageDocumentScreen>
       ),
     );
   }
+
+  void refreshFileList() {
+    // 🧠 Call the API or setState with latest data
+    if (_tabController.index == 0) {
+      // Assuming FragmentMyFiles has some reload method or notifier
+      print("Refreshing My Files...");
+      // e.g., you can trigger a provider function, or pass a callback to fragment
+    }
+  }
 }
-
-
-
 
 class DividerColor extends StatelessWidget {
   const DividerColor({super.key});

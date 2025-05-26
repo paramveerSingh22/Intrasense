@@ -493,8 +493,7 @@ class _CreateExpenseScreen extends State<CreateExpenseScreen> {
                   } else if (selectedFilePath == null) {
                     Utils.toastMessage("Please upload document");
                   } else {
-                    String? base64String =
-                        await encodeImageToBase64(selectedFilePath!);
+                    String? base64String = await encodeImageToBase64(selectedFilePath!);
 
                     Map data = {
                       'user_id': _userData?.data?.userId.toString(),

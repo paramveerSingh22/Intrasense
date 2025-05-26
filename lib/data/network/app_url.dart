@@ -124,4 +124,6 @@ class AppUrl{
   static var createFolderUrl = baseUrl + 'dms/createFolder';
   static var fileDetailUrl = baseUrl + 'dms/GetFileDetailsMobile';
 
+  static var uploadFileUrl = baseUrl + 'dms/uploadFile';
+
 }

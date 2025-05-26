@@ -115,4 +115,30 @@ class DocumentsViewModel with ChangeNotifier{
   }
 
 
+  Future<void> uploadFileApi(dynamic data, BuildContext context,String? filePath) async {
+    setLoading(true);
+    if (kDebugMode) {
+      print("Api params---$data");
+    }
+    _myRepo.uploadFileApi(data,context,filePath).then((onValue) {
+      setLoading(false);
+      if (kDebugMode) {
+        print("Api Response---$onValue");
+      }
+      Map<String, dynamic> response = onValue as Map<String, dynamic>;
+      Utils.toastMessage(response['message']);
+      /*if (response['status'] == true) {
+        Navigator.pop(context, true);
+      }*/
+    }).onError((error, stackTrace) {
+      setLoading(false);
+      if (kDebugMode) {
+        print(error.toString());
+        print("Api error---$error");
+      }
+      Utils.errorMessage(error);
+    });
+  }
+
+
 }
